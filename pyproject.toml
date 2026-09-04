@@ -24,7 +24,7 @@ search = ["numpy>=1.26"]
 test = ["pytest>=7.0", "math-dept[search]"]
 
 [project.urls]
-Repository = "https://github.com/FluxTech-UG/math-dept"
+Repository = "https://github.com/John-FluxTech/math-dept"
 
 [tool.setuptools.packages.find]
 where = ["."]
