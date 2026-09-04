@@ -1,0 +1,27 @@
+# Lake build products and vendored packages
+.lake/
+lake-packages/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.venv/
+build/
+dist/
+
+# Session scratch
+cc-logs/
+
+# The user's global gitignore excludes `.claude/` wholesale. This repo's
+# committed settings and skills live there, and git cannot re-include a file
+# whose parent directory is excluded, so the directory is re-included first and
+# the per-session scratch inside it is excluded again by name.
+!.claude/
+.claude/.cc-writes/
+.claude/worktrees/
+.claude/settings.local.json
+
+# macOS
+.DS_Store

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lake build*)",
+      "Bash(lake env lean *)",
+      "Bash(python -m pytest*)",
+      "Bash(python -m mdept.*)",
+      "Bash(python scripts/gen_root.py*)",
+      "Bash(repo-outline*)"
+    ]
+  }
+}

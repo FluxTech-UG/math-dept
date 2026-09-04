@@ -1,0 +1,153 @@
+{
+  "entries": [
+    {
+      "between": {
+        "above_of": [
+          "MD_0006"
+        ],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "ToyRepo:docs/toy.md \u00a71"
+      ],
+      "evidence": [
+        {
+          "kind": "extract",
+          "path": "sources/Test2026_extract.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0005",
+      "kind": "bound",
+      "merged_into": null,
+      "path": "ledger/MD_0005.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": "What the basilica cannot control for",
+          "application": "The consumer applies the bound at the boundary of the source's hypotheses.",
+          "doc": "docs/toy.md",
+          "domain": "elementary bounds on the naturals",
+          "repo": "ToyRepo"
+        },
+        "settled_by": null,
+        "stipulated_by": {
+          "date": "2026-08-20",
+          "model": null,
+          "request": "MDR:2026-08-20-closed#C1",
+          "who": "john"
+        }
+      },
+      "revises": null,
+      "source": "[Test2026]",
+      "statement_hash": null,
+      "status": "conjectured",
+      "title": "The toy bound on the naturals",
+      "topics": [
+        "toy"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [
+          "MD_0005"
+        ],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "ToyRepo:docs/toy.md \u00a71"
+      ],
+      "evidence": [
+        {
+          "kind": "triage",
+          "path": "triage/MD_0006.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0006",
+      "kind": "bound",
+      "merged_into": null,
+      "path": "ledger/MD_0006.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": "What the basilica cannot control for",
+          "application": "The downstream step needs the strict inequality, not the weak one.",
+          "doc": "docs/toy.md",
+          "domain": "elementary bounds on the naturals",
+          "repo": "ToyRepo"
+        },
+        "settled_by": null,
+        "stipulated_by": {
+          "date": "2026-08-20",
+          "model": "claude-fable-5-1",
+          "request": "MDR:2026-08-20-closed#C2",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "open",
+      "title": "The strict form of the toy bound",
+      "topics": [
+        "toy"
+      ]
+    }
+  ],
+  "generated_from": "8fa36074c1c2095b7e8c6bc5fd8a4b13841ea292101241bb2c17a2b384383f13",
+  "requests": [
+    {
+      "candidates": [
+        "C1"
+      ],
+      "from": {
+        "anchor": "What the basilica cannot control for",
+        "date": "2026-09-01",
+        "doc": "docs/toy.md",
+        "model": "claude-fable-5-1",
+        "repo": "ToyRepo",
+        "who": "claude"
+      },
+      "ledger_ids": [],
+      "path": "inbox/2026-09-01-toy.md",
+      "priority": "normal",
+      "request": "2026-09-01-toy",
+      "state": "new"
+    },
+    {
+      "candidates": [
+        "C1",
+        "C2",
+        "C3"
+      ],
+      "from": {
+        "anchor": "What the basilica cannot control for",
+        "date": "2026-08-20",
+        "doc": "docs/toy.md",
+        "model": null,
+        "repo": "ToyRepo",
+        "who": "john"
+      },
+      "ledger_ids": [
+        "MD_0005",
+        "MD_0006"
+      ],
+      "path": "inbox/done/2026-08-20-closed.md",
+      "priority": "normal",
+      "request": "2026-08-20-closed",
+      "state": "closed"
+    }
+  ],
+  "schema_version": 1
+}

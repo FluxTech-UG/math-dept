@@ -1,0 +1,1 @@
+# Per-declaration axiom exceptions: "<decl> <axiom>" per line.

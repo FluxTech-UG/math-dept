@@ -1,0 +1,2 @@
+# Per-declaration axiom exceptions: "<decl> <axiom>" per line. Example:
+# MathDept.MD_0012.statement Lean.ofReduceBool

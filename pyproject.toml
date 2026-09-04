@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "math-dept"
+version = "0.1.0"
+description = "A Lean 4 + Mathlib ledger of stipulated statements: proven, conjectured, or refuted, with a Python validator and refutation toolkit"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "John Patrick Therrien" }]
+keywords = ["lean4", "mathlib", "formal-verification", "counterexamples", "sympy"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = ["sympy>=1.12", "pyyaml>=6.0"]
+
+[project.optional-dependencies]
+search = ["numpy>=1.26"]
+test = ["pytest>=7.0", "math-dept[search]"]
+
+[project.urls]
+Repository = "https://github.com/FluxTech-UG/math-dept"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mdept*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

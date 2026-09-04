@@ -1,0 +1,204 @@
+{
+  "entries": [
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0001.statement",
+        "file": "MathDept/Results/MD_0001.lean"
+      },
+      "id": "MD_0001",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0001.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "elementary arithmetic on the naturals",
+          "repo": "math-dept"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-09-02",
+          "how": "lean",
+          "model": "claude-fable-5-1",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-01",
+          "model": "claude-fable-5-1",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "ac4e57f2bdf5b0308d8c267d88d952cf2e08b5bb500150c466d157b96fced5c1",
+      "status": "proven-formal",
+      "title": "Adding zero on the naturals changes nothing",
+      "topics": [
+        "toy",
+        "arithmetic"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0002_toy.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0002",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0002.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "elementary arithmetic on the integers",
+          "repo": "math-dept"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-09-03",
+          "how": "counterexample",
+          "model": "claude-fable-5-1",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-01",
+          "model": null,
+          "request": null,
+          "who": "john"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "Every integer exceeds its own square",
+      "topics": [
+        "toy",
+        "arithmetic"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0003",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0003.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "the toy source's own setting",
+          "repo": "math-dept"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-09-01",
+          "how": "citation",
+          "model": null,
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-01",
+          "model": null,
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": "[Test2026]",
+      "statement_hash": null,
+      "status": "cited",
+      "title": "The toy source theorem taken as it stands",
+      "topics": [
+        "toy"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0004",
+      "kind": "bound",
+      "merged_into": null,
+      "path": "ledger/MD_0004.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "elementary arithmetic on the naturals",
+          "repo": "math-dept"
+        },
+        "settled_by": null,
+        "stipulated_by": {
+          "date": "2026-09-04",
+          "model": "claude-fable-5-1",
+          "request": null,
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "conjectured",
+      "title": "A stipulation nobody has worked yet",
+      "topics": [
+        "toy"
+      ]
+    }
+  ],
+  "generated_from": "53e82c838bb0b3408120dbd65250e99ccaf41d2def94971d4ed49207c46425a9",
+  "requests": [],
+  "schema_version": 1
+}

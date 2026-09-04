@@ -1,0 +1,16 @@
+name = "math-dept"
+version = "0.1.0"
+defaultTargets = ["MathDept"]
+
+# Mathlib style: no auto-bound implicits; a typo in a binder is an error, not a new variable.
+[leanOptions]
+autoImplicit = false
+
+# Pinned to a Mathlib release tag; `lean-toolchain` is Mathlib's file at this same tag.
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.33.1"
+
+[[lean_lib]]
+name = "MathDept"

@@ -1,0 +1,32 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lean-and-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Builds the Lake package with the Mathlib cache applied. No --wfail:
+      # a `sorry` under MathDept/Conjectures/ warns legitimately.
+      - uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: true
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - run: pip install -e ".[test]"
+
+      # MATHDEPT_REQUIRE_LEAN turns every Lean-dependent skip into a failure.
+      - env:
+          MATHDEPT_REQUIRE_LEAN: "1"
+        run: python -m pytest -v
