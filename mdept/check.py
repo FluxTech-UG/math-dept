@@ -717,12 +717,32 @@ INVARIANTS = (
 )
 
 
+def bibliography_path(root: Path, kind: str) -> Path:
+    """The bibliography this repo checks against.
+
+    There is one bibliography and it lives in the public repo, because citations
+    are public even while the reading behind them is not. A private repo with no
+    local copy therefore resolves the public sibling's, which is what makes the
+    tag-to-extract sync (I11) meaningful across the pair.
+    """
+    local = Path(root) / "bibliography.md"
+    if local.is_file() or kind == "public":
+        return local
+    sibling = config.public_root(root)
+    if sibling is None:
+        raise ConfigError(
+            f"{root} has no bibliography.md and no public sibling to read one from. "
+            "Set repos.yaml public_sibling, or MATHDEPT_PUBLIC."
+        )
+    return sibling / "bibliography.md"
+
+
 def build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context:
     root = Path(root).resolve()
     _precheck_filenames(root)
     entries = parse.load_entries(root)
     kind = config.repo_kind(root)
-    bibliography = parse.parse_bibliography(root / "bibliography.md")
+    bibliography = parse.parse_bibliography(bibliography_path(root, kind))
     ctx = Context(
         root=root,
         kind=kind,
@@ -743,6 +763,12 @@ def build_context(root: Path, run_counterexamples: bool, family: bool, lean: boo
             )
         ctx.repos = parse.load_repos_yaml(repos_yaml)
         ctx.sibling = config.public_root(root) if kind == "private" else config.private_root(root)
+        # Eagerly, not lazily: the design's rule is that a repo listed in
+        # repos.yaml and absent from disk FAILS. Resolving only the repos some
+        # entry happens to name would let a stale path sit unnoticed until the
+        # first entry that needs it, which is the wrong time to find out.
+        for repo in sorted(ctx.repos["consumers"]):
+            _consumer_path(ctx, repo)
     if lean:
         cached = root / "audit" / "latest.json"
         if not cached.is_file():

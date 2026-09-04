@@ -80,9 +80,10 @@ _Ledger invariants I1 to I20._
 - i19_attempt_records(ctx: Context) -> None  ·L656
 - i20_sorry_fence(ctx: Context) -> None  ·L687
 - const INVARIANTS  ·L695
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context  ·L720
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False) -> Context  ·L754 — Run every invariant in order. Raises `CheckError` on the first violation.
-- main(argv: list[str] | None=None) -> int  ·L766
+- bibliography_path(root: Path, kind: str) -> Path  ·L720 — The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context  ·L740
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False) -> Context  ·L780 — Run every invariant in order. Raises `CheckError` on the first violation.
+- main(argv: list[str] | None=None) -> int  ·L792
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -283,10 +284,12 @@ _Emit a cc-run batch file, one step per open request candidate._
 
 ### scripts/gen_root.py
 _Generate the Lake root file that imports every module in a library._
-- const HEADER  ·L21
-- modules(library: Path, name: str) -> list[str]  ·L24 — Every module in the library, as dotted names, sorted.
-- render(library: Path, name: str) -> str  ·L33
-- main(argv: list[str] | None=None) -> int  ·L38
+- const DEFAULT_LIB  ·L30
+- const HEADER_PREFIX  ·L32
+- header(root: Path, name: str) -> str  ·L35 — The header line, naming how to rerun this script from `root`.
+- modules(library: Path, name: str) -> list[str]  ·L43 — Every module in the library, as dotted names, sorted.
+- render(root: Path, name: str) -> str  ·L52
+- main(argv: list[str] | None=None) -> int  ·L58
 
 ### tests/fixtures/broken/I06_witness_does_not_refute/counterexamples/MD_0002_toy.py
 _MD_0002 claims that every integer strictly exceeds its own square._

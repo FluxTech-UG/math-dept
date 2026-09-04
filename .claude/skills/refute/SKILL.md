@@ -10,9 +10,11 @@ description: >
 
 # Refute one ledger entry
 
-A refutation is a result: it ends the ladder for its entry, and when the Lean
-negation closes it lands in `MathDept/Results/` beside the proofs. Run from the
-repo root.
+A refutation is a result: it ends the ladder for its entry, and when the Lean negation
+closes it lands in `MathDept/Results/` beside the proofs. Run from the repo root. While
+an entry is unreleased its Lean file is `MathDeptPrivate/Conjectures/MD_####.lean` in
+`math-dept-private`; the namespace is `MathDept.MD_####` in both libraries, so a release
+moves the module path and keeps the declaration name.
 
 ## Cheap first
 
@@ -80,12 +82,24 @@ which the entry records:
 
 ## The statement stays frozen
 
-Never edit Statement or Hypotheses to make the counterexample land: the value of
-the witness is that it kills the statement as stipulated. A repaired version is
-a new entry ID with `revises`, linked from this one, and that pair is the record
-consumers read.
+Never edit Statement or Hypotheses to make the counterexample land: the value of the
+witness is that it kills the statement as stipulated. A repaired version is a new entry
+ID with `revises`, linked from this one, and that pair is the record consumers read.
 
-## Close out
+## Close out under orchestration
+
+As a `prover` agent in a wave under `math-orchestration`, the run ends at the artifact:
+`counterexamples/MD_####_slug.py`, with `python -m mdept.refute MD_####` verifying.
+Leave it in place and report the entry ID, the outcome (exact witness, numeric witness,
+or none found), the artifact path, what was tried, the evidence tier it reaches, and
+anything the lead must decide. Steps 1 to 5 below and the `git mv` into `Results/` are
+the lead's, after the wave: set no `status` or other ledger field, run no `make regen`
+or any part of it (`gen_root.py`, `mdept.index`, `repo-outline`), and make no commit. A
+status the adversarial review has not seen is a status nobody checked, and each
+generated view is derived from the whole tree, so regenerating or committing mid-wave
+collides with entries the agent did not write.
+
+## Close out: direct session
 
 1. `python scripts/gen_root.py --write` (when a Lean file moved)
 2. `python -m pytest`

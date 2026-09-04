@@ -88,3 +88,22 @@ name in Caveats what a citable source must confirm.
 
 Index the tag in the Topic Index table at the top of `bibliography.md` in the
 same edit: the validator fails on a tag indexed nowhere.
+
+## Close out under orchestration
+
+As a `math-extractor` agent in a wave under `math-orchestration`, the run ends at the two
+files: the extract and the `bibliography.md` entry with its Topic Index row. Leave both
+in place and report the BibTag, the outcome (extracted, or full text unreachable and
+nothing filed), both paths, which statements were taken and what the source turned out
+not to state, and anything the lead must decide. Every ledger entry a Hook seeds is the
+lead's to allocate, and so are the generated views (`make regen`, `python -m mdept.index`)
+and the commit; the write guard already holds the ledger half of that line. Each view is
+derived from the whole tree, so regenerating or committing mid-wave collides with entries
+the agent did not write.
+
+## Close out: direct session
+
+With no orchestration above the run, `make check` (the bibliography and index validators)
+and the commits are yours: the extract commits in `math-dept-private`, the bibliography
+edit commits here, one commit each, because a commit never spans two repos. A candidate a
+Hook proposes becomes a ledger entry in its own pass, never in this one.

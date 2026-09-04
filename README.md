@@ -98,7 +98,7 @@ declaration (module, axioms, pretty-printed type) and then fails if any audited
 declaration depends on an axiom outside {`propext`, `Classical.choice`, `Quot.sound`}
 plus the per-declaration lines in `audit/axiom-allowlist.txt`. That catches a `sorryAx`
 arriving through an import, which a text search cannot see, and it refuses
-`native_decide` (which appears as `Lean.ofReduceBool`) unless it is explicitly allowed.
+`native_decide`, whose generated axiom is refused unless explicitly allowed.
 The audited type is what the ledger hashes to keep a settled statement frozen.
 
 ## The Python side

@@ -64,7 +64,7 @@ MD_0007  MathDept.Results.MD_0007.statement
 1 hypothesis creep   PASS  binders match H1-H3; lean_minimal_hypotheses: none unused
 2 non-vacuity        PASS  n = 3, x = 1/2 satisfies H1-H3; norm_num closes
 3 circular helpers   PASS  aux_bound is strictly weaker than the target
-4 axiom gate         FAIL  depends on Lean.ofReduceBool, no allowlist line
+4 axiom gate         FAIL  native_decide axiom, no allowlist line
 5 maxHeartbeats      PASS  none set
 6 coercion traps     PASS  single ℝ ambient, no ↑ in the proof
 7 round trip         PASS  informalization matches the entry, quantifiers included
@@ -74,7 +74,19 @@ VERDICT: REJECT
   reduction or add the allowlist line with a recorded reason.
 ```
 
-The verdict is one word: ACCEPT, REJECT, or UNCERTAIN. REJECT lists the failing
-items and what would fix each. UNCERTAIN names exactly what a decision needs and
-who can supply it. The lead reads the verdict and sets the status; changing the
-ledger yourself is not part of this job.
+## Close out
+
+The artifact is the verdict, and it is the same artifact in both modes: the item table
+above, then one word. ACCEPT stands alone; REJECT lists the failing items and what would
+fix each; UNCERTAIN names exactly what a decision needs and who can supply it. This pass
+changes no `status` and no other ledger field, in either mode. The lead reads the verdict
+and sets the status.
+
+As a `prover` agent in a wave under `math-orchestration`, report the entry ID, the
+verdict, the path of the file reviewed, the evidence for each item, and anything the lead
+must decide. Change no files: a reviewer that edits the proof it is judging has become
+its author, and the review is gone. The commit and the generated views are the lead's,
+after the wave.
+
+With no orchestration above the run, the verdict goes back to the session that asked for
+it, and that session decides the status after reading it.

@@ -61,7 +61,7 @@ only `propext`, `Classical.choice` and `Quot.sound`, plus per-declaration except
 listed in `audit/axiom-allowlist.txt` (one `<decl> <axiom>` line each). Three layers
 enforce this: I20 and `python -m mdept.audit sorry` grep the token without needing
 Lean, `tests/test_sorry_scope.py` runs that guard, and `scripts/AxiomAudit.lean` under
-`make lean` catches `sorryAx` propagating out of a conjecture and `Lean.ofReduceBool`
+`make lean` catches `sorryAx` propagating out of a conjecture and a `native_decide` axiom
 arriving from `native_decide`.
 
 ## Lean file conventions

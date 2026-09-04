@@ -10,7 +10,7 @@ def enforced (m : Name) : Bool :=
 def readAllowlist (path : System.FilePath) : IO (List (Name × Name)) := do
   let txt ← IO.FS.readFile path
   return txt.splitOn "\n" |>.filterMap fun l =>
-    let l := l.trim
+    let l := l.trimAscii.toString
     if l.isEmpty || l.startsWith "#" then none else
     match l.splitOn " " |>.filter (· ≠ "") with
     | [d, a] => some (d.toName, a.toName)

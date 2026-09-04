@@ -95,9 +95,11 @@ statements must still typecheck. `MathDept/Results/`, `MathDept/Defs/`, and
 
 The audit is the real fence, and the `sorry` grep is only the cheap first pass: a
 `sorryAx` that reaches a Result through an imported conjecture is invisible to grep and
-fails the audit. `native_decide` appears in the audit as `Lean.ofReduceBool` and is
-refused unless that declaration has an allowlist line, because it moves the trust from
-the kernel to the compiler and that trade should be a recorded decision.
+fails the audit. A `native_decide` proof is refused unless that declaration has an
+allowlist line, because it moves the trust from the kernel to the compiler and that
+trade should be a recorded decision. On the pinned toolchain it surfaces as a
+generated per-declaration axiom, so copy the axiom name from what `make lean`
+reports rather than guessing it.
 
 ## Provenance is required on every non-merged entry
 

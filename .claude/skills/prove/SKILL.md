@@ -29,6 +29,10 @@ subject. Run from the repo root.
    If you find yourself reasoning that one extra hypothesis would be harmless
    here, that is exactly the move this rule forbids.
 
+While an entry is unreleased its Lean file is `MathDeptPrivate/Conjectures/MD_####.lean`
+in `math-dept-private`. The namespace is `MathDept.MD_####` in both libraries, so a
+release moves the module path and keeps the declaration name.
+
 ## Search before you prove
 
 - Order: `lean_leansearch` and `lean_loogle` for candidates, then `exact?` and
@@ -62,7 +66,24 @@ Default 40 turns. Stop and report when the goal state has not changed across 3
 compile cycles: a stalled proof needs a different decomposition or a different
 rung, never a longer budget on the same approach.
 
-## Close out: proven
+## Close out under orchestration
+
+As a `prover` agent in a wave under `math-orchestration`, the run ends at the artifact:
+the entry's Lean file, carrying the stuck-path attempt notes when the proof stalled.
+Leave it where it sits and report the entry ID, the outcome (proven, stuck, or looks
+false), the artifact path, what was tried and where progress stopped, and anything the
+lead must decide.
+
+Everything shared is the lead's, after the wave: `status` and every other ledger field,
+the `git mv` into `Results/`, the commit, and `make regen` with its three parts
+(`python scripts/gen_root.py --write`, `python -m mdept.index`, `repo-outline --write`
+for `docs/MAP.md`). A status the adversarial review has not seen is a status nobody
+checked, and each generated view is derived from the whole tree, so regenerating or
+committing mid-wave collides with entries the agent did not write.
+
+## Close out: proven, direct session
+
+With no orchestration above the run, this close-out is yours.
 
 1. Remove every `sorry`; `lake build` green.
 2. `git mv MathDept/Conjectures/MD_####.lean MathDept/Results/MD_####.lean`
@@ -76,10 +97,10 @@ rung, never a longer budget on the same approach.
 
 ## Close out: stuck
 
-Leave the file in `Conjectures/`. Append to the module docstring what was tried,
-which lemma names were searched and rejected, and the goal state where progress
-stopped. Commit `MD_####: attempt notes`. The next attempt reads that record
-cold, so write it for someone with no memory of this session.
+Leave the file in `Conjectures/`, in both modes. Append to the module docstring what
+was tried, which lemma names were searched and rejected, and the goal state where
+progress stopped. A direct session commits that as `MD_####: attempt notes`. The next
+attempt reads the record cold, so write it for someone with no memory of this session.
 
 ## When it looks false
 
