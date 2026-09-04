@@ -69,7 +69,8 @@ CASES = [
 def stage(tmp_path: Path) -> Path:
     """Copy both bases side by side, so `repos.yaml`'s public_sibling resolves."""
     for base in BASES:
-        shutil.copytree(FIXTURES / base, tmp_path / base)
+        shutil.copytree(FIXTURES / base, tmp_path / base,
+                        ignore=shutil.ignore_patterns("__pycache__"))
     return tmp_path
 
 
@@ -79,7 +80,7 @@ def apply_overlay(root: Path, overlay: Path) -> None:
             continue
         destination = root / source.relative_to(overlay)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
+        shutil.copy(source, destination)
 
 
 # --- the good fixtures ------------------------------------------------------

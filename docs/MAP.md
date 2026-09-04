@@ -189,15 +189,15 @@ _Read the markdown surfaces: ledger entries, bibliography, requests, role lines.
 
 ### mdept/refute.py
 _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
-- const EXACT_TYPES  ·L33
-- @dataclass class Witness  ·L37 — One point that satisfies an entry's hypotheses and violates its conclusion.
-  - verify(self) -> bool  ·L46 — True when the claim evaluates to exactly False at this point.
-  - _require_exact(self, name: str, value) -> None  ·L54
-- _is_sympy(value) -> bool  ·L70
-- _as_bool(value, entry: str) -> bool  ·L74
-- load(path: Path) -> Witness  ·L86 — Import an artifact and call its `refute()`. Raises when the contract is broken.
-- run_all(directory: Path) -> dict  ·L106 — Run every artifact in a directory. Returns {entry id: {file, verified, exact}}.
-- main(argv: list[str] | None=None) -> int  ·L124
+- const EXACT_TYPES  ·L34
+- @dataclass class Witness  ·L38 — One point that satisfies an entry's hypotheses and violates its conclusion.
+  - verify(self) -> bool  ·L47 — True when the claim evaluates to exactly False at this point.
+  - _require_exact(self, name: str, value) -> None  ·L55
+- _is_sympy(value) -> bool  ·L71
+- _as_bool(value, entry: str) -> bool  ·L75
+- load(path: Path) -> Witness  ·L87 — Import an artifact and call its `refute()`. Raises when the contract is broken.
+- run_all(directory: Path) -> dict  ·L113 — Run every artifact in a directory. Returns {entry id: {file, verified, exact}}.
+- main(argv: list[str] | None=None) -> int  ·L131
 
 ### mdept/release.py
 _Move a settled entry from the private repo into this public one._
@@ -350,18 +350,18 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - const LEAN  ·L43
 - const CASES  ·L45
 - stage(tmp_path: Path) -> Path  ·L69 — Copy both bases side by side, so `repos.yaml`'s public_sibling resolves.
-- apply_overlay(root: Path, overlay: Path) -> None  ·L76
-- @pytest.mark.parametrize test_good_fixture_passes_plain(base, tmp_path)  ·L89
-- test_good_public_passes_every_mode(tmp_path)  ·L94
-- test_good_private_passes_family(tmp_path)  ·L99
-- test_every_invariant_has_a_case()  ·L106
-- test_the_invariant_list_is_the_one_that_runs()  ·L114
-- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L122
-- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L138
-- test_template_front_matter_validates()  ·L150
-- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L158
-- test_new_never_reuses_an_id(tmp_path)  ·L178
-- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L187
+- apply_overlay(root: Path, overlay: Path) -> None  ·L77
+- @pytest.mark.parametrize test_good_fixture_passes_plain(base, tmp_path)  ·L90
+- test_good_public_passes_every_mode(tmp_path)  ·L95
+- test_good_private_passes_family(tmp_path)  ·L100
+- test_every_invariant_has_a_case()  ·L107
+- test_the_invariant_list_is_the_one_that_runs()  ·L115
+- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L123
+- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L139
+- test_template_front_matter_validates()  ·L151
+- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L159
+- test_new_never_reuses_an_id(tmp_path)  ·L179
+- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L188
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._

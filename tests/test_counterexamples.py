@@ -78,8 +78,14 @@ def test_module_invocation_uses_canonical_witness_class():
     import sys
     from pathlib import Path
 
+    import shutil
+    import tempfile
+
     repo = Path(__file__).resolve().parents[1]
-    fixture = repo / "tests" / "fixtures" / "good_public"
+    source = repo / "tests" / "fixtures" / "good_public"
+    # Run against a copy so the CLI never writes bytecode into the tracked fixture.
+    fixture = Path(tempfile.mkdtemp()) / "good_public"
+    shutil.copytree(source, fixture, ignore=shutil.ignore_patterns("__pycache__"))
     result = subprocess.run(
         [sys.executable, "-m", "mdept.refute", "--all", "--root", str(fixture)],
         capture_output=True, text=True, cwd=repo, check=False,

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import types
 import json
 import sys
 from dataclasses import dataclass, field
@@ -88,11 +89,17 @@ def load(path: Path) -> Witness:
     path = Path(path).resolve()
     if not path.is_file():
         raise CheckError(f"I6 counterexample: {path}: field '<file>': does not exist")
-    spec = importlib.util.spec_from_file_location(f"mdept_counterexample_{path.stem}", path)
-    if spec is None or spec.loader is None:
-        raise CheckError(f"I6 counterexample: {path}: field '<module>': cannot be imported")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    # Execute the source directly rather than importing through a file spec: a spec-based
+    # import consults any `__pycache__` beside the artifact, and a cached bytecode whose
+    # recorded source mtime and size happen to match (one checkout, two same-length
+    # witnesses) would silently run the wrong witness.
+    module = types.ModuleType(f"mdept_counterexample_{path.stem}")
+    module.__file__ = str(path)
+    try:
+        code = compile(path.read_text(encoding="utf-8"), str(path), "exec")
+        exec(code, module.__dict__)
+    except Exception as exc:
+        raise CheckError(f"I6 counterexample: {path}: field '<module>': {exc}") from exc
     if not hasattr(module, "refute"):
         raise CheckError(f"I6 counterexample: {path}: field 'refute': the module defines no `refute()`")
     witness = module.refute()
