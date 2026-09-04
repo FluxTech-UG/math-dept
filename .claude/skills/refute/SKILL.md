@@ -66,6 +66,12 @@ Add `theorem refuted : ¬ (...)` to the entry's Lean file, negating the frozen
 `statement` type verbatim, and prove it from the witness (`decide`, `norm_num`,
 an explicit instance). Then `git mv` the file into `MathDept/Results/`.
 
+Do this only when no proof attempt is running on the same entry. In a race under
+`math-orchestration` the entry's Lean file belongs to the prover, so the refuter's only
+artifact is the counterexample script. The negation is then a separate follow-up the
+lead assigns once the race has resolved and the file is free; it is the step that lifts
+the entry from the weaker tier below to the strongest.
+
 The ledger status word is `refuted` in every case: the status enum is closed
 and carries no qualifier. What varies is the strength of the evidence behind it,
 which the entry records:
