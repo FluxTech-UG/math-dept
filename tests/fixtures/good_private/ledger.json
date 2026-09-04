@@ -29,7 +29,7 @@
       "provenance": {
         "connects": [],
         "raised_by": {
-          "anchor": "What the basilica cannot control for",
+          "anchor": "Toy anchor heading",
           "application": "The consumer applies the bound at the boundary of the source's hypotheses.",
           "doc": "docs/toy.md",
           "domain": "elementary bounds on the naturals",
@@ -81,7 +81,7 @@
       "provenance": {
         "connects": [],
         "raised_by": {
-          "anchor": "What the basilica cannot control for",
+          "anchor": "Toy anchor heading",
           "application": "The downstream step needs the strict inequality, not the weak one.",
           "doc": "docs/toy.md",
           "domain": "elementary bounds on the naturals",
@@ -133,7 +133,7 @@
       "provenance": {
         "connects": [],
         "raised_by": {
-          "anchor": "What the basilica cannot control for",
+          "anchor": "Toy anchor heading",
           "application": "The consumer needs the left-identity form, not the right-identity one.",
           "doc": "docs/toy.md",
           "domain": "elementary arithmetic on the naturals",
@@ -171,7 +171,7 @@
         "C1"
       ],
       "from": {
-        "anchor": "What the basilica cannot control for",
+        "anchor": "Toy anchor heading",
         "date": "2026-09-01",
         "doc": "docs/toy.md",
         "model": "claude-fable-5-1",
@@ -191,7 +191,7 @@
         "C3"
       ],
       "from": {
-        "anchor": "What the basilica cannot control for",
+        "anchor": "Toy anchor heading",
         "date": "2026-08-20",
         "doc": "docs/toy.md",
         "model": null,
