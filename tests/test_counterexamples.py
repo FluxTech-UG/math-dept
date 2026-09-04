@@ -68,3 +68,21 @@ def test_a_module_without_refute_is_refused(tmp_path):
     artifact.write_text("VALUE = 1\n", encoding="utf-8")
     with pytest.raises(CheckError, match="defines no `refute"):
         refute.load(artifact)
+
+
+def test_module_invocation_uses_canonical_witness_class():
+    """`python -m mdept.refute` runs refute.py as `__main__`; artifacts import the canonical
+    `mdept.refute.Witness`. The CLI must dispatch to the canonical module so the isinstance
+    check in `load` compares against the class the artifacts actually bound."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    fixture = repo / "tests" / "fixtures" / "good_public"
+    result = subprocess.run(
+        [sys.executable, "-m", "mdept.refute", "--all", "--root", str(fixture)],
+        capture_output=True, text=True, cwd=repo, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "ok " in result.stdout

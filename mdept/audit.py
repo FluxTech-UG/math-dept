@@ -308,4 +308,9 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    # Dispatch to the canonical module: under `python -m`, this file runs as `__main__`
+    # and its classes would be distinct from the `mdept.audit` ones that artifacts and
+    # callers import, breaking isinstance checks.
+    from mdept.audit import main as _main
+
+    raise SystemExit(_main())

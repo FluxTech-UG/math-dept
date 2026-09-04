@@ -322,6 +322,7 @@ _Guard: every counterexample artifact still refutes what it claims to refute._
 - test_a_numeric_witness_accepts_a_float()  ·L55
 - test_a_non_boolean_claim_is_refused()  ·L60
 - test_a_module_without_refute_is_refused(tmp_path)  ·L66
+- test_module_invocation_uses_canonical_witness_class()  ·L73 — `python -m mdept.refute` runs refute.py as `__main__`; artifacts import the canonical
 
 ### tests/test_lean_build.py
 _Guard: the Lake package builds._
