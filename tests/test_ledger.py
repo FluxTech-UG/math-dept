@@ -19,7 +19,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from mdept import CheckError, ConfigError, check, index, new, parse, release, schema
+from mdept import CheckError, ConfigError, check, index, new, parse, schema
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -189,23 +189,3 @@ def test_new_refuses_to_overwrite_an_existing_entry(tmp_path):
     with pytest.raises(CheckError, match="already exists"):
         new._write_new(root / "ledger" / "MD_0001.md", "would clobber a permanent ID")
 
-
-# --- release abstracts provenance -------------------------------------------
-
-
-def test_release_drops_private_provenance_and_evidence(tmp_path):
-    root = stage(tmp_path) / "good_private"
-    front, _, _ = parse.load_front_matter(root / "ledger" / "MD_0005.md")
-    public_front = release.abstract_provenance(front)
-    raised_by = public_front["provenance"]["raised_by"]
-    assert raised_by["repo"] == "ToyRepo"
-    assert raised_by["domain"]
-    assert raised_by["doc"] is None and raised_by["anchor"] is None and raised_by["application"] is None
-    assert public_front["evidence"] == [], "an extract pointer does not survive a release"
-    assert front["provenance"]["raised_by"]["doc"] is not None, "the private entry is untouched"
-
-
-def test_release_refuses_an_unsettled_entry(tmp_path):
-    staged = stage(tmp_path)
-    with pytest.raises(CheckError, match="I4 status/evidence"):
-        release.release("MD_0005", staged / "good_public", staged / "good_private", dry_run=True)

@@ -17,6 +17,14 @@ not resolve is a dead pointer. What survives is `repo`, a one-line neutral
 `domain`, and the who/date/model credit trail, which is the point of recording
 provenance at all.
 
+A release is all or nothing. Everything checkable is checked before a single
+file moves (the rewritten entry against the public schema, every source present,
+every destination free, every surviving path resolving after the move), and if
+the post-move verification fails anyway, every move is undone and the private
+entry restored before the error is raised. A half-released entry, moved out of
+the private repo and rejected by the public one, would leave both repos failing
+their own checks with the entry in neither.
+
 After the move both repos are regenerated and re-checked. The Lean audit is
 required exactly when the entry carries a `formal.decl`.
 """
@@ -36,6 +44,20 @@ from . import CheckError, ConfigError
 from . import config, index, parse, schema
 
 MOVABLE_STATUSES = ("cited", "proven-formal", "proven-informal", "refuted")
+
+PRIVATE_LIB_PREFIX = "MathDeptPrivate/"
+PUBLIC_LIB_PREFIX = "MathDept/"
+
+
+def publicize(rel: str) -> str:
+    """A private repo-relative path rewritten to its public counterpart.
+
+    Only the library directory changes. Everything else (`proofs/`,
+    `counterexamples/`) has the same name in both repos.
+    """
+    if rel.startswith(PRIVATE_LIB_PREFIX):
+        return PUBLIC_LIB_PREFIX + rel[len(PRIVATE_LIB_PREFIX):]
+    return rel
 
 
 def _load_entry(root: Path, entry_id: str):
@@ -64,12 +86,17 @@ def abstract_provenance(front: dict) -> dict:
             "anchor": None,
             "application": None,
         }
+    # Private-only rows are dropped; every surviving row follows its file across.
+    # A row left pointing at MathDeptPrivate/ would be a dead pointer the moment
+    # the entry lands, which is exactly what I4 refuses.
     public["evidence"] = [
-        item for item in front["evidence"] if item["kind"] not in schema.PRIVATE_EVIDENCE_KINDS
+        {"kind": item["kind"], "path": publicize(item["path"])}
+        for item in front["evidence"]
+        if item["kind"] not in schema.PRIVATE_EVIDENCE_KINDS
     ]
     formal = dict(public["formal"])
     if formal["file"]:
-        formal["file"] = formal["file"].replace("MathDeptPrivate/", "MathDept/", 1)
+        formal["file"] = publicize(formal["file"])
     public["formal"] = formal
     return public
 
@@ -91,7 +118,7 @@ def plan_moves(private: Path, public: Path, entry) -> list[tuple[Path, Path]]:
                     f"{line.strip()!r} imports a private module, so this entry cannot be released. "
                     "Release what it depends on first, or inline the definition."
                 )
-        moves.append((source, public / lean_file.replace("MathDeptPrivate/", "MathDept/", 1)))
+        moves.append((source, public / publicize(lean_file)))
     proof = private / "proofs" / f"{entry_id}.md"
     if proof.is_file():
         moves.append((proof, public / "proofs" / f"{entry_id}.md"))
@@ -116,21 +143,97 @@ def release(entry_id: str, public: Path, private: Path, dry_run: bool = False) -
     moves = plan_moves(private, public, entry)
     public_front = abstract_provenance(entry.front)
     plan = {"entry": entry_id, "moves": [(str(s), str(d)) for s, d in moves], "dry_run": dry_run}
+
+    # Everything knowable before the first byte moves. A dry run gets the same
+    # answer as a real one, which is the point of having a dry run.
+    preflight(entry, public_front, moves, public)
     if dry_run:
         return plan
 
-    for source, destination in moves:
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(source), str(destination))
-
     target = public / "ledger" / f"{entry_id}.md"
-    dumped = yaml.dump(public_front, sort_keys=False, default_flow_style=False, allow_unicode=True).rstrip("\n")
-    target.write_text(f"---\n{dumped}\n---\n{entry.body}", encoding="utf-8")
+    original_entry_text = entry.path.read_text(encoding="utf-8")
+    completed: list[tuple[Path, Path]] = []
+    try:
+        for source, destination in moves:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(source), str(destination))
+            completed.append((source, destination))
 
-    for root in (private, public):
-        _regenerate(root)
-    plan["checks"] = [_verify(root, needs_lean=bool(entry.at("formal.decl"))) for root in (private, public)]
+        dumped = yaml.dump(public_front, sort_keys=False, default_flow_style=False,
+                           allow_unicode=True).rstrip("\n")
+        target.write_text(f"---\n{dumped}\n---\n{entry.body}", encoding="utf-8")
+
+        for root in (private, public):
+            _regenerate(root)
+        plan["checks"] = [_verify(root, needs_lean=bool(entry.at("formal.decl")))
+                          for root in (private, public)]
+    except BaseException as failure:
+        _roll_back(completed, entry.path, original_entry_text)
+        for root in (private, public):
+            _regenerate(root)
+        raise CheckError(
+            f"I4 status/evidence: ledger/{entry_id}.md: field '<release>': "
+            f"the release was rolled back and both repos are as they were. "
+            f"The failure was: {failure}"
+        ) from failure
     return plan
+
+
+def preflight(entry, public_front: dict, moves: list, public: Path) -> None:
+    """Refuse a release that cannot land, before anything moves.
+
+    Four questions, in the order that makes the error most useful: does the
+    rewritten entry satisfy the PUBLIC schema, is every source still there, is
+    every destination free, and will every path the public entry names actually
+    resolve once the moves are done.
+    """
+    target_entry = f"ledger/{entry.id}.md"
+    schema.validate_front(public_front, target_entry, "public")
+
+    for source, destination in moves:
+        if not source.exists():
+            raise CheckError(
+                f"I4 status/evidence: {source}: field '<source>': "
+                "this release would move a file that is not there. Nothing has been moved."
+            )
+        if destination.exists():
+            raise CheckError(
+                f"I2 permanence: {destination}: field '<destination>': "
+                "already exists in the public repo. Nothing has been moved."
+            )
+
+    landing = {d.resolve() for _, d in moves}
+
+    def resolves(rel: str) -> bool:
+        candidate = (public / rel).resolve()
+        return candidate in landing or candidate.exists()
+
+    for i, item in enumerate(public_front["evidence"]):
+        if not resolves(item["path"]):
+            raise CheckError(
+                f"I4 status/evidence: {target_entry}: field 'evidence[{i}].path': "
+                f"{item['path']} would not exist in the public repo after this release, so the "
+                "entry would land failing its own check. Nothing has been moved. Release what "
+                "this points at first, or drop the row."
+            )
+
+    formal_file = public_front["formal"]["file"]
+    if formal_file and not resolves(formal_file):
+        raise CheckError(
+            f"I5 formal pointer: {target_entry}: field 'formal.file': "
+            f"{formal_file} would not exist in the public repo after this release. "
+            "Nothing has been moved."
+        )
+
+
+def _roll_back(completed: list, entry_path: Path, original_entry_text: str) -> None:
+    """Undo every move that happened, newest first, and restore the entry file."""
+    for source, destination in reversed(completed):
+        if destination.exists():
+            source.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(destination), str(source))
+    if entry_path.exists():
+        entry_path.write_text(original_entry_text, encoding="utf-8")
 
 
 def _regenerate(root: Path) -> None:

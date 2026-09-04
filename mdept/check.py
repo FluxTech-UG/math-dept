@@ -482,9 +482,20 @@ def _reference_surfaces(ctx: Context) -> list[Path]:
 
 
 def _known_in_sibling(ctx: Context, token: str) -> bool:
-    if not ctx.family or ctx.sibling is None:
+    """True when a private repo's token names an entry that lives in the public one.
+
+    Releasing an entry moves it out of this repo but deliberately leaves its
+    triage record behind, because attempts stay private. That record still names
+    the ID, so a private repo resolves unknown tokens against its public sibling
+    even outside `--family`. The public repo never does the reverse: it has to
+    validate standalone in CI, where no private repo exists.
+    """
+    if not ctx.private:
         return False
-    return any(e.id == token for e in parse.load_entries(ctx.sibling))
+    sibling = ctx.sibling if ctx.sibling is not None else config.public_root(ctx.root)
+    if sibling is None or not (sibling / "ledger").is_dir():
+        return False
+    return any(e.id == token for e in parse.load_entries(sibling))
 
 
 # --- I13 inbox lifecycle ----------------------------------------------------

@@ -103,9 +103,68 @@
       "topics": [
         "toy"
       ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "triage",
+          "path": "triage/MD_0007.md"
+        },
+        {
+          "kind": "experiment",
+          "path": "MathDeptPrivate/Results/MD_0007.lean"
+        }
+      ],
+      "formal": {
+        "decl": "MathDept.MD_0007.statement",
+        "file": "MathDeptPrivate/Results/MD_0007.lean"
+      },
+      "id": "MD_0007",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0007.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": "What the basilica cannot control for",
+          "application": "The consumer needs the left-identity form, not the right-identity one.",
+          "doc": "docs/toy.md",
+          "domain": "elementary arithmetic on the naturals",
+          "repo": "ToyRepo"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-09-03",
+          "how": "lean",
+          "model": "claude-fable-5-1",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-02",
+          "model": "claude-fable-5-1",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "25068dc19e6dc85ef79aac9f32c251728026124bb37e44afcce198c66d50f78e",
+      "status": "proven-formal",
+      "title": "Adding zero on the left changes nothing",
+      "topics": [
+        "toy",
+        "arithmetic"
+      ]
     }
   ],
-  "generated_from": "8fa36074c1c2095b7e8c6bc5fd8a4b13841ea292101241bb2c17a2b384383f13",
+  "generated_from": "1dc78f236fc6b7da1ffcfd747f342d1f295daf05b0387b03aaf2ed9fc1066d09",
   "requests": [
     {
       "candidates": [

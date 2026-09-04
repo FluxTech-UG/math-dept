@@ -68,22 +68,22 @@ _Ledger invariants I1 to I20._
 - i11_tag_sync(ctx: Context) -> None  ·L431
 - i12_dangling_references(ctx: Context) -> None  ·L453
 - _reference_surfaces(ctx: Context) -> list[Path]  ·L473
-- _known_in_sibling(ctx: Context, token: str) -> bool  ·L484
-- i13_inbox(ctx: Context) -> None  ·L493
-- _outcome_line(outcome: str, candidate: str) -> str | None  ·L527
-- i14_request_backlinks(ctx: Context) -> None  ·L538
-- i15_consumer_citations(ctx: Context) -> None  ·L571
-- _citation_word(status: str) -> tuple[str, ...] | None  ·L599
-- i16_generated_views(ctx: Context) -> None  ·L610
-- i17_prose(ctx: Context) -> None  ·L625
-- i18_dates(ctx: Context) -> None  ·L637
-- i19_attempt_records(ctx: Context) -> None  ·L656
-- i20_sorry_fence(ctx: Context) -> None  ·L687
-- const INVARIANTS  ·L695
-- bibliography_path(root: Path, kind: str) -> Path  ·L720 — The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context  ·L740
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False) -> Context  ·L780 — Run every invariant in order. Raises `CheckError` on the first violation.
-- main(argv: list[str] | None=None) -> int  ·L792
+- _known_in_sibling(ctx: Context, token: str) -> bool  ·L484 — True when a private repo's token names an entry that lives in the public one.
+- i13_inbox(ctx: Context) -> None  ·L504
+- _outcome_line(outcome: str, candidate: str) -> str | None  ·L538
+- i14_request_backlinks(ctx: Context) -> None  ·L549
+- i15_consumer_citations(ctx: Context) -> None  ·L582
+- _citation_word(status: str) -> tuple[str, ...] | None  ·L610
+- i16_generated_views(ctx: Context) -> None  ·L621
+- i17_prose(ctx: Context) -> None  ·L636
+- i18_dates(ctx: Context) -> None  ·L648
+- i19_attempt_records(ctx: Context) -> None  ·L667
+- i20_sorry_fence(ctx: Context) -> None  ·L698
+- const INVARIANTS  ·L706
+- bibliography_path(root: Path, kind: str) -> Path  ·L731 — The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context  ·L751
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False) -> Context  ·L791 — Run every invariant in order. Raises `CheckError` on the first violation.
+- main(argv: list[str] | None=None) -> int  ·L803
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -201,14 +201,19 @@ _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
 
 ### mdept/release.py
 _Move a settled entry from the private repo into this public one._
-- const MOVABLE_STATUSES  ·L38
-- _load_entry(root: Path, entry_id: str)  ·L41
-- abstract_provenance(front: dict) -> dict  ·L49 — Return a copy of the front matter with every private-only field removed.
-- plan_moves(private: Path, public: Path, entry) -> list[tuple[Path, Path]]  ·L77 — Every (source, destination) pair this release performs.
-- release(entry_id: str, public: Path, private: Path, dry_run: bool=False) -> dict  ·L103
-- _regenerate(root: Path) -> None  ·L136
-- _verify(root: Path, needs_lean: bool) -> dict  ·L148
-- main(argv: list[str] | None=None) -> int  ·L162
+- const MOVABLE_STATUSES  ·L46
+- const PRIVATE_LIB_PREFIX  ·L48
+- const PUBLIC_LIB_PREFIX  ·L49
+- publicize(rel: str) -> str  ·L52 — A private repo-relative path rewritten to its public counterpart.
+- _load_entry(root: Path, entry_id: str)  ·L63
+- abstract_provenance(front: dict) -> dict  ·L71 — Return a copy of the front matter with every private-only field removed.
+- plan_moves(private: Path, public: Path, entry) -> list[tuple[Path, Path]]  ·L104 — Every (source, destination) pair this release performs.
+- release(entry_id: str, public: Path, private: Path, dry_run: bool=False) -> dict  ·L130
+- preflight(entry, public_front: dict, moves: list, public: Path) -> None  ·L182 — Refuse a release that cannot land, before anything moves.
+- _roll_back(completed: list, entry_path: Path, original_entry_text: str) -> None  ·L229 — Undo every move that happened, newest first, and restore the entry file.
+- _regenerate(root: Path) -> None  ·L239
+- _verify(root: Path, needs_lean: bool) -> dict  ·L251
+- main(argv: list[str] | None=None) -> int  ·L265
 
 ### mdept/schema.py
 _The closed front-matter schema for a ledger entry._
@@ -357,8 +362,6 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L158
 - test_new_never_reuses_an_id(tmp_path)  ·L178
 - test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L187
-- test_release_drops_private_provenance_and_evidence(tmp_path)  ·L196
-- test_release_refuses_an_unsettled_entry(tmp_path)  ·L208
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._
@@ -377,6 +380,31 @@ _The stage S1 toolkit on toy claims._
 - test_random_search_returns_the_failing_point()  ·L49
 - test_random_search_returns_none_when_nothing_fails()  ·L59
 - test_random_search_is_reproducible()  ·L68
+
+### tests/test_release.py
+_Releasing an entry is all or nothing._
+- const FIXTURES  ·L22
+- const BASES  ·L23
+- const ENTRY  ·L25
+- const LEAN_PRIVATE  ·L26
+- const LEAN_PUBLIC  ·L27
+- const TYPE_0007  ·L28
+- const TYPE_0001  ·L29
+- stage(tmp_path: Path, name: str='work') -> Path  ·L32 — A throwaway copy of the fixture pair, laid out as siblings.
+- post_release_shas(tmp_path: Path) -> tuple[str, str]  ·L41 — Both repos' sources_sha256 as they will be after the release.
+- write_audit(root: Path, declarations: dict, sources_sha: str) -> None  ·L55
+- prepare(tmp_path: Path) -> tuple[Path, Path]  ·L72 — Stage the pair and seed both audits for the post-release state.
+- @pytest.mark.parametrize test_publicize_rewrites_only_the_library_prefix(given, expected)  ·L101
+- test_abstract_provenance_drops_private_rows_and_follows_the_rest_across()  ·L105
+- test_the_rewritten_entry_satisfies_the_public_schema()  ·L122
+- test_release_lands_the_entry_and_both_repos_still_validate(tmp_path)  ·L130
+- test_the_released_id_still_resolves_from_the_private_triage_record(tmp_path)  ·L150
+- assert_nothing_moved(public: Path, private: Path) -> None  ·L161
+- test_release_refuses_an_evidence_row_that_would_not_resolve(tmp_path)  ·L168
+- test_release_refuses_when_the_destination_is_taken(tmp_path)  ·L187
+- test_release_refuses_an_unsettled_entry(tmp_path)  ·L198
+- test_a_dry_run_reports_the_moves_and_touches_nothing(tmp_path)  ·L204
+- test_a_verification_failure_rolls_every_move_back(tmp_path, monkeypatch)  ·L215
 
 ### tests/test_root_fresh.py
 _Guard: MathDept.lean imports exactly the modules on disk._
@@ -416,6 +444,10 @@ _Guard: the `sorry` fence and the entry-file naming rules, without Lean._
 - namespace MathDept.MD_0001  ·L7
 - theorem statement  ·L10
 - ⚠ sorry ×1
+
+### tests/fixtures/good_private/MathDeptPrivate/Results/MD_0007.lean
+- namespace MathDept.MD_0007  ·L7
+- theorem statement  ·L10
 
 ### tests/fixtures/good_public/MathDept/Results/MD_0001.lean
 - namespace MathDept.MD_0001  ·L7
