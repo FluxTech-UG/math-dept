@@ -7,6 +7,7 @@ check:
 	python -m mdept.index --check
 	python -m mdept.audit sorry
 	python scripts/gen_root.py --check
+	repo-outline --check
 
 # Rewrite every generated view. Never hand-edit what this writes.
 regen:

@@ -1,4 +1,4 @@
-"""Ledger invariants I1 to I20.
+"""Ledger invariants I1 to I21.
 
 Run: `python -m mdept.check [--root PATH] [--run-counterexamples] [--family] [--lean]`
 
@@ -23,7 +23,9 @@ Two scoping decisions worth knowing before reading the code:
   counterexample notes, the bibliography, and on the private side triage,
   inbox and sources). It does not scan instructional prose (`docs/`, `README.md`,
   `CLAUDE.md`, the skills), where an ID like MD_0007 is an illustration, nor the
-  templates, whose placeholder IDs are the point.
+  templates, whose placeholder IDs are the point. I21 is the mirror of it
+  pointed outward: it scans a listed consumer's own files, where an ID is a
+  reliance rather than an illustration.
 - HTML comments are stripped before any token scan, which is what makes a
   commented-out example in `bibliography.md` legal.
 """
@@ -36,8 +38,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from . import CheckError, ConfigError
+from . import anchors
 from . import audit as audit_mod
 from . import config, parse, schema
+from . import family as family_mod
 
 #: Surfaces I12 scans for MD_#### and MDR: tokens.
 REFERENCE_SURFACES = (
@@ -78,10 +82,11 @@ class Context:
     run_counterexamples: bool
     family: bool
     lean: bool
-    repos: dict | None = None
+    consumers: dict | None = None
     sibling: Path | None = None
     audit: dict | None = None
     notices: list = field(default_factory=list)
+    _sibling_entries: list | None = field(default=None, repr=False)
 
     @property
     def private(self) -> bool:
@@ -92,6 +97,22 @@ class Context:
             return str(Path(path).resolve().relative_to(self.root))
         except ValueError:
             return str(path)
+
+    def family_by_id(self) -> dict:
+        """Both ledgers' entries by ID: an ID resolves wherever it lives.
+
+        Releasing an entry moves it to the public repo, so a consumer's citation
+        of a released ID is checked against the public entry while the private
+        repo is the one running the family check.
+        """
+        if self._sibling_entries is None:
+            sibling = self.sibling if self.sibling is not None else config.public_root(self.root)
+            self._sibling_entries = (
+                parse.load_entries(sibling)
+                if sibling is not None and sibling != self.root and (sibling / "ledger").is_dir()
+                else []
+            )
+        return {e.id: e for e in [*self._sibling_entries, *self.entries]}
 
 
 # --- I1 filename = id -------------------------------------------------------
@@ -309,35 +330,63 @@ def i6_counterexamples(ctx: Context) -> None:
 
 
 def i7_raised_by(ctx: Context) -> None:
+    """Every anchor is a form of the grammar, and resolves to one place.
+
+    An entry's `provenance.raised_by` and a request's `from` both point into a
+    consumer document, so both are resolved here. `mdept.anchors` owns the
+    grammar; this invariant owns what a failure to resolve means.
+    """
     if not (ctx.family and ctx.private):
         return
-    consumers = ctx.repos["consumers"]
     for entry in ctx.entries:
-        raised_by = entry.at("provenance.raised_by")
-        if raised_by is None:
-            continue
-        repo = raised_by["repo"]
-        if repo not in consumers:
-            fail("I7 raised-by", ctx.rel(entry.path), "provenance.raised_by.repo",
-                 f"{repo!r} is not a key of repos.yaml consumers {sorted(consumers)}")
-        doc = raised_by.get("doc")
-        if doc is None:
-            continue
-        doc_path = _consumer_path(ctx, repo) / doc
-        if not doc_path.is_file():
-            fail("I7 raised-by", ctx.rel(entry.path), "provenance.raised_by.doc",
-                 f"{doc_path} does not exist")
-        anchor = raised_by.get("anchor")
-        if anchor and anchor not in doc_path.read_text(encoding="utf-8"):
-            fail("I7 raised-by", ctx.rel(entry.path), "provenance.raised_by.anchor",
-                 f"{anchor!r} does not occur literally in {doc_path}")
+        _check_anchor(ctx, ctx.rel(entry.path), "provenance.raised_by",
+                      entry.at("provenance.raised_by"))
+    for request in ctx.requests:
+        _check_anchor(ctx, request.rel, "from", request.front.get("from"))
+    from . import index as index_mod
+
+    ctx.notices.extend(index_mod.anchor_notices(ctx.entries, ctx.requests))
 
 
-def _consumer_path(ctx: Context, repo: str) -> Path:
-    raw = Path(str(ctx.repos["consumers"][repo])).expanduser()
-    path = raw if raw.is_absolute() else (ctx.root / raw)
+def _check_anchor(ctx: Context, where: str, field_name: str, source) -> None:
+    if source is None:
+        return
+    repo = source.get("repo")
+    if repo not in ctx.consumers:
+        fail("I7 raised-by", where, f"{field_name}.repo",
+             f"{repo!r} is not a key of repos.yaml consumers {sorted(ctx.consumers)}")
+    doc = source.get("doc")
+    if doc is None:
+        return
+    consumer = ctx.consumers[repo]
+    doc_path = _consumer_path(ctx, repo) / doc
+    if not doc_path.is_file():
+        fail("I7 raised-by", where, f"{field_name}.doc", f"{doc_path} does not exist")
+    anchor = source.get("anchor")
+    if anchor is None:
+        return
+    form = anchors.classify(anchor)
+    if form == "unknown":
+        fail("I7 raised-by", where, f"{field_name}.anchor",
+             f"{anchor!r} is no form of the anchor grammar: {anchors.GRAMMAR}")
+    text = consumer.text(doc_path)
+    if text is None:
+        fail("I7 raised-by", where, f"{field_name}.doc",
+             f"{doc_path} is not a text file, so no anchor can resolve in it")
+    found = anchors.matches(anchor, text)
+    if not found:
+        fail("I7 raised-by", where, f"{field_name}.anchor",
+             f"{anchor!r} (form {form}) resolves nowhere in {doc_path}")
+    if form in anchors.UNIQUE_FORMS and len(found) > 1:
+        fail("I7 raised-by", where, f"{field_name}.anchor",
+             f"{anchor!r} (form {form}) resolves at lines {[hit.line for hit in found]} "
+             f"of {doc_path}; an anchor names one place")
+
+
+def _consumer_path(ctx: Context, repo: str, invariant: str = "I7 raised-by") -> Path:
+    path = ctx.consumers[repo].path
     if not path.is_dir():
-        fail("I7 raised-by", "repos.yaml", f"consumers.{repo}",
+        fail(invariant, "repos.yaml", f"consumers.{repo}",
              f"{path} is listed but absent from disk; a listed repo is required, never skipped")
     return path
 
@@ -492,10 +541,7 @@ def _known_in_sibling(ctx: Context, token: str) -> bool:
     """
     if not ctx.private:
         return False
-    sibling = ctx.sibling if ctx.sibling is not None else config.public_root(ctx.root)
-    if sibling is None or not (sibling / "ledger").is_dir():
-        return False
-    return any(e.id == token for e in parse.load_entries(sibling))
+    return token in ctx.family_by_id()
 
 
 # --- I13 inbox lifecycle ----------------------------------------------------
@@ -526,21 +572,13 @@ def i13_inbox(ctx: Context) -> None:
         if not outcome.strip():
             fail("I13 inbox", request.rel, "Outcome", "a closed request carries an Outcome block")
         for candidate in request.candidates():
-            line = _outcome_line(outcome, candidate)
+            line = request.outcome_line(candidate)
             if line is None:
                 fail("I13 inbox", request.rel, "Outcome",
                      f"{candidate} has no line in the Outcome block")
             if not (schema.ID_TOKEN_RE.search(line) or "declined:" in line):
                 fail("I13 inbox", request.rel, "Outcome",
                      f"{candidate} maps to neither an MD_#### id nor 'declined: <reason>'")
-
-
-def _outcome_line(outcome: str, candidate: str) -> str | None:
-    for line in outcome.splitlines():
-        stripped = line.strip().lstrip("-*").strip()
-        if stripped.startswith(candidate) and (len(stripped) == len(candidate) or not stripped[len(candidate)].isdigit()):
-            return line
-    return None
 
 
 # --- I14 request back-links -------------------------------------------------
@@ -580,39 +618,41 @@ def i14_request_backlinks(ctx: Context) -> None:
 
 
 def i15_consumer_citations(ctx: Context) -> None:
+    """Every line of a listed file that names an entry carries its status word.
+
+    `cited_by` may name any text file the consumer owns, code included: a
+    comment or a docstring that leans on an unsettled statement is a citation,
+    and a line is a line wherever it sits. The status word is what makes the
+    reliance readable where it is written, without a trip to the ledger.
+    """
     if not ctx.family:
         return
-    consumers = ctx.repos["consumers"]
     for entry in ctx.entries:
         for i, citation in enumerate(entry.front["cited_by"]):
-            match = schema.CITED_BY_RE.match(citation)
-            repo, rel = match.group("repo").strip(), match.group("path")
-            if repo not in consumers:
+            repo, rel, _locator = schema.split_cited_by(citation)
+            if repo not in ctx.consumers:
                 fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
-                     f"{repo!r} is not a key of repos.yaml consumers {sorted(consumers)}")
-            doc = _consumer_path(ctx, repo) / rel
+                     f"{repo!r} is not a key of repos.yaml consumers {sorted(ctx.consumers)}")
+            consumer = ctx.consumers[repo]
+            doc = _consumer_path(ctx, repo, "I15 citation") / rel
             if not doc.is_file():
                 fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]", f"{doc} does not exist")
-            lines = [l for l in doc.read_text(encoding="utf-8").splitlines() if entry.id in l]
+            text = consumer.text(doc)
+            if text is None:
+                fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
+                     f"{doc} is not a text file, so it carries no citation line")
+            lines = [(n, l) for n, l in enumerate(text.splitlines(), start=1) if entry.id in l]
             if not lines:
                 fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
                      f"{doc} does not mention {entry.id}")
-            required = _citation_word(entry.status)
-            if required is None:
+            required = schema.citation_words(entry.status)
+            if not required:
                 continue
-            for line in lines:
+            for number, line in lines:
                 if not any(word in line.lower() for word in required):
-                    fail("I15 citation", str(doc), "<line>",
+                    fail("I15 citation", f"{repo}:{rel}:{number}", "<line>",
                          f"cites {entry.id} without any of {list(required)}; "
                          f"the entry is {entry.status}")
-
-
-def _citation_word(status: str) -> tuple[str, ...] | None:
-    if status == "refuted":
-        return ("refuted",)
-    if status in schema.UNSETTLED_STATUSES:
-        return ("pending", "conjectured", "open")
-    return None
 
 
 # --- I16 generated views fresh ----------------------------------------------
@@ -703,6 +743,53 @@ def i20_sorry_fence(ctx: Context) -> None:
              f"line {first['line']}: {first['reason']}")
 
 
+# --- I21 no unlisted consumer citation --------------------------------------
+
+
+def i21_unlisted_citations(ctx: Context) -> None:
+    """Every entry mention in a listed consumer appears in that entry's `cited_by`.
+
+    I15 checks the citations the ledger knows about. This checks the other
+    direction, which is the one that rots: a consumer adds a reliance and the
+    ledger never hears, so a refutation reaches every document but that one.
+    Three things are skipped, each for a reason that is not "it is noisy":
+    a file that declares itself generated is a mirror whose source is the
+    editable surface, the consumer's own generated view is this package's
+    output, and an `ignore` glob is the consumer's own declaration that a tree
+    (build output, vendored code, fleet results) is not a citation surface.
+    """
+    if not ctx.family:
+        return
+    cited = {}
+    for entry in ctx.family_by_id().values():
+        pairs = set()
+        for citation in entry.front["cited_by"]:
+            split = schema.split_cited_by(citation)
+            if split is not None:
+                pairs.add((split[0], split[1]))
+        cited[entry.id] = pairs
+    for name in sorted(ctx.consumers):
+        consumer = ctx.consumers[name]
+        _consumer_path(ctx, name, "I21 unlisted citation")
+        view = consumer.view_path
+        for path in consumer.files():
+            if path == view:
+                continue
+            text = consumer.text(path)
+            if text is None or consumer.is_generated(path, text):
+                continue
+            rel = consumer.rel(path)
+            for token in sorted(parse.id_tokens(text)):
+                if token not in cited:
+                    fail("I21 unlisted citation", f"{name}:{rel}", "<MD token>",
+                         f"{token} resolves to no entry in either ledger")
+                if (name, rel) not in cited[token]:
+                    fail("I21 unlisted citation", f"{name}:{rel}", "<MD token>",
+                         f"{token} is relied on here but its cited_by does not list "
+                         f"'{schema.cited_by_form(name, rel)}'; add it, or the next "
+                         "status change misses this file")
+
+
 INVARIANTS = (
     i1_filename_is_id,
     i2_permanence,
@@ -725,6 +812,7 @@ INVARIANTS = (
     i18_dates,
     i19_attempt_records,
     i20_sorry_fence,
+    i21_unlisted_citations,
 )
 
 
@@ -751,8 +839,10 @@ def bibliography_path(root: Path, kind: str) -> Path:
 def build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context:
     root = Path(root).resolve()
     _precheck_filenames(root)
-    entries = parse.load_entries(root)
-    kind = config.repo_kind(root)
+    located = family_mod.locate(root)
+    repo = located.repo_at(root)
+    entries = repo.entries()
+    kind = repo.kind
     bibliography = parse.parse_bibliography(bibliography_path(root, kind))
     ctx = Context(
         root=root,
@@ -760,7 +850,7 @@ def build_context(root: Path, run_counterexamples: bool, family: bool, lean: boo
         entries=entries,
         by_id={e.front.get("id"): e for e in entries},
         bibliography=bibliography,
-        requests=parse.load_requests(root),
+        requests=repo.requests(),
         run_counterexamples=run_counterexamples,
         family=family,
         lean=lean,
@@ -772,14 +862,14 @@ def build_context(root: Path, run_counterexamples: bool, family: bool, lean: boo
                 f"--family needs {repos_yaml}, which maps consumer names to paths. "
                 "It lives in the private repo; run --family from a session there."
             )
-        ctx.repos = parse.load_repos_yaml(repos_yaml)
-        ctx.sibling = config.public_root(root) if kind == "private" else config.private_root(root)
+        ctx.consumers = located.consumers
+        ctx.sibling = located.sibling_of(root)
         # Eagerly, not lazily: the design's rule is that a repo listed in
         # repos.yaml and absent from disk FAILS. Resolving only the repos some
         # entry happens to name would let a stale path sit unnoticed until the
         # first entry that needs it, which is the wrong time to find out.
-        for repo in sorted(ctx.repos["consumers"]):
-            _consumer_path(ctx, repo)
+        for consumer in sorted(ctx.consumers):
+            _consumer_path(ctx, consumer)
     if lean:
         cached = root / "audit" / "latest.json"
         if not cached.is_file():

@@ -1,9 +1,9 @@
 # Documentation and ledger conventions
-<!-- role: contract | status: current 2026-09-04 | cited-by: CLAUDE.md -->
+<!-- role: contract | status: current 2026-09-17 | cited-by: CLAUDE.md -->
 
 Repo-specific rules only; each names what enforces it. A rule with no command behind
 it is an intention, not a convention. Enforcement is `python -m mdept.check`
-(invariants I1 to I20), the Lean guards reached through `make lean`, and `tests/`. The
+(invariants I1 to I21), the Lean guards reached through `make lean`, and `tests/`. The
 flow these rules serve is `docs/protocol.md`.
 
 ## Role line
@@ -48,10 +48,15 @@ a proven statement fails the check.
 | `ledger/INDEX.md`, `ledger.json` | `python -m mdept.index` |
 | `MathDept.lean` | `python scripts/gen_root.py --write` |
 | `docs/MAP.md` | `repo-outline --write` |
+| a consumer's `docs/MATH.md` | `python -m mdept.view --consumer NAME --write` |
 
-`make regen` runs all three. `make check` regenerates each one in memory and fails on
-any drift (I16), so a hand edit surfaces as a failed check rather than as silent
-divergence.
+`make regen` runs the first three. `make check` rebuilds each of them and fails on any
+drift (I16 for the two ledger views, `--check` for the Lean root and the map), so a hand
+edit surfaces as a failed check rather than as silent divergence.
+
+The consumer view is the one generated file that lands outside this repo. A session in
+the consumer repo writes it, and that repo's own suite runs the `--check`, because a
+write stays inside the repo it belongs to.
 
 ## `sorry` fence
 
@@ -82,7 +87,34 @@ carries `repo` plus a one-line neutral `domain`, and nothing else: `doc`, `ancho
 the application text stay in the private request and triage record. `stipulated_by` and
 `settled_by` (who, date, model) are public, because they are the credit trail. I3
 enforces the closed key set and the closed enumerations for `status`, `kind`, `who` and
-`how`; I7 resolves `raised_by` against the private side in `--family` mode.
+`how`; I7 resolves `raised_by.anchor` and a request's `from.anchor` against the
+consumer document in `--family` mode.
+
+## An anchor names an identifier, not wording
+
+`mdept/anchors.py` owns the grammar. The form is read off the anchor's own syntax, so
+the set is closed and nothing in this package learns a consumer's layout: `resolve`
+takes the document's text and never its path.
+
+| Anchor | Form | Resolves at |
+|---|---|---|
+| `A8` | `item` | a line whose text, after list, heading or bold markup, begins `A8.` or `A8` then whitespace |
+| `A8(c)` | `item` | the same rule; an item ID matches whole, so `A8` never lands on the sub-item `A8(c).` |
+| `§21.3` | `heading` | a heading whose text begins `21.3`, and not `21.30` or `21.3.1` |
+| `§5 item 20` | `heading-item` | the numbered item `20.` under the heading whose text begins `5` |
+| `label:eq:gen-carnot-control` | `label` | `\label{eq:gen-carnot-control}` |
+| `text:"What the basilica cannot control for"` | `text` | that literal string, anywhere in the document |
+
+Every form but `text` must resolve exactly once: zero places fails I7 as unresolved,
+two or more fails as ambiguous with the line numbers, because an anchor that names two
+places does not say which raised the statement. `text:` takes its first occurrence.
+
+`text:` is legal and is the only form available to a document with no ID space, so it
+is a notice rather than a failure: I7 names every entry and request on one, and the
+notice lands in section 7 of the generated index. What it costs is paid later and
+elsewhere, on the day the consumer retitles that passage: the anchor stops resolving
+and nothing says which entries were pointing at it. Prefer the document's own
+identifier wherever it has one.
 
 ## Trust tiers
 
@@ -104,14 +136,26 @@ now, and dated attempts live in the private `triage/` record.
 
 | Command | Runs | Use it |
 |---|---|---|
-| `make check` | `python -m mdept.check`, `python -m mdept.index --check`, `python -m mdept.audit sorry`, `python scripts/gen_root.py --check` | before every commit |
+| `make check` | `python -m mdept.check`, `python -m mdept.index --check`, `python -m mdept.audit sorry`, `python scripts/gen_root.py --check`, `repo-outline --check` | before every commit |
 | `make regen` | `python scripts/gen_root.py --write`, `python -m mdept.index`, `repo-outline --write` | after adding or moving an entry, a Lean file, or a symbol |
 | `make lean` | `python -m mdept.audit all --json --write audit/latest.json` | after any Lean change, to refresh what `--lean` reads |
 | `make counterexamples` | `python -m mdept.refute --all` | to re-verify every witness |
 | `make test` | `python -m pytest -v` | before a milestone commit |
 
+| `python -m mdept.query "<terms>"` | both ledgers searched and ranked; `--topic`, `--status`, `--consumer`, `--resolve MDR:...`, `--json` | step 0 of the protocol, from any repo in the family |
+| `python -m mdept.view --consumer NAME --write` | the consumer's own `docs/MATH.md`; `--check` fails on drift, `--out` previews elsewhere | after any status change that reaches a consumer |
+
 `python -m mdept.check` also takes `--run-counterexamples`, `--lean` and `--family`. A
 repo listed in `repos.yaml` that is absent fails the family check; it never skips.
+
+`repos.yaml` lists each consumer as a bare path, or as `{path, ignore, view}`. `ignore`
+is a list of globs matched against the repo-relative path with `*` crossing directory
+separators (`outputs/*` skips that whole tree), naming what is not a citation surface;
+`view` is where `mdept.view` writes, `docs/MATH.md` by default. Three things are always
+skipped without being listed: tool and build directories, a nested checkout (any
+subdirectory with its own `.git`, which is what a git worktree is, so a family check
+does not pass or fail by whether someone is working in one), and a file that declares
+itself generated in its first eight lines.
 
 ## Which invariant enforces which rule
 
@@ -124,12 +168,14 @@ than settled.
 counterexample artifact exists and verifies; I19 every `open` entry and every
 non-citation settlement has a triage record; I20 `sorry` only under `Conjectures/`.
 
-**Links and sources.** I7 `raised_by` resolves to a real doc and anchor; I8 links
-resolve, no self-links, no links to `merged`; I9a a refuted entry is not implied by a
-proven one; I10 `cited` sources are of a trusted Kind and have an extract; I11
-bibliography tags and extract filenames stay in sync; I12 every `MD_####` and `MDR:`
-token resolves.
+**Links and sources.** I7 every `raised_by.anchor` and `from.anchor` is a form of the
+anchor grammar and resolves to exactly one place; I8 links resolve, no self-links, no
+links to `merged`; I9a a refuted entry is not implied by a proven one; I10 `cited`
+sources are of a trusted Kind and have an extract; I11 bibliography tags and extract
+filenames stay in sync; I12 every `MD_####` and `MDR:` token resolves.
 
 **Flow.** I13 inbox lifecycle and Outcome completeness; I14 requests back-link to the
-IDs they seeded; I15 consumer citations carry the right status word; I16 generated
-views are fresh; I17 no U+2014 in prose.
+IDs they seeded; I15 every line of a listed file that names an entry carries its status
+word, in code as well as in prose; I16 generated views are fresh; I17 no U+2014 in
+prose; I21 every `MD_####` mention in a listed consumer appears in that entry's
+`cited_by`, so a status change reaches every file that relies on it.

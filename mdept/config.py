@@ -59,11 +59,27 @@ def lean_lib(root: Path) -> str:
     return "MathDeptPrivate" if is_private(root) else "MathDept"
 
 
+def _require_repo(path: Path, why: str) -> Path:
+    """The path, once it is a math repo. A directory that is not one is an error.
+
+    "Absent" and "present but not a repo" are different findings and get
+    different treatment: a missing sibling means this machine has no copy, which
+    every command tolerates, while a path that was pointed AT and holds no
+    `ledger/` is a misconfiguration. Reporting the second as absent would send
+    the reader looking for a checkout they already have, and reporting it later,
+    when an entry scan finds no ledger directory, blames I1 for an environment
+    variable.
+    """
+    if not (path / "ledger").is_dir():
+        raise ConfigError(f"{why} is not a math repo (no ledger/)")
+    return path
+
+
 def private_root(root: Path | None = None) -> Path | None:
     """The private sibling, or None when this machine has no copy of it.
 
     Resolution order: the MATHDEPT_PRIVATE environment variable (which must
-    point at a real directory, otherwise the misconfiguration is an error, not
+    point at a real math repo, otherwise the misconfiguration is an error, not
     a fallback), then `../math-dept-private` beside the given root.
     """
     override = os.environ.get(PRIVATE_ENV)
@@ -71,11 +87,13 @@ def private_root(root: Path | None = None) -> Path | None:
         path = Path(override).expanduser().resolve()
         if not path.is_dir():
             raise ConfigError(f"{PRIVATE_ENV}={override} is not a directory")
-        return path
+        return _require_repo(path, f"{PRIVATE_ENV}={override}")
     if root is None:
         return None
     sibling = Path(root).resolve().parent / PRIVATE_REPO_DIRNAME
-    return sibling if sibling.is_dir() else None
+    if not sibling.is_dir():
+        return None
+    return _require_repo(sibling, str(sibling))
 
 
 def public_root(root: Path | None = None) -> Path | None:
@@ -87,7 +105,7 @@ def public_root(root: Path | None = None) -> Path | None:
         path = Path(override).expanduser().resolve()
         if not path.is_dir():
             raise ConfigError(f"{PUBLIC_ENV}={override} is not a directory")
-        return path
+        return _require_repo(path, f"{PUBLIC_ENV}={override}")
     if root is None:
         return None
     root = Path(root).resolve()
@@ -95,7 +113,9 @@ def public_root(root: Path | None = None) -> Path | None:
     if declared is not None:
         return declared
     sibling = root.parent / PUBLIC_REPO_DIRNAME
-    return sibling if sibling.is_dir() else None
+    if not sibling.is_dir():
+        return None
+    return _require_repo(sibling, str(sibling))
 
 
 def _declared_public_sibling(root: Path) -> Path | None:
@@ -112,7 +132,7 @@ def _declared_public_sibling(root: Path) -> Path | None:
     path = path if path.is_absolute() else (root / path)
     if not path.is_dir():
         raise ConfigError(f"repos.yaml public_sibling points at {path}, which is not a directory")
-    return path.resolve()
+    return _require_repo(path.resolve(), f"repos.yaml public_sibling {path}")
 
 
 def require_lean() -> bool:

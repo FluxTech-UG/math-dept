@@ -27,7 +27,7 @@ from numbers import Integral, Rational
 from pathlib import Path
 from typing import Callable
 
-from . import CheckError
+from . import CheckError, ConfigError
 from . import config
 
 #: Types a witness point may carry when it claims to be exact.
@@ -111,21 +111,37 @@ def load(path: Path) -> Witness:
 
 
 def run_all(directory: Path) -> dict:
-    """Run every artifact in a directory. Returns {entry id: {file, verified, exact}}."""
+    """Run every artifact in a directory. Returns {entry id: [{file, verified, exact}]}.
+
+    One entry can carry more than one artifact: a numeric lead and the exact
+    witness that replaces it, or two independent points that break different
+    hypotheses. Every artifact is reported under its entry, because a report
+    keyed by entry alone would silently drop all but the last one, and a witness
+    that stops verifying is exactly what nobody would notice.
+    """
     directory = Path(directory)
-    report: dict[str, dict] = {}
+    report: dict[str, list] = {}
     if not directory.is_dir():
         return report
     for path in sorted(directory.glob("*.py")):
         if path.name.startswith("_"):
             continue
         witness = load(path)
-        report[witness.entry] = {
+        report.setdefault(witness.entry, []).append({
             "file": str(path.relative_to(directory.parent)),
             "verified": witness.verify(),
             "exact": not witness.numeric,
-        }
+        })
     return report
+
+
+def artifacts(report: dict) -> list[tuple[str, dict]]:
+    """Every (entry id, artifact record) pair in a report, in a stable order."""
+    return [(entry_id, record) for entry_id in sorted(report) for record in report[entry_id]]
+
+
+def all_verified(report: dict) -> bool:
+    return all(record["verified"] for _entry_id, record in artifacts(report))
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -138,11 +154,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.all and args.entry is None:
         parser.error("name an entry ID or pass --all")
 
-    root = config.find_repo_root(args.root) if args.root is None else Path(args.root).resolve()
-    directory = root / "counterexamples"
     try:
+        root = config.find_repo_root(args.root) if args.root is None else Path(args.root).resolve()
+        directory = root / "counterexamples"
         report = run_all(directory)
-    except CheckError as exc:
+    except (CheckError, ConfigError) as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
 
@@ -154,8 +170,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
-    failed = [k for k, v in report.items() if not v["verified"]]
-    for entry_id, record in sorted(report.items()):
+    failed = []
+    for entry_id, record in artifacts(report):
+        if not record["verified"]:
+            failed.append(record["file"])
         mark = "ok " if record["verified"] else "FAIL"
         exact = "exact" if record["exact"] else "numeric lead"
         if not args.json:

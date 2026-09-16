@@ -1,5 +1,5 @@
 # Protocol: file a request, settle it, release it
-<!-- role: runbook | status: current 2026-09-04 | cited-by: CLAUDE.md -->
+<!-- role: runbook | status: current 2026-09-17 | cited-by: CLAUDE.md -->
 
 One loop with two halves. A session in a consumer repo files a request into the
 private inbox; a session in `math-dept-private` settles it and releases what belongs
@@ -14,13 +14,37 @@ verdict, an assertion or a design section.
 
 ### 0. Resolve first
 
-Grep both ledgers, `math-dept/ledger/` and `math-dept-private/ledger/`. An entry that
-already covers the statement is cited by its `MD_####` ID, and the flow stops there.
+```
+python -m mdept.query "<the statement in your own words>"
+python -m mdept.query --topic TOPIC --status open
+```
 
-In the same pass, resolve every pending `MDR:` token in this repo against
-`math-dept-private/inbox/done/`, and replace each one with the ledger ID and status
-its Outcome block names. This is how a consumer learns outcomes: notification is
-passive by design, and step 0 is the only thing that delivers it.
+Both ledgers are searched, released and unreleased together, from whatever directory
+you are in. An entry that already covers the statement is cited by its `MD_####` ID,
+and the flow stops there. `python -m mdept.query MD_0007` prints that entry, the words
+a citing line must carry, and where it is already cited.
+
+In the same pass, resolve every pending `MDR:` token in this repo:
+
+```
+python -m mdept.query --resolve MDR:2026-09-04-three-basin
+```
+
+It reports each candidate as `pending`, as `declined: <reason>`, or as the IDs and
+statuses it became. Replace a resolved token with those IDs. This is how a consumer
+learns outcomes: notification is passive by design, and step 0 is the only thing that
+delivers it.
+
+A repo with entries of its own keeps a generated local view, so the answer is in the
+repo that needs it:
+
+```
+python -m mdept.view --consumer NAME --write
+```
+
+It writes that repo's `docs/MATH.md`: what the repo raised, every citation with the
+line it sits on, and every `MDR:` token with what it became. `--check` fails on drift
+and belongs in the consumer's own test suite.
 
 ### 1. State the applied result as used
 
@@ -51,6 +75,12 @@ In the consumer's own doc, cite as `MDR:2026-09-04-three-basin#C2 (pending)`. A
 pending candidate records exposure; it licenses nothing. No verdict, number or design
 decision may depend on one.
 
+Every file that names an entry is a citation, code as much as prose, and each one is
+listed in that entry's `cited_by` as `<repo>:<path>`. I21 fails on a mention the ledger
+does not know about, because an unlisted reliance is the one a refutation never
+reaches; I15 requires the status word on the citing line itself. A generated file is
+skipped: the citation belongs in the source it was generated from.
+
 ### 5. Commit in the consumer repo separately
 
 The request commit lives in `math-dept-private`. The consumer's own changes commit in
@@ -66,10 +96,13 @@ Fidelity checking, ID allocation, the cheap-first ladder and the triage record a
 1. Set the entry's `status`, its `evidence` list, and `provenance.settled_by` (who,
    date, how, checked_by, model).
 2. Append the Outcome block to the request, one line per candidate, each mapping
-   `C<n>` to a ledger ID or to `declined: <reason>`.
+   `C<n>` to a ledger ID or to `declined: <reason>`. That block is what
+   `mdept.query --resolve` reads back to the consumer.
 3. Set the request's `state: closed` and `git mv` it into `inbox/done/`.
 4. `make regen && make check`.
 5. Commit.
+6. Report which consumers need `python -m mdept.view --consumer NAME --write`. The view
+   lives in their repo, so a session there rewrites it: writes stay inside one repo.
 
 A refuted stipulation reaches the consumer at its next step 0, which drops the
 reliance. When what was refuted is the applied published result itself, the consumer

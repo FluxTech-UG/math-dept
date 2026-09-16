@@ -1,5 +1,12 @@
 # Consumer name to path, and the public sibling this repo releases into.
 # A listed repo that is absent from disk fails --family; it never skips.
+#
+# A consumer is a bare path, or the mapping form used here: `ignore` names what
+# is not a citation surface (vendored or generated trees), and `view` is where
+# `python -m mdept.view` writes that repo's own view.
 public_sibling: ../good_public
 consumers:
-  ToyRepo: consumers/ToyRepo
+  ToyRepo:
+    path: consumers/ToyRepo
+    ignore: ["vendor/*"]
+    view: docs/MATH.md

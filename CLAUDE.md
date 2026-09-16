@@ -46,6 +46,8 @@ the hypotheses it actually uses.
 | `MathDept/` | Lean: `Defs/` (shared definitions), `Results/` (settled), `Conjectures/` (`sorry` allowed), `Smoke.lean`. |
 | `.claude/skills/{prove,refute,math-extract,lean-review}/` | The working procedures for each job. |
 | `docs/MAP.md` | Generated file map (`repo-outline`). Read it to find a symbol. |
+| `mdept/anchors.py` | The anchor grammar: what a provenance anchor may say and how it resolves. |
+| `mdept/family.py` | Where the department is, seen from anywhere: both ledgers and the listed consumers. |
 
 ## Writes stay inside this repo
 
@@ -108,6 +110,13 @@ line naming the mathematical area. The application's document, its anchor, and t
 rationale for needing the statement stay in the private repo, which is what lets released
 entries be public at all.
 
+An anchor names the consumer document's own identifier, not its wording: `A8`,
+`§21.3`, `§5 item 20`, `label:eq:name`, or `text:"..."` for a document that has no ID
+space. `mdept/anchors.py` owns that grammar and `docs/CONVENTIONS.md` states it; I7
+requires every non-`text` form to resolve to exactly one place, and reports a `text:`
+anchor as a notice, because wording is retitled and a retitle unanchors every entry
+that quoted it.
+
 `stipulated_by` and `settled_by` are public and carry who (john, claude, or both), the
 date, and the model. That credit trail is the reason provenance is a required field
 rather than a courtesy: the ledger is meant to reconstruct who and what settled each
@@ -142,6 +151,11 @@ never be the evidence that settles one.
 
 Underneath those:
 
+- `python -m mdept.query "<terms>" [--topic T] [--status S] [--consumer NAME]
+  [--resolve MDR:...] [--json]` searches both ledgers from any directory in the family
+  and reports what a request token became. It is step 0 of `docs/protocol.md`.
+- `python -m mdept.view --consumer NAME --write|--check [--out PATH]` generates that
+  consumer's own `docs/MATH.md`: what it raised, where it cites, what is still pending.
 - `python -m mdept.check [--run-counterexamples] [--family] [--lean]` validates the
   ledger. `--lean` reads the cached audit JSON and fails if it is stale against the Lean
   sources. `--family` resolves sibling repos through the private repo's `repos.yaml`, so

@@ -105,13 +105,22 @@ The audited type is what the ledger hashes to keep a settled statement frozen.
 
 `mdept` is the validator and the refutation toolkit.
 
-**Validator.** `python -m mdept.check` runs twenty invariants over the ledger: filename
-matches ID, IDs unique, front-matter schema exact with closed enumerations, status
-matched to the evidence it requires, formal pointers resolving in the audit JSON with a
-matching statement hash, counterexamples that load and verify, links that resolve with no
-self-links and no links into merged entries, no contradiction (a refuted statement cannot
-be implied by a proven one), generated views fresh, dates monotone, no em dashes, and
-`sorry` fenced to `Conjectures/`. Each failure names the offending path and field.
+**Validator.** `python -m mdept.check` runs twenty-two invariants over the ledger:
+filename matches ID, IDs unique, front-matter schema exact with closed enumerations,
+status matched to the evidence it requires, formal pointers resolving in the audit JSON
+with a matching statement hash, counterexamples that load and verify, links that resolve
+with no self-links and no links into merged entries, no contradiction (a refuted
+statement cannot be implied by a proven one), provenance anchors that resolve to exactly
+one place in the document that raised them, every citation of an entry carrying its
+status word and every mention of an entry known to the ledger, generated views fresh,
+dates monotone, no em dashes, and `sorry` fenced to `Conjectures/`. Each failure names
+the offending path and field.
+
+**Read interface.** `python -m mdept.query "<terms>"` searches both ledgers, ranks by
+term hits, and prints each entry with its status, its statement and where it is cited;
+`--resolve MDR:<stem>` reports what a request became. `python -m mdept.view --consumer
+NAME --write` generates that consumer repo's own `docs/MATH.md` and `--check` fails on
+drift. Both take `--json`, and the human output is derived from that shape.
 
 **Refutation toolkit.** A counterexample is a Python file that defines
 `refute() -> Witness`. A `Witness` carries the entry ID, the exact point, and the claim as

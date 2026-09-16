@@ -33,12 +33,46 @@ def test_witness_verifies(path):
 def test_run_all_reports_every_artifact():
     report = refute.run_all(REPO_ROOT / "tests" / "fixtures" / "good_public" / "counterexamples")
     assert report == {
-        "MD_0002": {
-            "file": "counterexamples/MD_0002_toy.py",
-            "verified": True,
-            "exact": True,
-        }
+        "MD_0002": [
+            {
+                "file": "counterexamples/MD_0002_toy.py",
+                "verified": True,
+                "exact": True,
+            }
+        ]
     }
+
+
+def test_two_artifacts_for_one_entry_are_both_reported(tmp_path):
+    """A numeric lead and the exact witness that replaces it both belong to one entry.
+
+    A report keyed by entry alone kept the last artifact loaded and dropped the
+    rest, so a witness that stopped verifying could hide behind one that still
+    did.
+    """
+    directory = tmp_path / "counterexamples"
+    directory.mkdir()
+    (directory / "MD_0002_toy.py").write_text(
+        (REPO_ROOT / "tests" / "fixtures" / "good_public" / "counterexamples" / "MD_0002_toy.py")
+        .read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    (directory / "MD_0002_numeric_lead.py").write_text(
+        '"""MD_0002 claims that every integer strictly exceeds its own square."""\n\n'
+        "from mdept.refute import Witness\n\n\n"
+        "def refute() -> Witness:\n"
+        "    return Witness(entry='MD_0002', point={'n': 1.0}, claim=lambda n: n * n > n,\n"
+        "                   numeric=True)\n",
+        encoding="utf-8",
+    )
+    report = refute.run_all(directory)
+    assert [record["file"] for record in report["MD_0002"]] == [
+        "counterexamples/MD_0002_numeric_lead.py",
+        "counterexamples/MD_0002_toy.py",
+    ]
+    assert [record["exact"] for record in report["MD_0002"]] == [False, True]
+    assert refute.all_verified(report) is True
+    assert len(refute.artifacts(report)) == 2
 
 
 def test_a_witness_that_does_not_refute_reports_false():
@@ -92,3 +126,26 @@ def test_module_invocation_uses_canonical_witness_class():
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "ok " in result.stdout
+
+
+def test_a_relabelled_version_one_audit_is_refused_by_shape(tmp_path):
+    """The version number is a claim; the shape is the fact.
+
+    A v1 `counterexamples` mapping relabelled 2 passed the version gate and then
+    failed inside a report loop with a TypeError, which named neither the file
+    nor the reason.
+    """
+    import json
+
+    from mdept import ConfigError, audit
+
+    (tmp_path / "audit").mkdir()
+    (tmp_path / "audit" / "latest.json").write_text(
+        json.dumps({
+            "schema_version": audit.SCHEMA_VERSION,
+            "counterexamples": {"MD_0002": {"file": "x.py", "verified": True, "exact": True}},
+        }),
+        encoding="utf-8",
+    )
+    with pytest.raises(ConfigError, match="version 1 content with a new label"):
+        audit.read_cached_audit(tmp_path)

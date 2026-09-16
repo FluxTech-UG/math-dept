@@ -54,7 +54,7 @@ def post_release_shas(tmp_path: Path) -> tuple[str, str]:
 
 def write_audit(root: Path, declarations: dict, sources_sha: str) -> None:
     payload = {
-        "schema_version": 1,
+        "schema_version": audit.SCHEMA_VERSION,
         "ok": True,
         "sorry_violations": [],
         "sources_sha256": sources_sha,

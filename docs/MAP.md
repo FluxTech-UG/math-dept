@@ -11,6 +11,36 @@ _Tooling for the math-dept ledger of stipulated mathematical statements._
 - class ConfigError(MDeptError)  ·L31 — A path, repo, or environment variable could not be resolved.
 - class CheckError(MDeptError)  ·L35 — A ledger invariant failed. The message names the invariant, path, and field.
 
+### mdept/anchors.py
+_The anchor grammar: what a provenance anchor may say, and how it resolves._
+- const FORMS  ·L43
+- const UNIQUE_FORMS  ·L46
+- const GRAMMAR  ·L49
+- const _ITEM_ID  ·L55
+- const _SECTION_ID  ·L56
+- const ITEM_RE  ·L58
+- const HEADING_RE  ·L59
+- const HEADING_ITEM_RE  ·L60
+- const LABEL_RE  ·L61
+- const TEXT_RE  ·L62
+- const _MARKUP_RE  ·L66
+- const _EMPHASIS_RE  ·L68
+- const _NUMBERED_RE  ·L70
+- const _HEADING_LINE_RE  ·L71
+- @dataclass class Hit  ·L75 — Where an anchor resolved: its form, the 1-based line, and that line.
+- classify(anchor: str) -> str  ·L83 — The form this anchor's syntax declares, or 'unknown'.
+- matches(anchor: str, doc_text: str) -> list[Hit]  ·L99 — Every place this anchor resolves, in document order.
+- resolve(anchor: str, doc_text: str) -> Hit | None  ·L121 — The one place this anchor resolves, or None when it is nowhere or ambiguous.
+- line_text(line: str) -> str  ·L131 — A line's own text, with list, heading, quote and emphasis markup removed.
+- _begins_with_item(text: str, item: str) -> bool  ·L145 — True when the line's text opens with this item ID as a whole token.
+- _find_item(item: str, doc_text: str) -> list[Hit]  ·L158
+- _begins_with_section(text: str, section: str) -> bool  ·L166 — True when the heading's text opens with this section id, whole.
+- _headings(doc_text: str)  ·L187
+- _find_heading(section: str, doc_text: str) -> list[Hit]  ·L197
+- _find_heading_item(section: str, wanted: str, doc_text: str) -> list[Hit]  ·L205
+- _find_label(name: str, doc_text: str) -> list[Hit]  ·L224
+- _find_text(literal: str, doc_text: str) -> list[Hit]  ·L233
+
 ### mdept/audit.py
 _Three guards over the Lean side, and the JSON contract the ledger reads._
 - const LEAN_ENTRY_DIRS  ·L33
@@ -35,55 +65,57 @@ _Three guards over the Lean side, and the JSON contract the ledger reads._
 - mathlib_rev(root: Path) -> str  ·L213 — The Mathlib revision Lake actually resolved, from the committed manifest.
 - counterexample_report(root: Path) -> dict  ·L225
 - full_audit(root: Path) -> dict  ·L231 — The cached contract: `python -m mdept.audit all --json --write audit/latest.json`.
-- read_cached_audit(root: Path) -> dict  ·L249
-- main(argv: list[str] | None=None) -> int  ·L264
+- read_cached_audit(root: Path) -> dict  ·L251
+- _require_audit_shape(path: Path, data: dict) -> None  ·L264 — Check the shape, not only the version number it claims.
+- main(argv: list[str] | None=None) -> int  ·L292
 
 ### mdept/check.py
-_Ledger invariants I1 to I20._
-- const REFERENCE_SURFACES  ·L43
-- const EM_DASH_EXCLUDE  ·L57
-- const ROLE_LINE_SURFACES  ·L61
-- const STANDARD_AXIOMS  ·L63
-- fail(invariant: str, path, field_name: str, message: str) -> None  ·L66
-- @dataclass class Context  ·L71
-  - @property private(self) -> bool  ·L87
-  - rel(self, path) -> str  ·L90
-- i1_filename_is_id(ctx: Context) -> None  ·L100
-- _precheck_filenames(root: Path) -> None  ·L107
-- i2_permanence(ctx: Context) -> None  ·L117
-- i3_schema(ctx: Context) -> None  ·L148
-- i4_status_evidence(ctx: Context) -> None  ·L161
-- _require_how(ctx: Context, entry, settled, how: str) -> None  ·L217
-- i5_formal_pointer(ctx: Context) -> None  ·L226
-- i6_counterexamples(ctx: Context) -> None  ·L267
-- i7_raised_by(ctx: Context) -> None  ·L311
-- _consumer_path(ctx: Context, repo: str) -> Path  ·L336
-- i8_links(ctx: Context) -> None  ·L348
-- const _IMPLIED_BY  ·L368
-- const _IMPLIES  ·L369
-- const _ESTABLISHED  ·L370
-- i9a_no_contradiction(ctx: Context) -> None  ·L373
-- i9b_inheritance_notice(ctx: Context) -> None  ·L394 — The one informational check. Its notices are section 7 of the generated index.
-- i10_cited_sources(ctx: Context) -> None  ·L404
-- i11_tag_sync(ctx: Context) -> None  ·L431
-- i12_dangling_references(ctx: Context) -> None  ·L453
-- _reference_surfaces(ctx: Context) -> list[Path]  ·L473
-- _known_in_sibling(ctx: Context, token: str) -> bool  ·L484 — True when a private repo's token names an entry that lives in the public one.
-- i13_inbox(ctx: Context) -> None  ·L504
-- _outcome_line(outcome: str, candidate: str) -> str | None  ·L538
-- i14_request_backlinks(ctx: Context) -> None  ·L549
-- i15_consumer_citations(ctx: Context) -> None  ·L582
-- _citation_word(status: str) -> tuple[str, ...] | None  ·L610
-- i16_generated_views(ctx: Context) -> None  ·L621
-- i17_prose(ctx: Context) -> None  ·L636
-- i18_dates(ctx: Context) -> None  ·L648
-- i19_attempt_records(ctx: Context) -> None  ·L667
-- i20_sorry_fence(ctx: Context) -> None  ·L698
-- const INVARIANTS  ·L706
-- bibliography_path(root: Path, kind: str) -> Path  ·L731 — The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context  ·L751
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False) -> Context  ·L791 — Run every invariant in order. Raises `CheckError` on the first violation.
-- main(argv: list[str] | None=None) -> int  ·L803
+_Ledger invariants I1 to I21._
+- const REFERENCE_SURFACES  ·L47
+- const EM_DASH_EXCLUDE  ·L61
+- const ROLE_LINE_SURFACES  ·L65
+- const STANDARD_AXIOMS  ·L67
+- fail(invariant: str, path, field_name: str, message: str) -> None  ·L70
+- @dataclass class Context  ·L75
+  - @property private(self) -> bool  ·L92
+  - rel(self, path) -> str  ·L95
+  - family_by_id(self) -> dict  ·L101 — Both ledgers' entries by ID: an ID resolves wherever it lives.
+- i1_filename_is_id(ctx: Context) -> None  ·L121
+- _precheck_filenames(root: Path) -> None  ·L128
+- i2_permanence(ctx: Context) -> None  ·L138
+- i3_schema(ctx: Context) -> None  ·L169
+- i4_status_evidence(ctx: Context) -> None  ·L182
+- _require_how(ctx: Context, entry, settled, how: str) -> None  ·L238
+- i5_formal_pointer(ctx: Context) -> None  ·L247
+- i6_counterexamples(ctx: Context) -> None  ·L288
+- i7_raised_by(ctx: Context) -> None  ·L332 — Every anchor is a form of the grammar, and resolves to one place.
+- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L351
+- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L386
+- i8_links(ctx: Context) -> None  ·L397
+- const _IMPLIED_BY  ·L417
+- const _IMPLIES  ·L418
+- const _ESTABLISHED  ·L419
+- i9a_no_contradiction(ctx: Context) -> None  ·L422
+- i9b_inheritance_notice(ctx: Context) -> None  ·L443 — The one informational check. Its notices are section 7 of the generated index.
+- i10_cited_sources(ctx: Context) -> None  ·L453
+- i11_tag_sync(ctx: Context) -> None  ·L480
+- i12_dangling_references(ctx: Context) -> None  ·L502
+- _reference_surfaces(ctx: Context) -> list[Path]  ·L522
+- _known_in_sibling(ctx: Context, token: str) -> bool  ·L533 — True when a private repo's token names an entry that lives in the public one.
+- i13_inbox(ctx: Context) -> None  ·L550
+- i14_request_backlinks(ctx: Context) -> None  ·L587
+- i15_consumer_citations(ctx: Context) -> None  ·L620 — Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L661
+- i17_prose(ctx: Context) -> None  ·L676
+- i18_dates(ctx: Context) -> None  ·L688
+- i19_attempt_records(ctx: Context) -> None  ·L707
+- i20_sorry_fence(ctx: Context) -> None  ·L738
+- i21_unlisted_citations(ctx: Context) -> None  ·L749 — Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- const INVARIANTS  ·L793
+- bibliography_path(root: Path, kind: str) -> Path  ·L819 — The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context  ·L839
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False) -> Context  ·L881 — Run every invariant in order. Raises `CheckError` on the first violation.
+- main(argv: list[str] | None=None) -> int  ·L893
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -97,36 +129,76 @@ _Resolve the repo root and the sibling repo, with no silent defaults._
 - repo_kind(root: Path) -> str  ·L45 — 'private' if this root carries the private-only surfaces, else 'public'.
 - is_private(root: Path) -> bool  ·L53
 - lean_lib(root: Path) -> str  ·L57 — The Lake library name this repo owns.
-- private_root(root: Path | None=None) -> Path | None  ·L62 — The private sibling, or None when this machine has no copy of it.
-- public_root(root: Path | None=None) -> Path | None  ·L81 — The public sibling seen from a private repo, or the root itself when public.
-- _declared_public_sibling(root: Path) -> Path | None  ·L101 — The `public_sibling` line of repos.yaml, resolved against the repo root.
-- require_lean() -> bool  ·L118 — True when a missing Lean toolchain must fail rather than skip.
-- lean_roots(root: Path) -> list[Path]  ·L123 — Every Lean library directory present in this repo, sorted.
+- _require_repo(path: Path, why: str) -> Path  ·L62 — The path, once it is a math repo. A directory that is not one is an error.
+- private_root(root: Path | None=None) -> Path | None  ·L78 — The private sibling, or None when this machine has no copy of it.
+- public_root(root: Path | None=None) -> Path | None  ·L99 — The public sibling seen from a private repo, or the root itself when public.
+- _declared_public_sibling(root: Path) -> Path | None  ·L121 — The `public_sibling` line of repos.yaml, resolved against the repo root.
+- require_lean() -> bool  ·L138 — True when a missing Lean toolchain must fail rather than skip.
+- lean_roots(root: Path) -> list[Path]  ·L143 — Every Lean library directory present in this repo, sorted.
+
+### mdept/family.py
+_The family this package reads: both ledgers, the inbox, and the listed consumers._
+- const GENERATED_MARKERS  ·L39
+- const GENERATED_HEAD_LINES  ·L40
+- const _COMMENT_OPEN_RE  ·L44
+- marker_line(line: str) -> str  ·L47 — A line with its comment opener and markdown markup stripped, lower-cased.
+- @dataclass class Consumer  ·L57 — One repo listed in `repos.yaml`: where it is, what to skip, where its view goes.
+  - @property view_path(self) -> Path  ·L66
+  - ignored(self, rel: str) -> bool  ·L69 — True when this repo-relative path matches one of the consumer's globs.
+  - files(self) -> list[Path]  ·L78 — Every file this repo owns, sorted, as one scannable surface.
+  - rel(self, path: Path) -> str  ·L102
+  - text(self, path: Path) -> str | None  ·L105 — The file's text, or None when it is not a readable text file at all.
+  - is_generated(self, path: Path, text: str | None=None) -> bool  ·L132 — True when one of the file's opening lines declares it generated.
+- @dataclass class Repo  ·L145 — One math repo: its root, its kind, and its two markdown surfaces.
+  - @property private(self) -> bool  ·L154
+  - entries(self) -> list  ·L157
+  - requests(self) -> list  ·L162
+- const _UNRESOLVED  ·L170
+- @dataclass class Family  ·L174 — Both ledgers and the consumers, as one read surface, resolved on demand.
+  - @property other(self) -> Repo | None  ·L182 — The ledger this family was not located from, resolved on first ask.
+  - @property public(self) -> Repo | None  ·L194
+  - @property private(self) -> Repo | None  ·L198
+  - @property repos_yaml(self) -> Path | None  ·L202 — The consumer map, which lives in the private repo, or None.
+  - @property consumers(self) -> dict  ·L211 — Name to Consumer, parsed from `repos.yaml` on first ask.
+  - ledgers(self) -> list[Repo]  ·L218
+  - entries(self) -> list  ·L221 — Every entry in the family, public first within an ID, sorted by ID.
+  - by_id(self) -> dict  ·L225
+  - requests(self) -> list  ·L228
+  - repo_at(self, root: Path) -> Repo  ·L231 — The Repo object for this root, whichever side of the family it is.
+  - sibling_of(self, root: Path) -> Path | None  ·L246 — The other ledger's root, seen from this one.
+  - consumer(self, name: str) -> Consumer  ·L256 — One listed consumer, or a failure that names the ones there are.
+- locate(root: Path | str | None=None) -> Family  ·L275 — The family, as paths only: nothing is read off disk yet.
+- load_family(root: Path | str | None=None) -> Family  ·L294 — `locate`, with both ledgers and the inbox read now rather than later.
+- read_consumers(repos_yaml: Path) -> dict  ·L308 — `repos.yaml` consumers as name to Consumer, paths resolved against the repo.
+- require_private(family: Family, what: str) -> Repo  ·L325 — The private repo, or a failure that says what needed it.
+- request_by_stem(family: Family, stem: str)  ·L335 — One request from the inbox, by its filename stem.
 
 ### mdept/index.py
 _The generated views: `ledger/INDEX.md` and `ledger.json`._
-- const INDEX_PATH  ·L22
-- const JSON_PATH  ·L23
-- const SCHEMA_VERSION  ·L24
-- const HEADER  ·L26
-- const _ESTABLISHED  ·L28
-- const _IMPLIED_BY  ·L29
-- escape(text: str) -> str  ·L32 — Make a value safe inside a markdown table cell.
-- inheritance_notices(entries: list) -> list[str]  ·L37 — I9b: unsettled entries that something already established implies.
-- partial_results(entries: list) -> list[tuple]  ·L55 — Settled entries that are a special case of something still unsettled.
-- _between_column(entry) -> str  ·L69
-- _status_summary(entries: list) -> list[str]  ·L78
-- _topic_index(entries: list) -> list[str]  ·L90
-- _all_entries(entries: list) -> list[str]  ·L107
-- _partial_section(entries: list) -> list[str]  ·L123
-- _by_consumer(entries: list) -> list[str]  ·L132
-- _requests(requests: list) -> list[str]  ·L153
-- _report(entries: list) -> list[str]  ·L164
-- render_index(entries: list, requests: list, kind: str) -> str  ·L174
-- render_json(entries: list, requests: list) -> str  ·L196
-- render(root: Path) -> dict[str, str]  ·L221 — Both generated views, as {repo-relative path: content}.
-- write(root: Path) -> list[str]  ·L233 — Write both views. Returns the paths that changed.
-- main(argv: list[str] | None=None) -> int  ·L246
+- const INDEX_PATH  ·L23
+- const JSON_PATH  ·L24
+- const SCHEMA_VERSION  ·L25
+- const HEADER  ·L27
+- const _ESTABLISHED  ·L29
+- const _IMPLIED_BY  ·L30
+- escape(text: str) -> str  ·L33 — Make a value safe inside a markdown table cell.
+- inheritance_notices(entries: list) -> list[str]  ·L38 — I9b: unsettled entries that something already established implies.
+- anchor_notices(entries: list, requests: list) -> list[str]  ·L56 — I7: entries and requests anchored on wording rather than on an ID.
+- _anchor_notice(subject: str, source: dict) -> str | None  ·L78
+- partial_results(entries: list) -> list[tuple]  ·L89 — Settled entries that are a special case of something still unsettled.
+- _between_column(entry) -> str  ·L103
+- _status_summary(entries: list) -> list[str]  ·L112
+- _topic_index(entries: list) -> list[str]  ·L124
+- _all_entries(entries: list) -> list[str]  ·L141
+- _partial_section(entries: list) -> list[str]  ·L157
+- _by_consumer(entries: list) -> list[str]  ·L166 — Which repo raised and which repo cites each entry, one row per entry.
+- _requests(requests: list) -> list[str]  ·L195
+- _report(entries: list, requests: list) -> list[str]  ·L206
+- render_index(entries: list, requests: list, kind: str) -> str  ·L216
+- render_json(entries: list, requests: list) -> str  ·L238
+- render(root: Path) -> dict[str, str]  ·L263 — Both generated views, as {repo-relative path: content}.
+- write(root: Path) -> list[str]  ·L276 — Write both views. Returns the paths that changed.
+- main(argv: list[str] | None=None) -> int  ·L289
 
 ### mdept/new.py
 _Allocate the next ID and write the entry file._
@@ -138,54 +210,76 @@ _Allocate the next ID and write the entry file._
 - blank_front(entry_id: str) -> dict  ·L51 — A schema-complete front matter with every key present and nothing invented.
 - render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L76
 - _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L102
-- from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str]  ·L121 — Write an entry for one candidate of an inbox request. Returns (id, path).
-- from_title(root: Path, args) -> tuple[str, str]  ·L167 — Write an entry raised in this repo, with no consumer request behind it.
-- _write_new(path: Path, text: str) -> None  ·L194
-- _record_on_request(path: Path, entry_id: str) -> None  ·L201 — Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
-- main(argv: list[str] | None=None) -> int  ·L221
+- from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str, str]  ·L121 — Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
+- from_title(root: Path, args) -> tuple[str, str, str]  ·L174 — Write an entry raised in this repo, with no consumer request behind it.
+- _write_new(path: Path, text: str) -> None  ·L201
+- _record_on_request(path: Path, entry_id: str) -> None  ·L208 — Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
+- main(argv: list[str] | None=None) -> int  ·L228
 
 ### mdept/parse.py
 _Read the markdown surfaces: ledger entries, bibliography, requests, role lines._
 - const IGNORE_DIRS  ·L21
 - const PLACEHOLDER_MD  ·L26
-- const FRONT_MATTER_RE  ·L28
-- const HTML_COMMENT_RE  ·L29
-- const HEADING_RE  ·L30
-- const ROLE_LINE_RE  ·L31
-- const BIB_HEADING_RE  ·L34
-- const BIB_FIELD_RE  ·L35
-- const ROLES  ·L37
-- split_front_matter(text: str, path: Path) -> tuple[str, str]  ·L43 — Return (front matter source, body). Raises when the fence is absent.
-- load_front_matter(path: Path) -> tuple[dict, str, str]  ·L51 — Return (front mapping, front source, body) for a markdown file.
-- normalize_dates(node)  ·L64 — Render YAML's own date type back to an ISO string, recursively.
-- @dataclass class Entry  ·L87 — One ledger entry: its path, its front matter, and its body.
-  - @property id(self) -> str  ·L97
-  - @property status(self) -> str  ·L101
-  - @property kind(self) -> str  ·L105
-  - @property title(self) -> str  ·L109
-  - @property rel(self) -> str  ·L113
-  - at(self, dotted: str)  ·L116 — Nested lookup by dotted path, returning None at the first null.
-  - linked_ids(self) -> dict[str, list[str]]  ·L125 — Every outgoing MD_#### link, grouped by the field that carries it.
-  - sections(self) -> dict[str, str]  ·L143
-- entry_paths(root: Path) -> list[Path]  ·L147 — Every `ledger/MD_####.md` under `root`, sorted. TEMPLATE.md is not an entry.
-- load_entries(root: Path) -> list[Entry]  ·L155 — Load every entry under `root/ledger/`, sorted by filename.
-- body_sections(body: str) -> dict[str, str]  ·L165 — Split a body into `## Heading` -> text. Deeper headings stay in the section.
-- @dataclass class BibEntry  ·L179
-  - @property source_kind(self) -> str | None  ·L186
-- parse_bibliography(path: Path) -> dict[str, BibEntry]  ·L190 — Tag -> entry, from `### [Tag] Title` blocks. HTML comments are not entries.
-- @dataclass class Request  ·L223
-  - @property stem(self) -> str  ·L231
-  - @property state(self) -> str  ·L235
-  - @property rel(self) -> str  ·L239
-  - candidates(self) -> list[str]  ·L242 — The `### C<n>` headings this request offers.
-  - outcome(self) -> str  ·L247
-- load_requests(root: Path) -> list[Request]  ·L251 — Every request in `inbox/` and `inbox/done/`. Empty when there is no inbox.
-- strip_html_comments(text: str) -> str  ·L271
-- iter_markdown(root: Path, exclude: tuple[str, ...]=()) -> list[Path]  ·L275 — Every .md file under `root`, sorted, skipping IGNORE_DIRS and `exclude` prefixes.
-- id_tokens(text: str) -> set[str]  ·L289 — Every MD_#### token, with HTML comments removed first.
-- request_tokens(text: str) -> set[tuple[str, str]]  ·L294 — Every (request stem, candidate) pair from MDR: tokens.
-- parse_role_line(path: Path) -> tuple[str, str]  ·L299 — Return (role, status date) from line 2 of a doc. Raises when it is absent.
-- load_repos_yaml(path: Path) -> dict  ·L316 — Load `repos.yaml`: a `public_sibling` path and a `consumers` name -> path map.
+- const CONSUMER_KEYS  ·L29
+- const DEFAULT_VIEW  ·L30
+- const FRONT_MATTER_RE  ·L32
+- const HTML_COMMENT_RE  ·L33
+- const HEADING_RE  ·L34
+- const ROLE_LINE_RE  ·L35
+- const BIB_HEADING_RE  ·L38
+- const BIB_FIELD_RE  ·L39
+- const ROLES  ·L41
+- split_front_matter(text: str, path: Path) -> tuple[str, str]  ·L47 — Return (front matter source, body). Raises when the fence is absent.
+- load_front_matter(path: Path) -> tuple[dict, str, str]  ·L55 — Return (front mapping, front source, body) for a markdown file.
+- normalize_dates(node)  ·L68 — Render YAML's own date type back to an ISO string, recursively.
+- @dataclass class Entry  ·L91 — One ledger entry: its path, its front matter, and its body.
+  - @property id(self) -> str  ·L101
+  - @property status(self) -> str  ·L105
+  - @property kind(self) -> str  ·L109
+  - @property title(self) -> str  ·L113
+  - @property rel(self) -> str  ·L117
+  - at(self, dotted: str)  ·L120 — Nested lookup by dotted path, returning None at the first null.
+  - linked_ids(self) -> dict[str, list[str]]  ·L129 — Every outgoing MD_#### link, grouped by the field that carries it.
+  - sections(self) -> dict[str, str]  ·L147
+- entry_paths(root: Path) -> list[Path]  ·L151 — Every `ledger/MD_####.md` under `root`, sorted. TEMPLATE.md is not an entry.
+- load_entries(root: Path) -> list[Entry]  ·L159 — Load every entry under `root/ledger/`, sorted by filename.
+- body_sections(body: str) -> dict[str, str]  ·L169 — Split a body into `## Heading` -> text. Deeper headings stay in the section.
+- @dataclass class BibEntry  ·L183
+  - @property source_kind(self) -> str | None  ·L190
+- parse_bibliography(path: Path) -> dict[str, BibEntry]  ·L194 — Tag -> entry, from `### [Tag] Title` blocks. HTML comments are not entries.
+- @dataclass class Request  ·L227
+  - @property stem(self) -> str  ·L235
+  - @property state(self) -> str  ·L239
+  - @property rel(self) -> str  ·L243
+  - candidates(self) -> list[str]  ·L246 — The `### C<n>` headings this request offers.
+  - outcome(self) -> str  ·L251
+  - outcome_line(self, candidate: str) -> str | None  ·L254 — The Outcome line for one candidate, or None when it has none.
+- load_requests(root: Path) -> list[Request]  ·L265 — Every request in `inbox/` and `inbox/done/`. Empty when there is no inbox.
+- strip_html_comments(text: str) -> str  ·L285
+- iter_markdown(root: Path, exclude: tuple[str, ...]=()) -> list[Path]  ·L289 — Every .md file under `root`, sorted, skipping IGNORE_DIRS and `exclude` prefixes.
+- id_tokens(text: str) -> set[str]  ·L303 — Every MD_#### token, with HTML comments removed first.
+- request_tokens(text: str) -> set[tuple[str, str]]  ·L308 — Every (request stem, candidate) pair from MDR: tokens.
+- request_stem_tokens(text: str) -> list[tuple[int, str, str | None]]  ·L313 — Every MDR: token with its line and candidate, the candidate optional.
+- parse_role_line(path: Path) -> tuple[str, str]  ·L329 — Return (role, status date) from line 2 of a doc. Raises when it is absent.
+- load_repos_yaml(path: Path) -> dict  ·L346 — Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
+- _consumer_entry(path: Path, name: str, value) -> dict  ·L371
+
+### mdept/query.py
+_Search both ledgers, and resolve a request token, from anywhere in the family._
+- const STATEMENT_WIDTH  ·L41
+- searchable(entry) -> dict[str, str]  ·L44 — The fields a query reads, as {field name: text}.
+- hits(entry, terms: list[str]) -> int  ·L60 — How many times these terms occur across the searchable fields.
+- one_line(text: str, width: int=STATEMENT_WIDTH) -> str  ·L68 — A block of prose or LaTeX collapsed to one line, cut to `width`.
+- citation_words(status: str) -> list[str]  ·L74 — The status words I15 requires on a line citing an entry at this status.
+- as_record(entry, term_hits: int) -> dict  ·L79 — One entry, as the JSON shape every other view is derived from.
+- _consumer_of(entry) -> set[str]  ·L98
+- search(family, terms: list[str], topic: str | None=None, status: str | None=None, consumer: str | None=None) -> dict  ·L110 — The answer to one query, as the JSON shape.
+- resolve(family, token: str) -> dict  ·L160 — What a request token became: pending, declined, or the entries it seeded.
+- _candidate_outcome(request, candidate: str, backlinks: dict, by_id: dict)  ·L196
+- render_search(answer: dict) -> list[str]  ·L214
+- render_entry(record: dict, also: list[str] | None=None) -> list[str]  ·L235
+- render_resolve(answer: dict) -> list[str]  ·L253
+- main(argv: list[str] | None=None) -> int  ·L266
 
 ### mdept/refute.py
 _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
@@ -196,8 +290,10 @@ _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
 - _is_sympy(value) -> bool  ·L71
 - _as_bool(value, entry: str) -> bool  ·L75
 - load(path: Path) -> Witness  ·L87 — Import an artifact and call its `refute()`. Raises when the contract is broken.
-- run_all(directory: Path) -> dict  ·L113 — Run every artifact in a directory. Returns {entry id: {file, verified, exact}}.
-- main(argv: list[str] | None=None) -> int  ·L131
+- run_all(directory: Path) -> dict  ·L113 — Run every artifact in a directory. Returns {entry id: [{file, verified, exact}]}.
+- artifacts(report: dict) -> list[tuple[str, dict]]  ·L138 — Every (entry id, artifact record) pair in a report, in a stable order.
+- all_verified(report: dict) -> bool  ·L143
+- main(argv: list[str] | None=None) -> int  ·L147
 
 ### mdept/release.py
 _Move a settled entry from the private repo into this public one._
@@ -229,39 +325,44 @@ _The closed front-matter schema for a ledger entry._
 - const SOURCE_KINDS  ·L45
 - const TRUSTED_SOURCE_KINDS  ·L48
 - const RELATIONS  ·L50
-- const ENTRY_KEYS  ·L54
-- const FORMAL_KEYS  ·L70
-- const BETWEEN_KEYS  ·L71
-- const PROVENANCE_KEYS  ·L72
-- const RAISED_BY_KEYS  ·L73
-- const RAISED_BY_PUBLIC_KEYS  ·L75
-- const STIPULATED_BY_KEYS  ·L76
-- const SETTLED_BY_KEYS  ·L77
-- const EVIDENCE_KEYS  ·L78
-- const ID_RE  ·L82
-- const ID_TOKEN_RE  ·L83
-- const REQUEST_STEM_RE  ·L84
-- const REQUEST_TOKEN_RE  ·L85
-- const TOPIC_RE  ·L86
-- const BIB_TAG_RE  ·L87
-- const DECL_RE  ·L88
-- const LEAN_FILE_RE  ·L89
-- const COUNTEREXAMPLE_STEM_RE  ·L90
-- const CITED_BY_RE  ·L91
-- const SHA256_RE  ·L92
-- const ISO_DATE_RE  ·L93
-- const BODY_HEADINGS  ·L96
-- const EM_DASH  ·L98
-- _fail(path: Path, field: str, message: str) -> None  ·L101
-- _closed_mapping(value, keys, path: Path, field: str) -> dict  ·L105
-- _enum(value, allowed, path: Path, field: str) -> None  ·L117
-- _iso_date(value, path: Path, field: str) -> None  ·L122
-- _str_list(value, path: Path, field: str) -> list  ·L131
-- _id_list(value, path: Path, field: str) -> list  ·L137
-- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L144 — Validate one entry's front matter. `kind` is 'public' or 'private'.
-- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L216
-- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L242
-- _validate_settled_by(settled_by, path: Path) -> None  ·L263
+- const CITATION_WORDS  ·L56
+- const ENTRY_KEYS  ·L64
+- const FORMAL_KEYS  ·L80
+- const BETWEEN_KEYS  ·L81
+- const PROVENANCE_KEYS  ·L82
+- const RAISED_BY_KEYS  ·L83
+- const RAISED_BY_PUBLIC_KEYS  ·L85
+- const STIPULATED_BY_KEYS  ·L86
+- const SETTLED_BY_KEYS  ·L87
+- const EVIDENCE_KEYS  ·L88
+- const ID_RE  ·L92
+- const ID_TOKEN_RE  ·L93
+- const REQUEST_STEM_RE  ·L94
+- const REQUEST_TOKEN_RE  ·L95
+- const REQUEST_STEM_TOKEN_RE  ·L97
+- const TOPIC_RE  ·L100
+- const BIB_TAG_RE  ·L101
+- const DECL_RE  ·L102
+- const LEAN_FILE_RE  ·L103
+- const COUNTEREXAMPLE_STEM_RE  ·L104
+- const CITED_BY_RE  ·L109
+- const SHA256_RE  ·L112
+- const ISO_DATE_RE  ·L113
+- const BODY_HEADINGS  ·L116
+- const EM_DASH  ·L118
+- split_cited_by(citation: str) -> tuple[str, str, str | None] | None  ·L121 — (repo, path, locator) from one `cited_by` string, or None when it is malformed.
+- cited_by_form(repo: str, path: str) -> str  ·L130 — The `cited_by` string for this repo and path, quoted when it has to be.
+- citation_words(status: str) -> tuple[str, ...]  ·L135 — The status words I15 requires on a line citing an entry at this status.
+- _fail(path: Path, field: str, message: str) -> None  ·L140
+- _closed_mapping(value, keys, path: Path, field: str) -> dict  ·L144
+- _enum(value, allowed, path: Path, field: str) -> None  ·L156
+- _iso_date(value, path: Path, field: str) -> None  ·L161
+- _str_list(value, path: Path, field: str) -> list  ·L170
+- _id_list(value, path: Path, field: str) -> list  ·L176
+- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L183 — Validate one entry's front matter. `kind` is 'public' or 'private'.
+- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L257
+- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L283
+- _validate_settled_by(settled_by, path: Path) -> None  ·L304
 
 ### mdept/search.py
 _Random search for numeric leads._
@@ -273,6 +374,20 @@ _Sympy helpers for stage S1: settle a claim exactly before anyone opens Lean._
 - inequality_counterexample(expr, var, domain)  ·L31 — An exact point in `domain` where the relational `expr` fails, or None.
 - _sample(region)  ·L44 — One exact representative of a solution set, or None when none is extractable.
 - rational_witness(expr, var, lo, hi, steps: int=200)  ·L71 — Scan `steps` rationals across [lo, hi] for the first exact failure of `expr`.
+
+### mdept/view.py
+_Generate a consumer's local view of the department: its `docs/MATH.md`._
+- const HEADER_NOTE  ·L38
+- header(consumer) -> list[str]  ·L41
+- collect(family, consumer) -> dict  ·L54 — Everything the view reports, as the JSON shape the markdown is built from.
+- _anchor_state(entry, consumer) -> tuple[int | None, str]  ·L71 — (line, condition) for this entry's anchor in the consumer's document.
+- _raised_record(entry, consumer, cited_lines: dict) -> dict  ·L98
+- _citations(entries: list, consumer) -> list[dict]  ·L116
+- _request_tokens(family, consumer) -> list[dict]  ·L148
+- _raised_at(record: dict) -> str  ·L192 — The one line that says where the entry was raised, and whether it still is.
+- render(payload: dict, consumer) -> str  ·L207
+- generate(family, name: str) -> tuple[str, Path, dict]  ·L265 — (rendered text, the default output path, the JSON payload) for one consumer.
+- main(argv: list[str] | None=None) -> int  ·L272
 
 ### scripts/gen_prove_queue.py
 _Emit a cc-run batch file, one step per open request candidate._
@@ -296,13 +411,44 @@ _Generate the Lake root file that imports every module in a library._
 - render(root: Path, name: str) -> str  ·L52
 - main(argv: list[str] | None=None) -> int  ·L58
 
+### tests/conftest.py
+_Test-wide isolation: the suite never sees the machine's real math repos._
+- @pytest.fixture _no_machine_repos()  ·L17
+
 ### tests/fixtures/broken/I06_witness_does_not_refute/counterexamples/MD_0002_toy.py
 _MD_0002 claims that every integer strictly exceeds its own square._
 - refute() -> Witness  ·L6
 
+### tests/fixtures/broken/I15_code_citation_missing_word/consumers/ToyRepo/src/toy.py
+_A toy consumer module: the bound it leans on is not settled._
+- const LIMIT  ·L4
+
+### tests/fixtures/good_private/consumers/ToyRepo/src/toy.py
+_A toy consumer module: the bound it leans on is not settled._
+- const LIMIT  ·L4
+
 ### tests/fixtures/good_public/counterexamples/MD_0002_toy.py
 _MD_0002 claims that every integer strictly exceeds its own square._
 - refute() -> Witness  ·L6
+
+### tests/test_anchors.py
+_The anchor grammar: one case per form, plus the two ways an anchor is broken._
+- const BACKLOG  ·L11
+- const DESIGN  ·L20
+- const PLAN  ·L31
+- const PAPER  ·L44
+- const PROSE  ·L49
+- @pytest.mark.parametrize test_the_form_is_read_off_the_syntax(anchor, form)  ·L71
+- test_an_item_id_resolves_at_its_own_line()  ·L75
+- test_an_item_id_does_not_match_a_sub_item()  ·L80 — `A8` and `A8(c)` are two items, and `A8` names exactly one of them.
+- test_a_repeated_item_id_is_ambiguous_rather_than_resolved()  ·L91
+- test_a_numbered_heading_resolves_and_does_not_prefix_match()  ·L97
+- test_a_numbered_item_is_scoped_to_its_heading()  ·L104
+- test_a_latex_label_resolves()  ·L111
+- test_a_text_anchor_resolves_on_the_literal()  ·L117
+- test_a_text_anchor_takes_its_first_occurrence()  ·L123 — Uniqueness is required of every form but this one: a phrase repeated in
+- test_an_unknown_form_resolves_nowhere_and_never_raises()  ·L131
+- @pytest.mark.parametrize test_markup_is_stripped_before_a_line_is_read(line, text)  ·L146
 
 ### tests/test_axiom_audit.py
 _Guard: every audited declaration rests on the standard axioms._
@@ -322,12 +468,14 @@ _Guard: every counterexample artifact still refutes what it claims to refute._
 - const ALL_ARTIFACTS  ·L20
 - @pytest.mark.parametrize test_witness_verifies(path)  ·L24
 - test_run_all_reports_every_artifact()  ·L33
-- test_a_witness_that_does_not_refute_reports_false()  ·L44
-- test_an_exact_witness_refuses_a_float()  ·L49
-- test_a_numeric_witness_accepts_a_float()  ·L55
-- test_a_non_boolean_claim_is_refused()  ·L60
-- test_a_module_without_refute_is_refused(tmp_path)  ·L66
-- test_module_invocation_uses_canonical_witness_class()  ·L73 — `python -m mdept.refute` runs refute.py as `__main__`; artifacts import the canonical
+- test_two_artifacts_for_one_entry_are_both_reported(tmp_path)  ·L46 — A numeric lead and the exact witness that replaces it both belong to one entry.
+- test_a_witness_that_does_not_refute_reports_false()  ·L78
+- test_an_exact_witness_refuses_a_float()  ·L83
+- test_a_numeric_witness_accepts_a_float()  ·L89
+- test_a_non_boolean_claim_is_refused()  ·L94
+- test_a_module_without_refute_is_refused(tmp_path)  ·L100
+- test_module_invocation_uses_canonical_witness_class()  ·L107 — `python -m mdept.refute` runs refute.py as `__main__`; artifacts import the canonical
+- test_a_relabelled_version_one_audit_is_refused_by_shape(tmp_path)  ·L131 — The version number is a claim; the shape is the fact.
 
 ### tests/test_lean_build.py
 _Guard: the Lake package builds._
@@ -340,33 +488,69 @@ _Guard: the Lake package builds._
 
 ### tests/test_ledger.py
 _The invariant suite, driven by a fixture ledger with one break per invariant._
-- const FIXTURES  ·L24
-- const REPO_ROOT  ·L25
-- const BASES  ·L26
-- @dataclass class Case  ·L30 — One deliberate break: which base, which modes, and the invariant it must raise.
-- const PLAIN  ·L40
-- const COUNTEREXAMPLES  ·L41
-- const FAMILY  ·L42
-- const LEAN  ·L43
-- const CASES  ·L45
-- stage(tmp_path: Path) -> Path  ·L69 — Copy both bases side by side, so `repos.yaml`'s public_sibling resolves.
-- apply_overlay(root: Path, overlay: Path) -> None  ·L77
-- @pytest.mark.parametrize test_good_fixture_passes_plain(base, tmp_path)  ·L90
-- test_good_public_passes_every_mode(tmp_path)  ·L95
-- test_good_private_passes_family(tmp_path)  ·L100
-- test_every_invariant_has_a_case()  ·L107
-- test_the_invariant_list_is_the_one_that_runs()  ·L115
-- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L123
-- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L139
-- test_template_front_matter_validates()  ·L151
-- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L159
-- test_new_never_reuses_an_id(tmp_path)  ·L179
-- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L188
+- const FIXTURES  ·L25
+- const REPO_ROOT  ·L26
+- const BASES  ·L27
+- @dataclass class Case  ·L31 — One deliberate break: which base, which modes, and the invariant it must raise.
+- const PLAIN  ·L41
+- const COUNTEREXAMPLES  ·L42
+- const FAMILY  ·L43
+- const LEAN  ·L44
+- const CASES  ·L46
+- stage(tmp_path: Path) -> Path  ·L74 — Copy both bases side by side, so `repos.yaml`'s public_sibling resolves.
+- apply_overlay(root: Path, overlay: Path) -> None  ·L82
+- @pytest.mark.parametrize test_good_fixture_passes_plain(base, tmp_path)  ·L95
+- test_good_public_passes_every_mode(tmp_path)  ·L100
+- test_good_private_passes_family(tmp_path)  ·L105
+- test_the_family_check_reads_the_extended_consumer_form(tmp_path)  ·L116 — `repos.yaml` carries `{path, ignore, view}` for ToyRepo, and both hold.
+- test_a_bare_consumer_path_still_means_the_default_view(tmp_path)  ·L132
+- test_every_invariant_has_a_case()  ·L142
+- test_the_invariant_list_is_the_one_that_runs()  ·L150
+- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L158
+- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L174
+- test_template_front_matter_validates()  ·L186
+- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L194
+- test_new_never_reuses_an_id(tmp_path)  ·L215
+- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L224
+- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L234 — A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
+- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L248 — The variable promised a repo, so the variable is what the message names.
+- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L266
+- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L285
+- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L289
+- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L294 — The fixture cites `research/toy notes.md`, whose name contains a space.
+- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L307 — MD_0006 is cited from two files in ToyRepo and is one row, not two.
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._
 - const REPO_ROOT  ·L14
 - test_map_is_fresh()  ·L17
+
+### tests/test_query.py
+_`python -m mdept.query`: what it searches, how it ranks, and what it resolves._
+- const FIXTURES  ·L17
+- const BASES  ·L18
+- stage(tmp_path: Path) -> Path  ·L21
+- @pytest.fixture family(tmp_path)  ·L29
+- ids(answer) -> list[str]  ·L33
+- test_both_ledgers_are_searched(family)  ·L40
+- test_terms_select_when_there_is_no_filter(family)  ·L44 — MD_0005 and MD_0006 are the two bounds; nothing else says "bound".
+- test_a_term_matches_the_statement_body(family)  ·L51 — `2^n` appears in no title and no topic: only in three Statements.
+- test_a_filter_selects_and_terms_only_rank(family)  ·L58 — With a filter, an entry the filter admits is never hidden by the terms.
+- test_a_status_filter_is_checked_against_the_vocabulary(family)  ·L70
+- test_a_consumer_filter_takes_raised_and_cited(family)  ·L76
+- test_the_record_carries_what_the_human_view_prints(family)  ·L85
+- test_a_refuted_entry_asks_for_the_word_refuted(family)  ·L100
+- test_a_settled_entry_asks_for_no_word(family)  ·L105
+- test_one_line_cuts_a_long_statement_and_keeps_a_short_one()  ·L110
+- test_resolve_reports_the_entries_a_closed_candidate_became(family)  ·L119
+- test_resolve_reports_a_declined_candidate_with_its_reason(family)  ·L126
+- test_resolve_reports_pending_for_a_request_nobody_has_worked(family)  ·L131
+- test_one_candidate_can_be_asked_for_on_its_own(family)  ·L137
+- test_resolve_refuses_a_token_that_is_not_one(family)  ·L142
+- test_resolve_names_a_request_that_does_not_exist(family)  ·L147
+- test_the_public_ledger_alone_is_still_a_family(tmp_path, monkeypatch)  ·L155 — A public checkout with no private sibling answers over what it has.
+- test_an_unknown_topic_fails_rather_than_answering_nothing(family)  ·L174 — Zero entries for a mistyped topic reads as "the department holds nothing".
+- test_an_unknown_consumer_fails_even_with_the_public_ledger_alone(tmp_path, monkeypatch)  ·L185 — With no private repo there is no consumer list, so no name can be checked.
 
 ### tests/test_refute_helpers.py
 _The stage S1 toolkit on toy claims._
@@ -426,6 +610,35 @@ _Guard: the `sorry` fence and the entry-file naming rules, without Lean._
 - test_an_id_cannot_be_both_conjecture_and_result(tmp_path)  ·L69
 - @pytest.mark.parametrize test_comment_stripper_removes_sorry(source)  ·L85
 - test_comment_stripper_keeps_real_code_and_line_numbers()  ·L89
+
+### tests/test_view.py
+_`python -m mdept.view`: the consumer's generated view, and its drift guard._
+- const FIXTURES  ·L18
+- const BASES  ·L19
+- stage(tmp_path: Path) -> Path  ·L22
+- @pytest.fixture private(tmp_path)  ·L30
+- run(root: Path, *args) -> int  ·L34
+- test_write_then_check_is_green(private, capsys)  ·L41
+- test_check_fails_before_the_view_has_ever_been_written(private, capsys)  ·L47 — Nothing requires the view to exist: `--check` says so and fails.
+- test_a_status_change_makes_check_fail(private, capsys)  ·L59
+- test_the_write_is_deterministic(private)  ·L68
+- test_out_writes_a_preview_somewhere_else(private, tmp_path)  ·L75
+- test_the_opening_lines_declare_the_file_generated(private)  ·L88
+- test_the_view_reports_raised_cited_and_request_tokens(private)  ·L98
+- test_an_id_anchor_is_reported_with_its_line_and_its_form(private)  ·L114
+- test_an_unknown_consumer_names_the_ones_there_are(private)  ·L123
+- test_a_cited_file_that_does_not_exist_sends_the_reader_to_check(private)  ·L129
+- test_a_generated_file_and_an_ignored_tree_are_not_scanned(private)  ·L143 — Both fixture files carry an `MDR:` token that must not reach the view.
+- test_a_nested_checkout_is_another_repo_and_is_not_scanned(private)  ·L168 — An agent worktree under `.claude/` carries a copy of every citation.
+- test_an_unresolvable_anchor_is_named_in_the_view(private)  ·L194
+- test_an_ambiguous_anchor_names_its_lines_in_the_view(private)  ·L207
+- test_a_missing_document_is_named_in_the_view(private)  ·L218
+- test_an_entry_with_no_anchor_says_that_rather_than_nothing(private)  ·L237
+- test_the_generated_marker_has_to_open_a_line(private)  ·L254 — Prose about something "generated by hand" does not exempt a file.
+- test_a_file_with_no_prose_to_scan_is_skipped_and_never_crashes(private)  ·L275 — None from `text` means "nothing to scan here", for two definite reasons.
+- test_an_unreadable_regular_file_fails_instead_of_reading_as_empty(private)  ·L286 — A permission problem reported as "no citations here" is the worst answer.
+- test_a_mistyped_request_token_names_the_line_that_holds_it(private)  ·L303
+- test_a_request_token_naming_a_candidate_that_does_not_exist_is_located(private)  ·L311
 
 ## Lean
 

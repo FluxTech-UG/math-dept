@@ -58,4 +58,4 @@ Settled entries that are a special case of something still open.
 
 ## 7. Contradiction and staleness report
 
-No notices. `python -m mdept.check` passes with nothing to report.
+- I7: MD_0006 anchors on wording (text:) in ToyRepo docs/toy.md; an ID form (A8, §21.3, §5 item 20, label:eq:name) survives a retitle

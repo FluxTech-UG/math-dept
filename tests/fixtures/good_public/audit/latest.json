@@ -1,10 +1,12 @@
 {
   "counterexamples": {
-    "MD_0002": {
-      "exact": true,
-      "file": "counterexamples/MD_0002_toy.py",
-      "verified": true
-    }
+    "MD_0002": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0002_toy.py",
+        "verified": true
+      }
+    ]
   },
   "declarations": {
     "MathDept.MD_0001.statement": {
@@ -16,7 +18,7 @@
   "lean_toolchain": "leanprover/lean4:v4.33.1",
   "mathlib_rev": "v4.33.1",
   "ok": true,
-  "schema_version": 1,
+  "schema_version": 2,
   "sorry_violations": [],
   "sources_sha256": "eb8593baf49c65fa1b0f0a9c65e4f24adcace51e9f34fc04b96ce95457c1567f"
 }

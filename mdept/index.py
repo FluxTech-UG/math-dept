@@ -16,8 +16,9 @@ import json
 import sys
 from pathlib import Path
 
-from . import CheckError
-from . import config, parse, schema
+from . import CheckError, ConfigError
+from . import anchors, config, parse, schema
+from . import family as family_mod
 
 INDEX_PATH = "ledger/INDEX.md"
 JSON_PATH = "ledger.json"
@@ -50,6 +51,39 @@ def inheritance_notices(entries: list) -> list[str]:
                         "it may settle by inheritance"
                     )
     return notices
+
+
+def anchor_notices(entries: list, requests: list) -> list[str]:
+    """I7: entries and requests anchored on wording rather than on an ID.
+
+    A `text:` anchor is legal and sometimes the only option, so this is a notice
+    and not a failure. It is worth reporting on every run because the cost of
+    one lands later and elsewhere: the day the consumer retitles that passage,
+    the anchor stops resolving and nothing says which entries were pointing at
+    it.
+    """
+    notices = []
+    for entry in entries:
+        raised_by = entry.at("provenance.raised_by") or {}
+        notice = _anchor_notice(entry.id, raised_by)
+        if notice:
+            notices.append(notice)
+    for request in requests:
+        notice = _anchor_notice(f"MDR:{request.stem}", request.front.get("from") or {})
+        if notice:
+            notices.append(notice)
+    return notices
+
+
+def _anchor_notice(subject: str, source: dict) -> str | None:
+    anchor = source.get("anchor")
+    if anchor is None or anchors.classify(anchor) != "text":
+        return None
+    where = " ".join(str(part) for part in (source.get("repo"), source.get("doc")) if part)
+    return (
+        f"I7: {subject} anchors on wording (text:) in {where or 'its consumer document'}; "
+        "an ID form (A8, §21.3, §5 item 20, label:eq:name) survives a retitle"
+    )
 
 
 def partial_results(entries: list) -> list[tuple]:
@@ -130,6 +164,13 @@ def _partial_section(entries: list) -> list[str]:
 
 
 def _by_consumer(entries: list) -> list[str]:
+    """Which repo raised and which repo cites each entry, one row per entry.
+
+    An entry cited from four files in one repo is one fact about that repo, so it
+    appears once. Repeating it per `cited_by` row made the column grow with the
+    citation count and say nothing more; `mdept.view` is where the per-line
+    detail belongs, in the repo that has the lines.
+    """
     lines = ["## 5. By consumer", "", "| Repo | Raised | Cited |", "|---|---|---|"]
     raised: dict[str, list] = {}
     cited: dict[str, list] = {}
@@ -137,10 +178,11 @@ def _by_consumer(entries: list) -> list[str]:
         repo = entry.at("provenance.raised_by.repo")
         if repo:
             raised.setdefault(repo, []).append(entry)
-        for citation in entry.front["cited_by"]:
-            match = schema.CITED_BY_RE.match(citation)
-            if match:
-                cited.setdefault(match.group("repo").strip(), []).append(entry)
+        for name in sorted({
+            split[0] for split in
+            (schema.split_cited_by(c) for c in entry.front["cited_by"]) if split
+        }):
+            cited.setdefault(name, []).append(entry)
     for repo in sorted(set(raised) | set(cited)):
         lines.append(
             f"| {escape(repo)} "
@@ -161,9 +203,9 @@ def _requests(requests: list) -> list[str]:
     return lines
 
 
-def _report(entries: list) -> list[str]:
+def _report(entries: list, requests: list) -> list[str]:
     lines = ["## 7. Contradiction and staleness report", ""]
-    notices = inheritance_notices(entries)
+    notices = inheritance_notices(entries) + anchor_notices(entries, requests)
     if not notices:
         lines.append("No notices. `python -m mdept.check` passes with nothing to report.")
     else:
@@ -186,7 +228,7 @@ def render_index(entries: list, requests: list, kind: str) -> str:
         _partial_section(entries),
         _by_consumer(entries),
         _requests(requests),
-        _report(entries),
+        _report(entries, requests),
     ):
         lines.extend(section)
         lines.append("")
@@ -221,9 +263,10 @@ def render_json(entries: list, requests: list) -> str:
 def render(root: Path) -> dict[str, str]:
     """Both generated views, as {repo-relative path: content}."""
     root = Path(root).resolve()
-    entries = parse.load_entries(root)
-    requests = parse.load_requests(root)
-    kind = config.repo_kind(root)
+    repo = family_mod.locate(root).repo_at(root)
+    entries = repo.entries()
+    requests = repo.requests()
+    kind = repo.kind
     return {
         INDEX_PATH: render_index(entries, requests, kind),
         JSON_PATH: render_json(entries, requests),
@@ -248,11 +291,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=None, help="repo root (default: nearest ancestor with ledger/)")
     parser.add_argument("--check", action="store_true", help="fail on drift instead of writing")
     args = parser.parse_args(argv)
-    root = config.find_repo_root(args.root) if args.root is None else Path(args.root).resolve()
 
     try:
+        root = config.find_repo_root(args.root) if args.root is None else Path(args.root).resolve()
         rendered = render(root)
-    except CheckError as exc:
+    except (CheckError, ConfigError) as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
 

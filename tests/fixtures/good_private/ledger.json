@@ -10,7 +10,8 @@
         "special_case_of": []
       },
       "cited_by": [
-        "ToyRepo:docs/toy.md \u00a71"
+        "ToyRepo:docs/toy.md \u00a71",
+        "ToyRepo:src/toy.py"
       ],
       "evidence": [
         {
@@ -29,7 +30,7 @@
       "provenance": {
         "connects": [],
         "raised_by": {
-          "anchor": "Toy anchor heading",
+          "anchor": "T1",
           "application": "The consumer applies the bound at the boundary of the source's hypotheses.",
           "doc": "docs/toy.md",
           "domain": "elementary bounds on the naturals",
@@ -62,7 +63,8 @@
         "special_case_of": []
       },
       "cited_by": [
-        "ToyRepo:docs/toy.md \u00a71"
+        "ToyRepo:docs/toy.md \u00a71",
+        "ToyRepo:\"research/toy notes.md\" \u00a72"
       ],
       "evidence": [
         {
@@ -81,7 +83,7 @@
       "provenance": {
         "connects": [],
         "raised_by": {
-          "anchor": "Toy anchor heading",
+          "anchor": "text:\"Toy anchor heading\"",
           "application": "The downstream step needs the strict inequality, not the weak one.",
           "doc": "docs/toy.md",
           "domain": "elementary bounds on the naturals",
@@ -133,7 +135,7 @@
       "provenance": {
         "connects": [],
         "raised_by": {
-          "anchor": "Toy anchor heading",
+          "anchor": "T1",
           "application": "The consumer needs the left-identity form, not the right-identity one.",
           "doc": "docs/toy.md",
           "domain": "elementary arithmetic on the naturals",
@@ -164,14 +166,14 @@
       ]
     }
   ],
-  "generated_from": "50ec60690c9bdebb59ef811e549f7c37722e82c838fb707f960273d70abfd03c",
+  "generated_from": "bd3dc2bbe73f520b8006a368b72192d43a6cae6ecad5996f844bf0dd8203ed88",
   "requests": [
     {
       "candidates": [
         "C1"
       ],
       "from": {
-        "anchor": "Toy anchor heading",
+        "anchor": "T1",
         "date": "2026-09-01",
         "doc": "docs/toy.md",
         "model": "claude-fable-5-1",
@@ -191,7 +193,7 @@
         "C3"
       ],
       "from": {
-        "anchor": "Toy anchor heading",
+        "anchor": "T1",
         "date": "2026-08-20",
         "doc": "docs/toy.md",
         "model": null,

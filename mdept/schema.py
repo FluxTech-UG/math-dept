@@ -49,6 +49,16 @@ TRUSTED_SOURCE_KINDS = ("paper", "book", "notes", "mathlib")
 
 RELATIONS = ("below_of", "above_of", "special_case_of", "generalizes")
 
+#: The words a consumer line citing an entry must carry, by status (I15). A
+#: settled-and-standing entry needs none: the citation is simply true. The
+#: unsettled and the refuted need one, because a line that reads as established
+#: is the failure mode, and it is invisible in the consumer's own document.
+CITATION_WORDS = {
+    "refuted": ("refuted",),
+    "conjectured": ("pending", "conjectured", "open"),
+    "open": ("pending", "conjectured", "open"),
+}
+
 # --- key sets (closed) ------------------------------------------------------
 
 ENTRY_KEYS = (
@@ -83,12 +93,22 @@ ID_RE = re.compile(r"^MD_\d{4}$")
 ID_TOKEN_RE = re.compile(r"\bMD_\d{4}\b")
 REQUEST_STEM_RE = re.compile(r"^\d{4}-\d{2}-\d{2}-[a-z0-9-]+$")
 REQUEST_TOKEN_RE = re.compile(r"\bMDR:(\d{4}-\d{2}-\d{2}-[a-z0-9-]+)#(C\d+)\b")
+#: The same token with the candidate optional, for reading what a document carries.
+REQUEST_STEM_TOKEN_RE = re.compile(
+    r"\bMDR:(?P<stem>\d{4}-\d{2}-\d{2}-[a-z0-9-]+)(?:#(?P<candidate>C\d+))?\b"
+)
 TOPIC_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 BIB_TAG_RE = re.compile(r"^\[([A-Za-z0-9][A-Za-z0-9+._-]*)\]$")
 DECL_RE = re.compile(r"^MathDept(Private)?\.MD_\d{4}\.[A-Za-z_][A-Za-z0-9_.']*$")
 LEAN_FILE_RE = re.compile(r"^MathDept(Private)?/[A-Za-z0-9_/]+\.lean$")
 COUNTEREXAMPLE_STEM_RE = re.compile(r"^MD_\d{4}_[a-z0-9_]+$")
-CITED_BY_RE = re.compile(r"^(?P<repo>[^:]+):(?P<path>\S+)(?:\s+(?P<loc>.+))?$")
+#: One `cited_by` string: `Repo:path §locator`. The path may be double quoted,
+#: which is the only way to write one that contains a space, and several repos in
+#: this family have those (`Some Repo:"research/a spaced name.md" §2`).
+#: Read it through `split_cited_by`, never by group name.
+CITED_BY_RE = re.compile(
+    r'^(?P<repo>[^:]+):(?:"(?P<quoted>[^"]+)"|(?P<path>\S+))(?:\s+(?P<loc>.+))?$'
+)
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -96,6 +116,25 @@ ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 BODY_HEADINGS = ("Statement", "Hypotheses", "Why it was raised", "Current notes")
 
 EM_DASH = "—"
+
+
+def split_cited_by(citation: str) -> tuple[str, str, str | None] | None:
+    """(repo, path, locator) from one `cited_by` string, or None when it is malformed."""
+    match = CITED_BY_RE.match(str(citation))
+    if match is None:
+        return None
+    path = match.group("quoted") or match.group("path")
+    return match.group("repo").strip(), path, match.group("loc")
+
+
+def cited_by_form(repo: str, path: str) -> str:
+    """The `cited_by` string for this repo and path, quoted when it has to be."""
+    return f'{repo}:"{path}"' if " " in str(path) else f"{repo}:{path}"
+
+
+def citation_words(status: str) -> tuple[str, ...]:
+    """The status words I15 requires on a line citing an entry at this status."""
+    return CITATION_WORDS.get(status, ())
 
 
 def _fail(path: Path, field: str, message: str) -> None:
@@ -200,8 +239,10 @@ def validate_front(front: dict, path: Path, kind: str = "public") -> None:
     _str_list(prov["connects"], path, "provenance.connects")
 
     for i, citation in enumerate(_str_list(front["cited_by"], path, "cited_by")):
-        if not CITED_BY_RE.match(citation):
-            _fail(path, f"cited_by[{i}]", f"{citation!r} is not of the form 'Repo:path/to/doc.md §n'")
+        if split_cited_by(citation) is None:
+            _fail(path, f"cited_by[{i}]",
+                  f"{citation!r} is not of the form 'Repo:path/to/doc.md §n'; "
+                  'a path containing a space is double quoted, as in Repo:"a doc.md" §2')
 
     for field in ("revises", "merged_into"):
         value = front[field]

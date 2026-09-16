@@ -14,7 +14,7 @@
   "lean_toolchain": "leanprover/lean4:v4.33.1",
   "mathlib_rev": "0df444a360eaa60ab8c11dca51a86af692955474",
   "ok": true,
-  "schema_version": 1,
+  "schema_version": 2,
   "sorry_violations": [],
   "sources_sha256": "23e9c3e2bdd71e27f2514353eb2cf6bcfaef98a68bbae8ca6c6d64914024638d"
 }

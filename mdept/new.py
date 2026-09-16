@@ -29,7 +29,7 @@ from pathlib import Path
 import yaml
 
 from . import CheckError, ConfigError
-from . import config, parse, schema
+from . import anchors, config, parse, schema
 
 CANDIDATE_HEADING_RE = re.compile(r"^###\s+(C\d+)\s*(.*?)\s*$", re.MULTILINE)
 BULLET_RE = re.compile(r"^-\s+\*\*(?P<key>[^:*]+):\*\*\s*(?P<value>.*)$")
@@ -118,8 +118,14 @@ def _candidate_section(request, candidate: str) -> tuple[str, dict]:
     )
 
 
-def from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str]:
-    """Write an entry for one candidate of an inbox request. Returns (id, path)."""
+def from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str, str]:
+    """Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
+
+    The anchor is copied from the request, never invented here, and its form is
+    reported rather than resolved: an anchor that points nowhere is I7's
+    failure, and finding it at allocation time would only move the same message
+    to a place where nothing can be done about it yet.
+    """
     root = Path(root).resolve()
     if not config.is_private(root):
         raise ConfigError(
@@ -161,10 +167,11 @@ def from_request(root: Path, stem: str, candidate: str, model: str | None) -> tu
     path = root / "ledger" / f"{entry_id}.md"
     _write_new(path, text)
     _record_on_request(request.path, entry_id)
-    return entry_id, str(path)
+    anchor = source.get("anchor")
+    return entry_id, str(path), anchors.classify(anchor) if anchor else "none"
 
 
-def from_title(root: Path, args) -> tuple[str, str]:
+def from_title(root: Path, args) -> tuple[str, str, str]:
     """Write an entry raised in this repo, with no consumer request behind it."""
     root = Path(root).resolve()
     entry_id = allocate_id(root)
@@ -188,7 +195,7 @@ def from_title(root: Path, args) -> tuple[str, str]:
     text = render_entry(front, "$$ ... $$", "- **H1.** ...", args.domain)
     path = root / "ledger" / f"{entry_id}.md"
     _write_new(path, text)
-    return entry_id, str(path)
+    return entry_id, str(path), "none"
 
 
 def _write_new(path: Path, text: str) -> None:
@@ -237,17 +244,17 @@ def main(argv: list[str] | None = None) -> int:
         if args.request or args.candidate:
             if not (args.request and args.candidate):
                 parser.error("--request and --candidate are used together")
-            entry_id, path = from_request(root, args.request, args.candidate, args.model)
+            entry_id, path, anchor_form = from_request(root, args.request, args.candidate, args.model)
         else:
             missing = [f for f in ("title", "kind", "topics", "domain", "who") if getattr(args, f) is None]
             if missing:
                 parser.error(f"the title form requires {['--' + m for m in missing]}; none of them has a default")
-            entry_id, path = from_title(root, args)
+            entry_id, path, anchor_form = from_title(root, args)
     except (CheckError, ConfigError) as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
 
-    print(f"ok {entry_id} {path}")
+    print(f"ok {entry_id} {path} (anchor form: {anchor_form})")
     print("next: write the Statement and Hypotheses, then `make regen && make check`")
     return 0
 

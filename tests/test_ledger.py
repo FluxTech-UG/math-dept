@@ -20,6 +20,7 @@ from types import SimpleNamespace
 import pytest
 
 from mdept import CheckError, ConfigError, check, index, new, parse, schema
+from mdept import family as family_mod
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -49,7 +50,9 @@ CASES = [
     Case("I04_cited_without_source", "good_public", "I4 status/evidence", PLAIN),
     Case("I05_statement_hash_drift", "good_public", "I5 formal pointer", LEAN),
     Case("I06_witness_does_not_refute", "good_public", "I6 counterexample", COUNTEREXAMPLES),
-    Case("I07_anchor_not_in_doc", "good_private", "I7 raised-by", FAMILY),
+    Case("I07_anchor_unresolved", "good_private", "I7 raised-by", FAMILY),
+    Case("I07_anchor_ambiguous", "good_private", "I7 raised-by", FAMILY),
+    Case("I07_request_anchor", "good_private", "I7 raised-by", FAMILY),
     Case("I08_dangling_link", "good_public", "I8 links", PLAIN),
     Case("I09a_contradiction", "good_public", "I9a contradiction", PLAIN),
     Case("I10_unknown_source_tag", "good_public", "I10 cited source", PLAIN),
@@ -58,11 +61,13 @@ CASES = [
     Case("I13_closed_state_in_inbox", "good_private", "I13 inbox", PLAIN),
     Case("I14_backlink_mismatch", "good_private", "I14 back-link", PLAIN),
     Case("I15_citation_missing_word", "good_private", "I15 citation", FAMILY),
+    Case("I15_code_citation_missing_word", "good_private", "I15 citation", FAMILY),
     Case("I16_stale_index", "good_public", "I16 generated", PLAIN),
     Case("I17_em_dash", "good_public", "I17 prose", PLAIN),
     Case("I18_settled_before_stipulated", "good_public", "I18 dates", PLAIN, regen=True),
     Case("I19_missing_role_line", "good_public", "I19 attempt record", PLAIN),
     Case("I20_sorry_in_results", "good_public", "I20 sorry fence", PLAIN),
+    Case("I21_unlisted_citation", "good_private", "I21 unlisted citation", FAMILY),
 ]
 
 
@@ -102,18 +107,48 @@ def test_good_private_passes_family(tmp_path):
     context = check.run(root, family=True)
     assert context.kind == "private"
     assert context.sibling is not None and context.sibling.name == "good_public"
+    assert [n for n in context.notices if n.startswith("I7:")] == [
+        "I7: MD_0006 anchors on wording (text:) in ToyRepo docs/toy.md; "
+        "an ID form (A8, §21.3, §5 item 20, label:eq:name) survives a retitle"
+    ], "a text: anchor is a notice, and the only entry on one is MD_0006"
+
+
+def test_the_family_check_reads_the_extended_consumer_form(tmp_path):
+    """`repos.yaml` carries `{path, ignore, view}` for ToyRepo, and both hold.
+
+    The ignore glob is what keeps `vendor/` out of I21, and the generated
+    marker is what keeps the mirrored notes out. Both files name an entry that
+    does not list them, so either one failing to be skipped fails the check.
+    """
+    root = stage(tmp_path) / "good_private"
+    context = check.run(root, family=True)
+    toy = context.consumers["ToyRepo"]
+    assert toy.ignore == ("vendor/*",) and toy.view == "docs/MATH.md"
+    assert toy.ignored("vendor/third_party.md") and not toy.ignored("docs/toy.md")
+    assert toy.is_generated(toy.path / "docs/generated_notes.md")
+    assert not toy.view_path.exists(), "the view is generated on demand, never required"
+
+
+def test_a_bare_consumer_path_still_means_the_default_view(tmp_path):
+    written = tmp_path / "repos.yaml"
+    written.write_text("consumers:\n  Bare: /somewhere/else\n", encoding="utf-8")
+    assert parse.load_repos_yaml(written)["consumers"]["Bare"] == {
+        "path": "/somewhere/else",
+        "ignore": [],
+        "view": "docs/MATH.md",
+    }
 
 
 def test_every_invariant_has_a_case():
     covered = {case.invariant.split()[0] for case in CASES}
-    expected = {f"I{n}" for n in range(1, 21)}
+    expected = {f"I{n}" for n in range(1, 22)}
     expected.discard("I9")
     expected.add("I9a")
     assert covered == expected
 
 
 def test_the_invariant_list_is_the_one_that_runs():
-    assert len(check.INVARIANTS) == 21
+    assert len(check.INVARIANTS) == 22
 
 
 # --- one break per invariant ------------------------------------------------
@@ -167,7 +202,8 @@ def test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path):
         repo="math-dept",
         model="claude-fable-5-1",
     )
-    entry_id, path = new.from_title(root, args)
+    entry_id, path, anchor_form = new.from_title(root, args)
+    assert anchor_form == "none", "an entry born here has no consumer anchor"
     assert entry_id == "MD_0005", "IDs are allocated as max plus one"
     index.write(root)
     check.run(root)
@@ -180,8 +216,8 @@ def test_new_never_reuses_an_id(tmp_path):
     root = stage(tmp_path) / "good_public"
     args = SimpleNamespace(title="t", kind="lemma", topics="toy", domain="d", who="john",
                            repo="math-dept", model=None)
-    first, _ = new.from_title(root, args)
-    second, _ = new.from_title(root, args)
+    first, _, _ = new.from_title(root, args)
+    second, _, _ = new.from_title(root, args)
     assert (first, second) == ("MD_0005", "MD_0006")
 
 
@@ -190,3 +226,90 @@ def test_new_refuses_to_overwrite_an_existing_entry(tmp_path):
     with pytest.raises(CheckError, match="already exists"):
         new._write_new(root / "ledger" / "MD_0001.md", "would clobber a permanent ID")
 
+
+
+# --- the environment never reaches past what a command needs ---------------
+
+
+def test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch):
+    """A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
+
+    Consumer and sibling resolution is lazy, so the public repo's own check and
+    its generated views never read the private repo or its `repos.yaml`. A
+    misconfigured environment variable failing an unrelated command is how an
+    operator learns to distrust the checker.
+    """
+    monkeypatch.setenv("MATHDEPT_PRIVATE", str(tmp_path / "gone"))
+    root = stage(tmp_path) / "good_public"
+    assert check.run(root).kind == "public"
+    assert index.main(["--check", "--root", str(root)]) == 0
+
+
+def test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch):
+    """The variable promised a repo, so the variable is what the message names.
+
+    A directory with no `ledger/` used to be accepted here and to surface later
+    as `I1 filename: no 'ledger/' directory`, which blames an invariant for an
+    environment variable and sends the reader to the wrong repo.
+    """
+    not_a_repo = tmp_path / "not-a-repo"
+    not_a_repo.mkdir()
+    monkeypatch.setenv("MATHDEPT_PRIVATE", str(not_a_repo))
+    located = family_mod.locate(stage(tmp_path) / "good_public")
+    with pytest.raises(ConfigError) as raised:
+        located.private
+    assert "is not a math repo (no ledger/)" in str(raised.value)
+    assert "MATHDEPT_PRIVATE" in str(raised.value)
+    assert not str(raised.value).startswith("I1 filename")
+
+
+def test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    assert index.main(["--check"]) == 1
+    assert "no math-dept repo root" in capsys.readouterr().err
+
+
+# --- cited_by paths, quoted and not ----------------------------------------
+
+
+@pytest.mark.parametrize(
+    "citation,expected",
+    [
+        ("ToyRepo:docs/toy.md §1", ("ToyRepo", "docs/toy.md", "§1")),
+        ("ToyRepo:src/toy.py", ("ToyRepo", "src/toy.py", None)),
+        ('Some Repo:"research/a spaced name.md" §2',
+         ("Some Repo", "research/a spaced name.md", "§2")),
+        ("nothing-like-a-citation", None),
+    ],
+)
+def test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected):
+    assert schema.split_cited_by(citation) == expected
+
+
+def test_the_quoted_form_is_used_exactly_when_the_path_needs_it():
+    assert schema.cited_by_form("ToyRepo", "docs/toy.md") == "ToyRepo:docs/toy.md"
+    assert schema.cited_by_form("Some Repo", "a doc.md") == 'Some Repo:"a doc.md"'
+
+
+def test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path):
+    """The fixture cites `research/toy notes.md`, whose name contains a space.
+
+    Unquoted, I21 would demand a `cited_by` row that I15 could never match,
+    because the path regex stopped at the space: the entry would be
+    unciteable from that file in both directions at once.
+    """
+    root = stage(tmp_path) / "good_private"
+    context = check.run(root, family=True)
+    cited = context.by_id["MD_0006"].front["cited_by"]
+    assert 'ToyRepo:"research/toy notes.md" §2' in cited
+
+
+def test_a_consumer_column_lists_each_entry_once(tmp_path):
+    """MD_0006 is cited from two files in ToyRepo and is one row, not two."""
+    root = stage(tmp_path) / "good_private"
+    consumer_section = [
+        line for line in (root / "ledger/INDEX.md").read_text(encoding="utf-8").splitlines()
+        if line.startswith("| ToyRepo |")
+    ]
+    assert len(consumer_section) == 1
+    assert consumer_section[0].count("MD_0006") == 2, "once as raised, once as cited"

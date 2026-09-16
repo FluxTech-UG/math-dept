@@ -37,7 +37,7 @@ ENTRY_STEM_RE = re.compile(r"^MD_\d{4}$")
 AUDIT_SCRIPT = "scripts/AxiomAudit.lean"
 CACHED_AUDIT = "audit/latest.json"
 ALLOWLIST = "audit/axiom-allowlist.txt"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 # --- Lean source scanning (no toolchain required) ---------------------------
@@ -230,13 +230,15 @@ def counterexample_report(root: Path) -> dict:
 
 def full_audit(root: Path) -> dict:
     """The cached contract: `python -m mdept.audit all --json --write audit/latest.json`."""
+    from . import refute as refute_mod
+
     root = Path(root).resolve()
     violations = sorry_violations(root)
     declarations = run_axiom_audit(root)
     counterexamples = counterexample_report(root)
     return {
         "schema_version": SCHEMA_VERSION,
-        "ok": not violations and all(c["verified"] for c in counterexamples.values()),
+        "ok": not violations and refute_mod.all_verified(counterexamples),
         "sorry_violations": violations,
         "sources_sha256": sources_sha256(root),
         "lean_toolchain": toolchain(root),
@@ -255,7 +257,33 @@ def read_cached_audit(root: Path) -> dict:
         raise ConfigError(
             f"{CACHED_AUDIT} is schema_version {data.get('schema_version')}, this package reads {SCHEMA_VERSION}"
         )
+    _require_audit_shape(path, data)
     return data
+
+
+def _require_audit_shape(path: Path, data: dict) -> None:
+    """Check the shape, not only the version number it claims.
+
+    A hand-edited version bump over version 1 content passes a version check and
+    then fails deep inside a report loop with a TypeError, which says nothing
+    about the file that caused it. The counterexample report is the part that
+    changed shape, so it is the part worth asserting.
+    """
+    report = data.get("counterexamples")
+    if not isinstance(report, dict):
+        raise ConfigError(f"{path}: 'counterexamples' is not a mapping of entry ID to artifacts")
+    for entry_id, records in report.items():
+        legal = isinstance(records, list) and all(
+            isinstance(record, dict) and {"file", "verified", "exact"} <= set(record)
+            for record in records
+        )
+        if not legal:
+            raise ConfigError(
+                f"{path}: counterexamples[{entry_id}] is not a list of "
+                "{file, verified, exact} records. A schema_version 2 audit reports every "
+                "artifact of an entry, so this is version 1 content with a new label. "
+                "Regenerate it with `make lean`."
+            )
 
 
 # --- CLI --------------------------------------------------------------------
@@ -279,8 +307,10 @@ def main(argv: list[str] | None = None) -> int:
             payload = {"ok": True, "declarations": declarations,
                        "sources_sha256": sources_sha256(root)}
         elif args.what == "counterexamples":
+            from . import refute as refute_mod
+
             report = counterexample_report(root)
-            payload = {"ok": all(c["verified"] for c in report.values()), "counterexamples": report}
+            payload = {"ok": refute_mod.all_verified(report), "counterexamples": report}
         else:
             payload = full_audit(root)
     except (CheckError, ConfigError) as exc:
@@ -298,7 +328,9 @@ def main(argv: list[str] | None = None) -> int:
     if not payload["ok"]:
         for violation in payload.get("sorry_violations", []):
             print(f"FAIL {violation['file']}:{violation['line']}: {violation['reason']}", file=sys.stderr)
-        for entry_id, record in sorted(payload.get("counterexamples", {}).items()):
+        from . import refute as refute_mod
+
+        for entry_id, record in refute_mod.artifacts(payload.get("counterexamples", {})):
             if not record["verified"]:
                 print(f"FAIL {record['file']}: witness for {entry_id} did not verify", file=sys.stderr)
         return 1

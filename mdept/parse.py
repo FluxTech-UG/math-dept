@@ -25,6 +25,10 @@ IGNORE_DIRS = frozenset(
 #: Generated or template markdown that carries placeholder IDs by design.
 PLACEHOLDER_MD = ("ledger/TEMPLATE.md", "inbox/TEMPLATE.md")
 
+#: The closed key set of one `repos.yaml` consumer, and where its view lands.
+CONSUMER_KEYS = ("path", "ignore", "view")
+DEFAULT_VIEW = "docs/MATH.md"
+
 FRONT_MATTER_RE = re.compile(r"\A---\r?\n(?P<front>.*?)\r?\n---\r?\n(?P<body>.*)\Z", re.DOTALL)
 HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*$", re.MULTILINE)
@@ -247,6 +251,16 @@ class Request:
     def outcome(self) -> str:
         return body_sections(self.body).get("Outcome", "")
 
+    def outcome_line(self, candidate: str) -> str | None:
+        """The Outcome line for one candidate, or None when it has none."""
+        for line in self.outcome().splitlines():
+            stripped = line.strip().lstrip("-*").strip()
+            if stripped.startswith(candidate) and (
+                len(stripped) == len(candidate) or not stripped[len(candidate)].isdigit()
+            ):
+                return line
+        return None
+
 
 def load_requests(root: Path) -> list[Request]:
     """Every request in `inbox/` and `inbox/done/`. Empty when there is no inbox."""
@@ -296,6 +310,22 @@ def request_tokens(text: str) -> set[tuple[str, str]]:
     return set(schema.REQUEST_TOKEN_RE.findall(strip_html_comments(text)))
 
 
+def request_stem_tokens(text: str) -> list[tuple[int, str, str | None]]:
+    """Every MDR: token with its line and candidate, the candidate optional.
+
+    `request_tokens` reads the citing form a consumer commits to, `MDR:<stem>#C2`,
+    which is the one I12 resolves. This reads the looser thing a document may
+    actually carry, a bare `MDR:<stem>` naming the whole request, because the
+    generated consumer view has to report what is written rather than only what
+    is well formed.
+    """
+    found = []
+    for number, line in enumerate(strip_html_comments(text).splitlines(), start=1):
+        for match in schema.REQUEST_STEM_TOKEN_RE.finditer(line):
+            found.append((number, match.group("stem"), match.group("candidate")))
+    return found
+
+
 def parse_role_line(path: Path) -> tuple[str, str]:
     """Return (role, status date) from line 2 of a doc. Raises when it is absent."""
     lines = Path(path).read_text(encoding="utf-8").splitlines()
@@ -314,7 +344,12 @@ def parse_role_line(path: Path) -> tuple[str, str]:
 
 
 def load_repos_yaml(path: Path) -> dict:
-    """Load `repos.yaml`: a `public_sibling` path and a `consumers` name -> path map."""
+    """Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
+
+    A consumer's value is either a bare path or a mapping `{path, ignore, view}`.
+    The bare form means `{path: <it>, ignore: [], view: 'docs/MATH.md'}`, so both
+    forms come back normalized and no caller has to test which was written.
+    """
     path = Path(path)
     if not path.is_file():
         raise CheckError(f"I7 raised-by: {path}: field '<repos.yaml>': file does not exist")
@@ -327,4 +362,32 @@ def load_repos_yaml(path: Path) -> dict:
     consumers = data.get("consumers") or {}
     if not isinstance(consumers, dict):
         raise CheckError(f"I7 raised-by: {path}: field 'consumers': expected a mapping of name to path")
-    return {"public_sibling": data.get("public_sibling"), "consumers": consumers}
+    return {
+        "public_sibling": data.get("public_sibling"),
+        "consumers": {name: _consumer_entry(path, name, value) for name, value in consumers.items()},
+    }
+
+
+def _consumer_entry(path: Path, name: str, value) -> dict:
+    if isinstance(value, str):
+        value = {"path": value}
+    if not isinstance(value, dict):
+        raise CheckError(
+            f"I7 raised-by: {path}: field 'consumers.{name}': expected a path or a mapping "
+            f"of {list(CONSUMER_KEYS)}, got {type(value).__name__}"
+        )
+    unknown = sorted(set(value) - set(CONSUMER_KEYS))
+    if unknown:
+        raise CheckError(f"I7 raised-by: {path}: field 'consumers.{name}': unknown key(s) {unknown}")
+    if not value.get("path"):
+        raise CheckError(f"I7 raised-by: {path}: field 'consumers.{name}.path': a consumer declares a path")
+    ignore = value.get("ignore") or []
+    if not isinstance(ignore, list) or not all(isinstance(glob, str) for glob in ignore):
+        raise CheckError(
+            f"I7 raised-by: {path}: field 'consumers.{name}.ignore': expected a list of glob strings"
+        )
+    return {
+        "path": str(value["path"]),
+        "ignore": [str(glob) for glob in ignore],
+        "view": str(value.get("view") or DEFAULT_VIEW),
+    }
