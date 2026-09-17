@@ -13,11 +13,13 @@ and keeps the suite runnable without a toolchain.
 
 import json
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
-from mdept import CheckError, audit, check, index, parse, release, schema
+from mdept import CheckError, audit, check, config, index, parse, release, schema
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 BASES = ("good_public", "good_private")
@@ -145,6 +147,25 @@ def test_release_lands_the_entry_and_both_repos_still_validate(tmp_path):
     assert len(plan["checks"]) == 2
     check.run(public, lean=True)
     check.run(private)
+
+
+def test_release_regenerates_both_lean_roots(tmp_path):
+    """The private repo has no gen_root.py of its own; a release still rewrites its root.
+
+    The generator is the public checkout's single copy, located from the package, so
+    neither root can be left stale by a release. Both are checked with the script's own
+    `--check` afterwards.
+    """
+    public, private = prepare(tmp_path)
+    release.release(ENTRY, public, private)
+    script = config.gen_root_script()
+    for root, lib in ((public, "MathDept"), (private, "MathDeptPrivate")):
+        assert (root / f"{lib}.lean").is_file(), f"{lib}.lean was not written by the release"
+        result = subprocess.run(
+            [sys.executable, str(script), "--check", "--lib", lib, "--root", str(root)],
+            cwd=root, capture_output=True, text=True,
+        )
+        assert result.returncode == 0, f"{lib}.lean is stale after the release:\n{result.stdout}{result.stderr}"
 
 
 def test_the_released_id_still_resolves_from_the_private_triage_record(tmp_path):

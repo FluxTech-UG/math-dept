@@ -237,14 +237,21 @@ def _roll_back(completed: list, entry_path: Path, original_entry_text: str) -> N
 
 
 def _regenerate(root: Path) -> None:
-    script = root / "scripts" / "gen_root.py"
-    if script.is_file():
-        result = subprocess.run(
-            [sys.executable, "scripts/gen_root.py", "--write", "--lib", config.lean_lib(root)],
-            cwd=root, capture_output=True, text=True,
-        )
-        if result.returncode != 0:
-            raise CheckError(f"I16 generated: {root}/scripts/gen_root.py: field '<root>': {result.stderr.strip()}")
+    """Rewrite `root`'s Lean root and generated ledger views.
+
+    The one copy of `scripts/gen_root.py` lives in the public checkout beside this
+    package; the private repo has none and reaches across for it, exactly as its
+    Makefile does. So the script is located from the package, never from `root`, and
+    a missing script is a configuration failure rather than a root left stale.
+    """
+    script = config.gen_root_script()
+    result = subprocess.run(
+        [sys.executable, str(script), "--write", "--lib", config.lean_lib(root), "--root", str(root)],
+        cwd=root, capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        raise CheckError(f"I16 generated: {root / (config.lean_lib(root) + '.lean')}: field '<root>': "
+                         f"{(result.stderr or result.stdout).strip()}")
     index.write(root)
 
 

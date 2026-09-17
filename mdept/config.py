@@ -59,6 +59,18 @@ def lean_lib(root: Path) -> str:
     return "MathDeptPrivate" if is_private(root) else "MathDept"
 
 
+def gen_root_script() -> Path:
+    """The one copy of `scripts/gen_root.py`, in the public checkout beside this package.
+
+    The private repo carries no copy and regenerates its root through this one, so a
+    caller that needs it asks here and never looks under its own root.
+    """
+    script = package_root() / "scripts" / "gen_root.py"
+    if not script.is_file():
+        raise ConfigError(f"{script} is missing; the Lean root generator ships with the public checkout")
+    return script
+
+
 def _require_repo(path: Path, why: str) -> Path:
     """The path, once it is a math repo. A directory that is not one is an error.
 

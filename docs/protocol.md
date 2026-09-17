@@ -118,7 +118,8 @@ records the exposure in its own register, citing the ID.
 - abstracts provenance: keeps `raised_by.repo`, adds a one-line neutral `domain`,
   drops `doc`, `anchor` and `application`. `stipulated_by` and `settled_by` cross
   intact, because they are the credit trail;
-- regenerates both Lean roots and both indexes;
+- regenerates both Lean roots, using the public repo's `scripts/gen_root.py` (the one
+  copy; the private repo has none) for each, and both ledger indexes;
 - runs both repos' checks with `MATHDEPT_REQUIRE_LEAN=1`.
 
 IDs and Lean declaration names are stable across a release. A consumer cites

@@ -129,12 +129,13 @@ _Resolve the repo root and the sibling repo, with no silent defaults._
 - repo_kind(root: Path) -> str  ·L45 — 'private' if this root carries the private-only surfaces, else 'public'.
 - is_private(root: Path) -> bool  ·L53
 - lean_lib(root: Path) -> str  ·L57 — The Lake library name this repo owns.
-- _require_repo(path: Path, why: str) -> Path  ·L62 — The path, once it is a math repo. A directory that is not one is an error.
-- private_root(root: Path | None=None) -> Path | None  ·L78 — The private sibling, or None when this machine has no copy of it.
-- public_root(root: Path | None=None) -> Path | None  ·L99 — The public sibling seen from a private repo, or the root itself when public.
-- _declared_public_sibling(root: Path) -> Path | None  ·L121 — The `public_sibling` line of repos.yaml, resolved against the repo root.
-- require_lean() -> bool  ·L138 — True when a missing Lean toolchain must fail rather than skip.
-- lean_roots(root: Path) -> list[Path]  ·L143 — Every Lean library directory present in this repo, sorted.
+- gen_root_script() -> Path  ·L62 — The one copy of `scripts/gen_root.py`, in the public checkout beside this package.
+- _require_repo(path: Path, why: str) -> Path  ·L74 — The path, once it is a math repo. A directory that is not one is an error.
+- private_root(root: Path | None=None) -> Path | None  ·L90 — The private sibling, or None when this machine has no copy of it.
+- public_root(root: Path | None=None) -> Path | None  ·L111 — The public sibling seen from a private repo, or the root itself when public.
+- _declared_public_sibling(root: Path) -> Path | None  ·L133 — The `public_sibling` line of repos.yaml, resolved against the repo root.
+- require_lean() -> bool  ·L150 — True when a missing Lean toolchain must fail rather than skip.
+- lean_roots(root: Path) -> list[Path]  ·L155 — Every Lean library directory present in this repo, sorted.
 
 ### mdept/family.py
 _The family this package reads: both ledgers, the inbox, and the listed consumers._
@@ -307,9 +308,9 @@ _Move a settled entry from the private repo into this public one._
 - release(entry_id: str, public: Path, private: Path, dry_run: bool=False) -> dict  ·L130
 - preflight(entry, public_front: dict, moves: list, public: Path) -> None  ·L182 — Refuse a release that cannot land, before anything moves.
 - _roll_back(completed: list, entry_path: Path, original_entry_text: str) -> None  ·L229 — Undo every move that happened, newest first, and restore the entry file.
-- _regenerate(root: Path) -> None  ·L239
-- _verify(root: Path, needs_lean: bool) -> dict  ·L251
-- main(argv: list[str] | None=None) -> int  ·L265
+- _regenerate(root: Path) -> None  ·L239 — Rewrite `root`'s Lean root and generated ledger views.
+- _verify(root: Path, needs_lean: bool) -> dict  ·L258
+- main(argv: list[str] | None=None) -> int  ·L272
 
 ### mdept/schema.py
 _The closed front-matter schema for a ledger entry._
@@ -567,28 +568,29 @@ _The stage S1 toolkit on toy claims._
 
 ### tests/test_release.py
 _Releasing an entry is all or nothing._
-- const FIXTURES  ·L22
-- const BASES  ·L23
-- const ENTRY  ·L25
-- const LEAN_PRIVATE  ·L26
-- const LEAN_PUBLIC  ·L27
-- const TYPE_0007  ·L28
-- const TYPE_0001  ·L29
-- stage(tmp_path: Path, name: str='work') -> Path  ·L32 — A throwaway copy of the fixture pair, laid out as siblings.
-- post_release_shas(tmp_path: Path) -> tuple[str, str]  ·L41 — Both repos' sources_sha256 as they will be after the release.
-- write_audit(root: Path, declarations: dict, sources_sha: str) -> None  ·L55
-- prepare(tmp_path: Path) -> tuple[Path, Path]  ·L72 — Stage the pair and seed both audits for the post-release state.
-- @pytest.mark.parametrize test_publicize_rewrites_only_the_library_prefix(given, expected)  ·L101
-- test_abstract_provenance_drops_private_rows_and_follows_the_rest_across()  ·L105
-- test_the_rewritten_entry_satisfies_the_public_schema()  ·L122
-- test_release_lands_the_entry_and_both_repos_still_validate(tmp_path)  ·L130
-- test_the_released_id_still_resolves_from_the_private_triage_record(tmp_path)  ·L150
-- assert_nothing_moved(public: Path, private: Path) -> None  ·L161
-- test_release_refuses_an_evidence_row_that_would_not_resolve(tmp_path)  ·L168
-- test_release_refuses_when_the_destination_is_taken(tmp_path)  ·L187
-- test_release_refuses_an_unsettled_entry(tmp_path)  ·L198
-- test_a_dry_run_reports_the_moves_and_touches_nothing(tmp_path)  ·L204
-- test_a_verification_failure_rolls_every_move_back(tmp_path, monkeypatch)  ·L215
+- const FIXTURES  ·L24
+- const BASES  ·L25
+- const ENTRY  ·L27
+- const LEAN_PRIVATE  ·L28
+- const LEAN_PUBLIC  ·L29
+- const TYPE_0007  ·L30
+- const TYPE_0001  ·L31
+- stage(tmp_path: Path, name: str='work') -> Path  ·L34 — A throwaway copy of the fixture pair, laid out as siblings.
+- post_release_shas(tmp_path: Path) -> tuple[str, str]  ·L43 — Both repos' sources_sha256 as they will be after the release.
+- write_audit(root: Path, declarations: dict, sources_sha: str) -> None  ·L57
+- prepare(tmp_path: Path) -> tuple[Path, Path]  ·L74 — Stage the pair and seed both audits for the post-release state.
+- @pytest.mark.parametrize test_publicize_rewrites_only_the_library_prefix(given, expected)  ·L103
+- test_abstract_provenance_drops_private_rows_and_follows_the_rest_across()  ·L107
+- test_the_rewritten_entry_satisfies_the_public_schema()  ·L124
+- test_release_lands_the_entry_and_both_repos_still_validate(tmp_path)  ·L132
+- test_release_regenerates_both_lean_roots(tmp_path)  ·L152 — The private repo has no gen_root.py of its own; a release still rewrites its root.
+- test_the_released_id_still_resolves_from_the_private_triage_record(tmp_path)  ·L171
+- assert_nothing_moved(public: Path, private: Path) -> None  ·L182
+- test_release_refuses_an_evidence_row_that_would_not_resolve(tmp_path)  ·L189
+- test_release_refuses_when_the_destination_is_taken(tmp_path)  ·L208
+- test_release_refuses_an_unsettled_entry(tmp_path)  ·L219
+- test_a_dry_run_reports_the_moves_and_touches_nothing(tmp_path)  ·L225
+- test_a_verification_failure_rolls_every_move_back(tmp_path, monkeypatch)  ·L236
 
 ### tests/test_root_fresh.py
 _Guard: MathDept.lean imports exactly the modules on disk._
