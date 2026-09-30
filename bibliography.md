@@ -25,6 +25,8 @@ another.
 | Learning efficiency bounds | Information acquired by a learner bounded by its total entropy production; the efficiency it defines is at most one | thermodynamic analogies for loss-decrement ratios | `GoldtSeifert2017` |
 | Relative entropy and thermodynamic bounds | Nonequilibrium free energy as KL divergence to a Gibbs state; second law and work bounds between nonequilibrium endpoints; the survey that collects them | KL divergence, Markov chains with local detailed balance | `EspositoVanDenBroeck2011`, `ParrondoHorowitzSagawa2015` |
 | Effective temperature and Carnot-form bounds | Per-level-pair effective temperature of a stationary non-Gibbs state, and the efficiency bound in its extreme effective temperatures | log-sum inequalities, Gibbs states | `DeLiberatoUeda2011` |
+| Coarse-graining and closed macro dynamics | A projection from micro states to macro states that commutes with the dynamics, so the macro update is closed; the supercell construction for cellular automata; whether one micro rule admits several such projections | semiconjugacy of maps, quotient dynamics, projection-operator methods | `IsraeliGoldenfeld2006`, `IsraeliGoldenfeld2004` |
+| Generalized Gibbs ensembles | Relaxed states of integrable and near-integrable systems fixed by more conserved quantities than energy and particle number; the experimental cases in one-dimensional Bose gases | maximum-entropy states under constraints, Gibbs states, non-uniqueness of the macrovariable set | `Langen2015`, `Rigol2007`, `Kinoshita2006` |
 
 ## Entries
 
@@ -126,4 +128,44 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** effective temperature of a non-Gibbs stationary state, and the Carnot bound in its extreme effective temperatures
 - **Mathlib:** `ProbabilityTheory.Kernel.IsReversible` (v4.33.1); thermodynamic content: none found, searched 2026-09-08
+- **Ledger:** none yet
+
+### [IsraeliGoldenfeld2006] Coarse-graining of cellular automata, emergence, and the predictability of complex systems
+- **Authors:** Israeli, N.; Goldenfeld, N.
+- **Source:** Phys. Rev. E 73(2), 026203 (2006), 17 pp. DOI 10.1103/PhysRevE.73.026203; arXiv:nlin/0508033. Author copy: https://guava.physics.ucsd.edu/~nigel/REPRINTS/2006/Israeli%20Coarse-graining%20of%20cellular%20automata%20PRE%202006%20(PDF).pdf
+- **Kind:** paper
+- **Used for:** the commuting condition under which a projection of micro states yields a closed macro update, and the non-uniqueness question: whether one micro rule admits several inequivalent such projections
+- **Mathlib:** `Function.Semiconj` (v4.33.1); cellular automata: none found, searched 2026-09-30
+- **Ledger:** none yet
+
+### [IsraeliGoldenfeld2004] Computational Irreducibility and the Predictability of Complex Physical Systems
+- **Authors:** Israeli, N.; Goldenfeld, N.
+- **Source:** Phys. Rev. Lett. 92(7), 074105 (2004), 4 pp. DOI 10.1103/PhysRevLett.92.074105; arXiv:nlin/0309047. Author copy: https://guava.physics.ucsd.edu/~nigel/REPRINTS/2004/Israeli%20Computational%20Irreducibility%20and%20Predictability%20PRL%202004.pdf
+- **Kind:** paper
+- **Used for:** the letter preceding [IsraeliGoldenfeld2006]; supporting source for the non-uniqueness question on coarse-grainings of one micro rule
+- **Mathlib:** `Function.Semiconj` (v4.33.1); cellular automata: none found, searched 2026-09-30
+- **Ledger:** none yet
+
+### [Langen2015] Experimental observation of a generalized Gibbs ensemble
+- **Authors:** Langen, T.; Erne, S.; Geiger, R.; Rauer, B.; Schweigler, T.; Kuhnert, M.; Rohringer, W.; Mazets, I. E.; Gasenzer, T.; Schmiedmayer, J.
+- **Source:** Science 348(6231), 207-211 (2015). DOI 10.1126/science.1257026; arXiv:1411.7185
+- **Kind:** paper
+- **Used for:** experimental precedent for the non-uniqueness question: a relaxed state that needs more macrovariables than the thermal ensemble carries
+- **Mathlib:** none found, searched 2026-09-30
+- **Ledger:** none yet
+
+### [Rigol2007] Relaxation in a Completely Integrable Many-Body Quantum System: An Ab Initio Study of the Dynamics of the Highly Excited States of 1D Lattice Hard-Core Bosons
+- **Authors:** Rigol, M.; Dunjko, V.; Yurovsky, V.; Olshanii, M.
+- **Source:** Phys. Rev. Lett. 98(5), 050405 (2007). DOI 10.1103/PhysRevLett.98.050405; arXiv:cond-mat/0604476
+- **Kind:** paper
+- **Used for:** the generalized Gibbs ensemble as the relaxed state of an integrable system; supporting source for the non-uniqueness question
+- **Mathlib:** none found, searched 2026-09-30
+- **Ledger:** none yet
+
+### [Kinoshita2006] A quantum Newton's cradle
+- **Authors:** Kinoshita, T.; Wenger, T.; Weiss, D. S.
+- **Source:** Nature 440(7086), 900-903 (2006). DOI 10.1038/nature04693. Full text not open
+- **Kind:** paper
+- **Used for:** a one-dimensional Bose gas that does not relax to the thermal state; supporting source for the non-uniqueness question
+- **Mathlib:** none found, searched 2026-09-30
 - **Ledger:** none yet
