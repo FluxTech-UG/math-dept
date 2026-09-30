@@ -25,8 +25,8 @@ another.
 | Learning efficiency bounds | Information acquired by a learner bounded by its total entropy production; the efficiency it defines is at most one | thermodynamic analogies for loss-decrement ratios | `GoldtSeifert2017` |
 | Relative entropy and thermodynamic bounds | Nonequilibrium free energy as KL divergence to a Gibbs state; second law and work bounds between nonequilibrium endpoints; the survey that collects them | KL divergence, Markov chains with local detailed balance | `EspositoVanDenBroeck2011`, `ParrondoHorowitzSagawa2015` |
 | Effective temperature and Carnot-form bounds | Per-level-pair effective temperature of a stationary non-Gibbs state, and the efficiency bound in its extreme effective temperatures | log-sum inequalities, Gibbs states | `DeLiberatoUeda2011` |
-| Coarse-graining and closed macro dynamics | A projection from micro states to macro states that commutes with the dynamics, so the macro update is closed; the supercell construction for cellular automata; whether one micro rule admits several such projections | semiconjugacy of maps, quotient dynamics, projection-operator methods | `IsraeliGoldenfeld2006`, `IsraeliGoldenfeld2004` |
-| Generalized Gibbs ensembles | Relaxed states of integrable and near-integrable systems fixed by more conserved quantities than energy and particle number; the experimental cases in one-dimensional Bose gases | maximum-entropy states under constraints, Gibbs states, non-uniqueness of the macrovariable set | `Langen2015`, `Rigol2007`, `Kinoshita2006` |
+| Coarse-graining and closed macro dynamics | A blockwise projection from micro states to macro states that commutes with the dynamics, so the macro update is closed; the supercell construction for cellular automata; instances of one micro rule with distinct exact coarse-grainings at different block sizes | semiconjugacy of maps, quotient dynamics, projection-operator methods | `IsraeliGoldenfeld2006`, `IsraeliGoldenfeld2004` |
+| Generalized Gibbs ensembles | The maximum-entropy state with one Lagrange multiplier per conserved quantity of an integrable model; its numerical test on lattice hard-core bosons and its observation in a split one-dimensional Bose gas | maximum-entropy states under constraints, Gibbs states, non-uniqueness of the macrovariable set | `Langen2015`, `Rigol2007`, `Kinoshita2006` |
 
 ## Entries
 
@@ -132,40 +132,40 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 
 ### [IsraeliGoldenfeld2006] Coarse-graining of cellular automata, emergence, and the predictability of complex systems
 - **Authors:** Israeli, N.; Goldenfeld, N.
-- **Source:** Phys. Rev. E 73(2), 026203 (2006), 17 pp. DOI 10.1103/PhysRevE.73.026203; arXiv:nlin/0508033. Author copy: https://guava.physics.ucsd.edu/~nigel/REPRINTS/2006/Israeli%20Coarse-graining%20of%20cellular%20automata%20PRE%202006%20(PDF).pdf
+- **Source:** Phys. Rev. E 73(2), 026203 (2006), 17 pp. DOI 10.1103/PhysRevE.73.026203; arXiv:nlin/0508033. Sec. III Eqs. (1)-(2); Sec. III A Eqs. (3)-(6); Sec. III B Eq. (11); Sec. IV A, Fig. 1; Sec. IV B 2, Figs. 3-4; Sec. IV B 4, Fig. 6; Sec. IV B 5 Eq. (24); Sec. V Eqs. (26)-(37); Sec. VI. Author copy: https://guava.physics.ucsd.edu/~nigel/REPRINTS/2006/Israeli%20Coarse-graining%20of%20cellular%20automata%20PRE%202006%20(PDF).pdf
 - **Kind:** paper
-- **Used for:** the commuting condition under which a projection of micro states yields a closed macro update, and the non-uniqueness question: whether one micro rule admits several inequivalent such projections
-- **Mathlib:** `Function.Semiconj` (v4.33.1); cellular automata: none found, searched 2026-09-30
+- **Used for:** the exact commuting condition for a blockwise projection of a cellular automaton, and the non-uniqueness question: printed instances of one rule with two distinct exact coarse-grainings at different block sizes
+- **Mathlib:** `Function.Semiconj`, `Function.Semiconj.iterate_right`, `Function.Semiconj.trans`, `Function.iterate_mul` (v4.33.1); cellular automata: none found, searched 2026-09-30
 - **Ledger:** none yet
 
 ### [IsraeliGoldenfeld2004] Computational Irreducibility and the Predictability of Complex Physical Systems
 - **Authors:** Israeli, N.; Goldenfeld, N.
-- **Source:** Phys. Rev. Lett. 92(7), 074105 (2004), 4 pp. DOI 10.1103/PhysRevLett.92.074105; arXiv:nlin/0309047. Author copy: https://guava.physics.ucsd.edu/~nigel/REPRINTS/2004/Israeli%20Computational%20Irreducibility%20and%20Predictability%20PRL%202004.pdf
+- **Source:** Phys. Rev. Lett. 92(7), 074105 (2004), 4 pp. DOI 10.1103/PhysRevLett.92.074105; arXiv:nlin/0309047. Eqs. (1)-(5); Figs. 1-2; ref. [20]. Author copy: https://guava.physics.ucsd.edu/~nigel/REPRINTS/2004/Israeli%20Computational%20Irreducibility%20and%20Predictability%20PRL%202004.pdf
 - **Kind:** paper
-- **Used for:** the letter preceding [IsraeliGoldenfeld2006]; supporting source for the non-uniqueness question on coarse-grainings of one micro rule
-- **Mathlib:** `Function.Semiconj` (v4.33.1); cellular automata: none found, searched 2026-09-30
+- **Used for:** the letter preceding [IsraeliGoldenfeld2006]: the commuting-projection condition and the survey of the elementary rules; supporting source for the non-uniqueness question on coarse-grainings of one micro rule
+- **Mathlib:** `Function.Semiconj`, `Function.Semiconj.iterate_right`, `Function.iterate_mul` (v4.33.1); cellular automata: none found, searched 2026-09-30
 - **Ledger:** none yet
 
 ### [Langen2015] Experimental observation of a generalized Gibbs ensemble
 - **Authors:** Langen, T.; Erne, S.; Geiger, R.; Rauer, B.; Schweigler, T.; Kuhnert, M.; Rohringer, W.; Mazets, I. E.; Gasenzer, T.; Schmiedmayer, J.
-- **Source:** Science 348(6231), 207-211 (2015). DOI 10.1126/science.1257026; arXiv:1411.7185
+- **Source:** Science 348(6231), 207-211 (2015). DOI 10.1126/science.1257026. Read as arXiv:1411.7185v1: Eq. (1); Figs. 2-4; Supp. Eqs. (6), (9), (10), (13), (14)
 - **Kind:** paper
-- **Used for:** experimental precedent for the non-uniqueness question: a relaxed state that needs more macrovariables than the thermal ensemble carries
-- **Mathlib:** none found, searched 2026-09-30
+- **Used for:** experimental generalized Gibbs ensemble over the mode occupations of a quadratic model in a split one-dimensional Bose gas, where a single temperature fails for one preparation; bears on the non-uniqueness question without addressing the choice of conserved set
+- **Mathlib:** `InformationTheory.klDiv`, `InformationTheory.klDiv_map_le` (v4.33.1); generalized Gibbs ensembles: none found, searched 2026-09-30
 - **Ledger:** none yet
 
 ### [Rigol2007] Relaxation in a Completely Integrable Many-Body Quantum System: An Ab Initio Study of the Dynamics of the Highly Excited States of 1D Lattice Hard-Core Bosons
 - **Authors:** Rigol, M.; Dunjko, V.; Yurovsky, V.; Olshanii, M.
-- **Source:** Phys. Rev. Lett. 98(5), 050405 (2007). DOI 10.1103/PhysRevLett.98.050405; arXiv:cond-mat/0604476
+- **Source:** Phys. Rev. Lett. 98(5), 050405 (2007). DOI 10.1103/PhysRevLett.98.050405. Read as arXiv:cond-mat/0604476v2: Eqs. (1)-(2), (6), (8); Figs. 1-2
 - **Kind:** paper
-- **Used for:** the generalized Gibbs ensemble as the relaxed state of an integrable system; supporting source for the non-uniqueness question
-- **Mathlib:** none found, searched 2026-09-30
+- **Used for:** the generalized Gibbs ensemble conjectured as the maximum-entropy state under the full set of integrals of motion and tested numerically; supporting source for the non-uniqueness question
+- **Mathlib:** `InformationTheory.klDiv`, `InformationTheory.integral_llr_add_sub_measure_univ_nonneg`, `Real.negMulLog` (v4.33.1); generalized Gibbs ensembles: none found, searched 2026-09-30
 - **Ledger:** none yet
 
 ### [Kinoshita2006] A quantum Newton's cradle
 - **Authors:** Kinoshita, T.; Wenger, T.; Weiss, D. S.
-- **Source:** Nature 440(7086), 900-903 (2006). DOI 10.1038/nature04693. Full text not open
+- **Source:** Nature 440(7086), 900-903 (2006). DOI 10.1038/nature04693; PMID 16612376. Full text not open, checked 2026-09-30; abstract only
 - **Kind:** paper
-- **Used for:** a one-dimensional Bose gas that does not relax to the thermal state; supporting source for the non-uniqueness question
+- **Used for:** citation pointer for one-dimensional Bose gases that do not noticeably equilibrate; supporting pointer for the non-uniqueness question, never a statement source
 - **Mathlib:** none found, searched 2026-09-30
 - **Ledger:** none yet
