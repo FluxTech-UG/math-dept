@@ -29,6 +29,16 @@ extract that reads authoritative and states hypotheses the source does not have,
 the failure mode this ledger exists to catch. When the full text is unreachable,
 report that and file nothing. Budget the extract at 1,200 to 1,800 tokens.
 
+## The web is read by an agent tier
+
+Every web read this skill needs (the source's full text, a citation's metadata,
+whether an open copy exists) runs in a `math-extractor` agent, which writes the
+extract, or in a `scout` agent, which returns findings and writes nothing. A
+session leading the work delegates the fetch and reads the agent's report and
+the local files; its own web tools stay unused, even for a one-line DOI check.
+Fetched pages are where untrusted text enters a session, and those two tiers are
+the ones whose tool lists keep that text away from anything that can act on it.
+
 ## Extract skeleton
 
 ```markdown
@@ -103,7 +113,7 @@ the agent did not write.
 
 ## Close out: direct session
 
-With no orchestration above the run, `make check` (the bibliography and index validators)
-and the commits are yours: the extract commits in `math-dept-private`, the bibliography
+With no orchestration above the run, the fetches still go to a `math-extractor` or a
+`scout`, and `make check` (the bibliography and index validators) and the commits are yours: the extract commits in `math-dept-private`, the bibliography
 edit commits here, one commit each, because a commit never spans two repos. A candidate a
 Hook proposes becomes a ledger entry in its own pass, never in this one.
