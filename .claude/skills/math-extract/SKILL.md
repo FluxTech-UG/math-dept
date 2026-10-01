@@ -101,19 +101,23 @@ same edit: the validator fails on a tag indexed nowhere.
 
 ## Close out under orchestration
 
-As a `math-extractor` agent in a wave under `math-orchestration`, the run ends at the two
-files: the extract and the `bibliography.md` entry with its Topic Index row. Leave both
-in place and report the BibTag, the outcome (extracted, or full text unreachable and
-nothing filed), both paths, which statements were taken and what the source turned out
-not to state, and anything the lead must decide. Every ledger entry a Hook seeds is the
-lead's to allocate, and so are the generated views (`make regen`, `python -m mdept.index`)
-and the commit; the write guard already holds the ledger half of that line. Each view is
-derived from the whole tree, so regenerating or committing mid-wave collides with entries
-the agent did not write.
+As a `math-extractor` agent in a wave under `math-orchestration`, the run ends at one
+file: the extract. `bibliography.md` is one file shared by every agent in the wave, and
+an agent's only write is a whole-file replacement, so two agents writing it would each
+erase the other's entry. The agent leaves the extract in place and reports, for the lead
+to apply in one edit: the BibTag, the outcome (extracted, or full text unreachable and
+nothing filed), the extract's path, the entry's fields (the Source line's section and
+equation pointers, the Used for line, the Mathlib line) and its Topic Index row, which
+statements were taken and what the source turned out not to state, and anything the lead
+must decide. Every ledger entry a Hook seeds is the lead's to allocate, and so are the
+generated views (`make regen`, `python -m mdept.index`) and the commit; the write guard
+already holds the ledger half of that line. Each view is derived from the whole tree, so
+regenerating or committing mid-wave collides with entries the agent did not write.
 
 ## Close out: direct session
 
 With no orchestration above the run, the fetches still go to a `math-extractor` or a
-`scout`, and `make check` (the bibliography and index validators) and the commits are yours: the extract commits in `math-dept-private`, the bibliography
-edit commits here, one commit each, because a commit never spans two repos. A candidate a
-Hook proposes becomes a ledger entry in its own pass, never in this one.
+`scout`, and the `bibliography.md` entry, `make check` (the bibliography and index
+validators) and the commits are yours: the extract commits in `math-dept-private`, the
+bibliography edit commits here, one commit each, because a commit never spans two repos.
+A candidate a Hook proposes becomes a ledger entry in its own pass, never in this one.
