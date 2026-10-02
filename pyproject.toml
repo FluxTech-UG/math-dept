@@ -9,7 +9,7 @@ description = "A Lean 4 + Mathlib ledger of stipulated statements: proven, conje
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
-authors = [{ name = "Patrick John Therrien" }]
+authors = [{ name = "John Patrick Therrien" }]
 keywords = ["lean4", "mathlib", "formal-verification", "counterexamples", "sympy"]
 classifiers = [
     "Development Status :: 3 - Alpha",
