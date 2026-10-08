@@ -146,9 +146,14 @@ now, and dated attempts live in the private `triage/` record.
 | `python -m mdept.view --consumer NAME --write` | the consumer's own `docs/MATH.md`; `--check` fails on drift, `--out` previews elsewhere | after any status change that reaches a consumer |
 
 `python -m mdept.check` also takes `--run-counterexamples`, `--lean` and `--family`. A
-repo listed in `repos.yaml` that is absent fails the family check; it never skips.
+repo listed in `repos.yaml` by path that is absent fails the family check; it never skips.
 
-`repos.yaml` lists each consumer as a bare path, or as `{path, ignore, view}`. `ignore`
+`repos.yaml` lists each consumer as a bare path, as `{path, ignore, view}`, or as
+`{archived: <where>}` for a repo whose files are kept off-line. An archived consumer
+takes no other key. Its name still resolves, so the entries and requests it raised keep
+their provenance as written: I7 checks the `repo` key and leaves `doc` and `anchor`
+unresolved, I21 skips the repo, I15 fails on a `cited_by` that names it (a citation
+lives in a file the check can read), and `mdept.view` refuses it. `ignore`
 is a list of globs matched against the repo-relative path with `*` crossing directory
 separators (`outputs/*` skips that whole tree), naming what is not a citation surface;
 `view` is where `mdept.view` writes, `docs/MATH.md` by default. Three things are always
@@ -169,7 +174,7 @@ counterexample artifact exists and verifies; I19 every `open` entry and every
 non-citation settlement has a triage record; I20 `sorry` only under `Conjectures/`.
 
 **Links and sources.** I7 every `raised_by.anchor` and `from.anchor` is a form of the
-anchor grammar and resolves to exactly one place; I8 links resolve, no self-links, no
+anchor grammar and, in a consumer on disk, resolves to exactly one place; I8 links resolve, no self-links, no
 links to `merged`; I9a a refuted entry is not implied by a proven one; I10 `cited`
 sources are of a trusted Kind and have an extract; I11 bibliography tags and extract
 filenames stay in sync; I12 every `MD_####` and `MDR:` token resolves.
@@ -177,5 +182,5 @@ filenames stay in sync; I12 every `MD_####` and `MDR:` token resolves.
 **Flow.** I13 inbox lifecycle and Outcome completeness; I14 requests back-link to the
 IDs they seeded; I15 every line of a listed file that names an entry carries its status
 word, in code as well as in prose; I16 generated views are fresh; I17 no U+2014 in
-prose; I21 every `MD_####` mention in a listed consumer appears in that entry's
+prose; I21 every `MD_####` mention in a listed consumer on disk appears in that entry's
 `cited_by`, so a status change reaches every file that relies on it.

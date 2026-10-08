@@ -358,6 +358,10 @@ def _check_anchor(ctx: Context, where: str, field_name: str, source) -> None:
     if doc is None:
         return
     consumer = ctx.consumers[repo]
+    if consumer.archived is not None:
+        # The document is off-line with the rest of the repo: the key resolves,
+        # and the anchor stays as written for whoever reopens the archive.
+        return
     doc_path = _consumer_path(ctx, repo) / doc
     if not doc_path.is_file():
         fail("I7 raised-by", where, f"{field_name}.doc", f"{doc_path} does not exist")
@@ -383,7 +387,11 @@ def _check_anchor(ctx: Context, where: str, field_name: str, source) -> None:
 
 
 def _consumer_path(ctx: Context, repo: str, invariant: str = "I7 raised-by") -> Path:
-    path = ctx.consumers[repo].path
+    consumer = ctx.consumers[repo]
+    if consumer.archived is not None:
+        fail(invariant, "repos.yaml", f"consumers.{repo}",
+             f"is archived ({consumer.archived}), so it has no files to read")
+    path = consumer.path
     if not path.is_dir():
         fail(invariant, "repos.yaml", f"consumers.{repo}",
              f"{path} is listed but absent from disk; a listed repo is required, never skipped")
@@ -633,6 +641,10 @@ def i15_consumer_citations(ctx: Context) -> None:
                 fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
                      f"{repo!r} is not a key of repos.yaml consumers {sorted(ctx.consumers)}")
             consumer = ctx.consumers[repo]
+            if consumer.archived is not None:
+                fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
+                     f"{repo!r} is archived ({consumer.archived}); a citation lives in a "
+                     "file the check can read, so an archived repo cites nothing")
             doc = _consumer_path(ctx, repo, "I15 citation") / rel
             if not doc.is_file():
                 fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]", f"{doc} does not exist")
@@ -751,7 +763,8 @@ def i21_unlisted_citations(ctx: Context) -> None:
     I15 checks the citations the ledger knows about. This checks the other
     direction, which is the one that rots: a consumer adds a reliance and the
     ledger never hears, so a refutation reaches every document but that one.
-    Three things are skipped, each for a reason that is not "it is noisy":
+    An archived consumer is skipped whole, since its files are off-line. Within a
+    repo on disk, three things are skipped, each for a reason that is not "it is noisy":
     a file that declares itself generated is a mirror whose source is the
     editable surface, the consumer's own generated view is this package's
     output, and an `ignore` glob is the consumer's own declaration that a tree
@@ -769,6 +782,8 @@ def i21_unlisted_citations(ctx: Context) -> None:
         cited[entry.id] = pairs
     for name in sorted(ctx.consumers):
         consumer = ctx.consumers[name]
+        if consumer.archived is not None:
+            continue
         _consumer_path(ctx, name, "I21 unlisted citation")
         view = consumer.view_path
         for path in consumer.files():
@@ -866,9 +881,12 @@ def build_context(root: Path, run_counterexamples: bool, family: bool, lean: boo
         # Eagerly, not lazily: the design's rule is that a repo listed in
         # repos.yaml and absent from disk FAILS. Resolving only the repos some
         # entry happens to name would let a stale path sit unnoticed until the
-        # first entry that needs it, which is the wrong time to find out.
+        # first entry that needs it, which is the wrong time to find out. An
+        # archived consumer declares that its files are off-line, so it has no
+        # path to resolve.
         for consumer in sorted(ctx.consumers):
-            _consumer_path(ctx, consumer)
+            if ctx.consumers[consumer].archived is None:
+                _consumer_path(ctx, consumer)
     if lean:
         cached = root / "audit" / "latest.json"
         if not cached.is_file():

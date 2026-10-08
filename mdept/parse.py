@@ -26,7 +26,7 @@ IGNORE_DIRS = frozenset(
 PLACEHOLDER_MD = ("ledger/TEMPLATE.md", "inbox/TEMPLATE.md")
 
 #: The closed key set of one `repos.yaml` consumer, and where its view lands.
-CONSUMER_KEYS = ("path", "ignore", "view")
+CONSUMER_KEYS = ("path", "ignore", "view", "archived")
 DEFAULT_VIEW = "docs/MATH.md"
 
 FRONT_MATTER_RE = re.compile(r"\A---\r?\n(?P<front>.*?)\r?\n---\r?\n(?P<body>.*)\Z", re.DOTALL)
@@ -346,9 +346,11 @@ def parse_role_line(path: Path) -> tuple[str, str]:
 def load_repos_yaml(path: Path) -> dict:
     """Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
 
-    A consumer's value is either a bare path or a mapping `{path, ignore, view}`.
-    The bare form means `{path: <it>, ignore: [], view: 'docs/MATH.md'}`, so both
-    forms come back normalized and no caller has to test which was written.
+    A consumer's value is either a bare path, a mapping `{path, ignore, view}`, or
+    `{archived: <where>}` for a repo whose files are kept off-line. The bare form
+    means `{path: <it>, ignore: [], view: 'docs/MATH.md'}`. Every form comes back
+    normalized with all four keys (`archived` None for a repo on disk, `path` None
+    for an archived one), so no caller has to test which was written.
     """
     path = Path(path)
     if not path.is_file():
@@ -379,8 +381,25 @@ def _consumer_entry(path: Path, name: str, value) -> dict:
     unknown = sorted(set(value) - set(CONSUMER_KEYS))
     if unknown:
         raise CheckError(f"I7 raised-by: {path}: field 'consumers.{name}': unknown key(s) {unknown}")
+    if "archived" in value:
+        where = value["archived"]
+        if not isinstance(where, str) or not where.strip():
+            raise CheckError(
+                f"I7 raised-by: {path}: field 'consumers.{name}.archived': "
+                "expected a non-empty string saying where the archived repo is kept"
+            )
+        extra = sorted(set(value) - {"archived"})
+        if extra:
+            raise CheckError(
+                f"I7 raised-by: {path}: field 'consumers.{name}': an archived consumer has no "
+                f"tree on disk, so it takes no {extra}"
+            )
+        return {"path": None, "ignore": [], "view": DEFAULT_VIEW, "archived": where.strip()}
     if not value.get("path"):
-        raise CheckError(f"I7 raised-by: {path}: field 'consumers.{name}.path': a consumer declares a path")
+        raise CheckError(
+            f"I7 raised-by: {path}: field 'consumers.{name}.path': a consumer declares a path, "
+            "or `archived` when its files are off-line"
+        )
     ignore = value.get("ignore") or []
     if not isinstance(ignore, list) or not all(isinstance(glob, str) for glob in ignore):
         raise CheckError(
@@ -390,4 +409,5 @@ def _consumer_entry(path: Path, name: str, value) -> dict:
         "path": str(value["path"]),
         "ignore": [str(glob) for glob in ignore],
         "view": str(value.get("view") or DEFAULT_VIEW),
+        "archived": None,
     }

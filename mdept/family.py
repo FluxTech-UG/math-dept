@@ -55,12 +55,17 @@ def marker_line(line: str) -> str:
 
 @dataclass(frozen=True)
 class Consumer:
-    """One repo listed in `repos.yaml`: where it is, what to skip, where its view goes."""
+    """One repo listed in `repos.yaml`: where it is, what to skip, where its view goes.
+
+    An archived consumer (`archived` set, `path` None) is a repo whose files are
+    kept off-line: its key still resolves, and nothing of it is read.
+    """
 
     name: str
-    path: Path
+    path: Path | None
     ignore: tuple[str, ...] = ()
     view: str = "docs/MATH.md"
+    archived: str | None = None
 
     @property
     def view_path(self) -> Path:
@@ -312,6 +317,9 @@ def read_consumers(repos_yaml: Path) -> dict:
     root = repos_yaml.parent
     consumers = {}
     for name, value in declared["consumers"].items():
+        if value["archived"] is not None:
+            consumers[name] = Consumer(name=name, path=None, archived=value["archived"])
+            continue
         raw = Path(str(value["path"])).expanduser()
         consumers[name] = Consumer(
             name=name,

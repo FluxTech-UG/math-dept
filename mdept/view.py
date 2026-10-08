@@ -265,6 +265,11 @@ def render(payload: dict, consumer) -> str:
 def generate(family, name: str) -> tuple[str, Path, dict]:
     """(rendered text, the default output path, the JSON payload) for one consumer."""
     consumer = family.consumer(name)
+    if consumer.archived is not None:
+        raise ConfigError(
+            f"{name!r} is archived ({consumer.archived}); a view is written into a repo "
+            "on disk, and this one has none"
+        )
     payload = collect(family, consumer)
     return render(payload, consumer), consumer.view_path, payload
 

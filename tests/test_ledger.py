@@ -136,7 +136,85 @@ def test_a_bare_consumer_path_still_means_the_default_view(tmp_path):
         "path": "/somewhere/else",
         "ignore": [],
         "view": "docs/MATH.md",
+        "archived": None,
     }
+
+
+# --- an archived consumer: the key resolves, nothing of it is read ----------
+
+
+SHELVED = "  Shelved:\n    archived: external drive, off-line\n"
+
+
+def archive_a_consumer(root: Path) -> None:
+    """List `Shelved` as archived, and let MD_0007 be raised there with its anchor kept."""
+    repos = root / "repos.yaml"
+    repos.write_text(repos.read_text(encoding="utf-8") + SHELVED, encoding="utf-8")
+    entry = root / "ledger" / "MD_0007.md"
+    text = entry.read_text(encoding="utf-8")
+    assert text.count("    repo: ToyRepo\n") == 1
+    entry.write_text(text.replace("    repo: ToyRepo\n", "    repo: Shelved\n"), encoding="utf-8")
+    index.write(root)
+
+
+def test_an_archived_consumer_parses_without_a_path(tmp_path):
+    written = tmp_path / "repos.yaml"
+    written.write_text("consumers:\n" + SHELVED, encoding="utf-8")
+    assert parse.load_repos_yaml(written)["consumers"]["Shelved"] == {
+        "path": None,
+        "ignore": [],
+        "view": "docs/MATH.md",
+        "archived": "external drive, off-line",
+    }
+
+
+@pytest.mark.parametrize("value", [
+    "{archived: external drive, path: /somewhere}",
+    "{archived: external drive, ignore: ['x/*']}",
+    "{archived: ''}",
+    "{archived: [external drive]}",
+])
+def test_an_archived_consumer_takes_only_where_it_is_kept(value, tmp_path):
+    written = tmp_path / "repos.yaml"
+    written.write_text(f"consumers:\n  Shelved: {value}\n", encoding="utf-8")
+    with pytest.raises(CheckError, match="consumers.Shelved"):
+        parse.load_repos_yaml(written)
+
+
+def test_the_family_check_resolves_an_archived_key_and_reads_nothing_of_it(tmp_path):
+    """MD_0007 is raised by an archived repo, with a doc and an anchor that exist nowhere.
+
+    I7 resolves the key and leaves the anchor unresolved on purpose, and I21
+    skips the repo, so the family check passes with the archive off-line.
+    """
+    root = stage(tmp_path) / "good_private"
+    archive_a_consumer(root)
+    context = check.run(root, family=True)
+    shelved = context.consumers["Shelved"]
+    assert shelved.archived == "external drive, off-line" and shelved.path is None
+    assert context.by_id["MD_0007"].at("provenance.raised_by.repo") == "Shelved"
+
+
+def test_a_citation_naming_an_archived_consumer_fails_i15(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    archive_a_consumer(root)
+    entry = root / "ledger" / "MD_0007.md"
+    text = entry.read_text(encoding="utf-8")
+    entry.write_text(text.replace("cited_by: []", 'cited_by: ["Shelved:docs/toy.md"]'), encoding="utf-8")
+    index.write(root)
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    assert str(raised.value).startswith("I15 citation")
+    assert "archived" in str(raised.value)
+
+
+def test_a_view_of_an_archived_consumer_is_refused(tmp_path):
+    from mdept import view
+
+    root = stage(tmp_path) / "good_private"
+    archive_a_consumer(root)
+    with pytest.raises(ConfigError, match="archived"):
+        view.generate(family_mod.load_family(root), "Shelved")
 
 
 def test_every_invariant_has_a_case():
