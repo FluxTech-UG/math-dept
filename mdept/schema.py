@@ -115,7 +115,7 @@ ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 #: The four body headings every entry carries, in order.
 BODY_HEADINGS = ("Statement", "Hypotheses", "Why it was raised", "Current notes")
 
-EM_DASH = "—"
+EM_DASH = "\u2014"
 
 
 def split_cited_by(citation: str) -> tuple[str, str, str | None] | None:
