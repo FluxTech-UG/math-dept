@@ -29,6 +29,11 @@ moves the module path and keeps the declaration name.
 3. `mdept.search.random_search(pred, sampler)` last. Sampling is the expensive
    rung and the least informative when it finds nothing.
 
+Run a search in the foreground with the Bash tool's `timeout` parameter (up to 10
+minutes per call), and split a longer search into several calls. Never start it as a
+background task and wait for it: an agent that ends its turn on its own background
+work is not woken again, so the result is never read.
+
 ## A numeric hit is a lead, not a witness
 
 A float that violates the claim tells you where to look. Move to exact values in
