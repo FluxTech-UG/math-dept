@@ -25,6 +25,7 @@ import fnmatch
 import os
 import re
 import stat
+import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -83,14 +84,71 @@ class Consumer:
     def files(self) -> list[Path]:
         """Every file this repo owns, sorted, as one scannable surface.
 
-        Three prunings, and each is about ownership rather than noise:
-        `parse.IGNORE_DIRS` is tool and build state; a nested checkout (any
-        subdirectory carrying its own `.git`, which is what a git worktree or a
-        submodule is) belongs to that other checkout, and an agent worktree
-        appearing under `.claude/` would otherwise make a family check pass or
-        fail depending on who happens to be working; and the `ignore` globs are
-        the consumer's own declaration of what is not a citation surface.
+        A consumer that is a git checkout is enumerated through git: its tracked
+        files plus its untracked ones that `.gitignore` does not exclude. What
+        the consumer gitignores (session plans under `.claude/`, local results)
+        never reaches its history, so it is not a citation surface. A consumer
+        path that is not the top of a git checkout is walked on disk instead.
+
+        Three prunings apply to both routes, and each is about ownership rather
+        than noise: `parse.IGNORE_DIRS` is tool and build state; a nested
+        checkout (any subdirectory carrying its own `.git`, which is what a git
+        worktree or a submodule is) belongs to that other checkout, and an agent
+        worktree appearing under `.claude/` would otherwise make a family check
+        pass or fail depending on who happens to be working; and the `ignore`
+        globs are the consumer's own declaration of what is not a citation surface.
         """
+        listed = self._git_files()
+        return self._walk_files() if listed is None else listed
+
+    def _git_toplevel(self) -> Path | None:
+        """The checkout root git reports for this path, or None when it is not in one."""
+        try:
+            done = subprocess.run(
+                ["git", "-C", str(self.path), "rev-parse", "--show-toplevel"],
+                capture_output=True, text=True, check=False,
+            )
+        except FileNotFoundError as exc:
+            raise ConfigError(
+                f"consumer {self.name}: git is not on PATH, and the citation scan "
+                "enumerates a consumer's files through git"
+            ) from exc
+        return Path(done.stdout.strip()).resolve() if done.returncode == 0 else None
+
+    def _git_files(self) -> list[Path] | None:
+        """Tracked plus untracked-but-not-ignored files, or None when not a checkout root.
+
+        A path that merely sits inside some other checkout (a fixture under a
+        test repo) is not this consumer's checkout, so it is walked instead.
+        """
+        root = Path(self.path).resolve()
+        if self._git_toplevel() != root:
+            return None
+        done = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            capture_output=True, check=False,
+        )
+        if done.returncode != 0:
+            raise CheckError(
+                f"I21 unlisted citation: {self.name}: field '<files>': git ls-files failed "
+                f"({done.stderr.decode('utf-8', 'replace').strip()})"
+            )
+        found = set()
+        for raw in done.stdout.decode("utf-8", "surrogateescape").split("\0"):
+            # An entry ending in a slash is an untracked nested checkout, which
+            # git reports as one directory and which belongs to that checkout.
+            if not raw or raw.endswith("/"):
+                continue
+            rel = Path(raw)
+            if any(part in parse.IGNORE_DIRS for part in rel.parts[:-1]) or self.ignored(raw):
+                continue
+            path = self.path / rel
+            if path.is_symlink() or path.is_file():
+                found.add(path)
+        return sorted(found)
+
+    def _walk_files(self) -> list[Path]:
+        """The on-disk walk, for a consumer path that is not a git checkout root."""
         found = []
         for directory, subdirectories, filenames in os.walk(self.path):
             here = Path(directory)

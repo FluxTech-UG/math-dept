@@ -182,5 +182,7 @@ filenames stay in sync; I12 every `MD_####` and `MDR:` token resolves.
 **Flow.** I13 inbox lifecycle and Outcome completeness; I14 requests back-link to the
 IDs they seeded; I15 every line of a listed file that names an entry carries its status
 word, in code as well as in prose; I16 generated views are fresh; I17 no U+2014 in
-prose; I21 every `MD_####` mention in a listed consumer on disk appears in that entry's
-`cited_by`, so a status change reaches every file that relies on it.
+prose; I21 every `MD_####` mention in a listed consumer appears in that entry's
+`cited_by`, so a status change reaches every file that relies on it. A consumer that is
+a git checkout is scanned over its tracked and untracked-but-not-ignored files; what it
+gitignores never reaches its history and is not a citation surface.

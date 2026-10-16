@@ -3,7 +3,8 @@
 Run: `python -m mdept.check [--root PATH] [--run-counterexamples] [--family] [--lean]`
 
 Every invariant raises `CheckError` on the first violation it finds, naming the
-invariant, the offending path, and the offending field. There is no warnings
+invariant, the offending path, and the offending field; I21 collects every
+unlisted citation and raises them together, one per line. There is no warnings
 tier and no partial pass: I9b is the single informational check, and it is
 reported as a notice that also lands in `ledger/INDEX.md` section 7.
 
@@ -780,6 +781,9 @@ def i21_unlisted_citations(ctx: Context) -> None:
             if split is not None:
                 pairs.add((split[0], split[1]))
         cited[entry.id] = pairs
+    # Every violation is collected and reported together, so a fix that spans
+    # several files is one round, not one per file.
+    violations = []
     for name in sorted(ctx.consumers):
         consumer = ctx.consumers[name]
         if consumer.archived is not None:
@@ -794,14 +798,16 @@ def i21_unlisted_citations(ctx: Context) -> None:
                 continue
             rel = consumer.rel(path)
             for token in sorted(parse.id_tokens(text)):
+                where = f"I21 unlisted citation: {name}:{rel}: field '<MD token>'"
                 if token not in cited:
-                    fail("I21 unlisted citation", f"{name}:{rel}", "<MD token>",
-                         f"{token} resolves to no entry in either ledger")
-                if (name, rel) not in cited[token]:
-                    fail("I21 unlisted citation", f"{name}:{rel}", "<MD token>",
-                         f"{token} is relied on here but its cited_by does not list "
-                         f"'{schema.cited_by_form(name, rel)}'; add it, or the next "
-                         "status change misses this file")
+                    violations.append(f"{where}: {token} resolves to no entry in either ledger")
+                elif (name, rel) not in cited[token]:
+                    violations.append(
+                        f"{where}: {token} is relied on here but its cited_by does not list "
+                        f"'{schema.cited_by_form(name, rel)}'; add it, or the next "
+                        "status change misses this file")
+    if violations:
+        raise CheckError("\n".join(violations))
 
 
 INVARIANTS = (

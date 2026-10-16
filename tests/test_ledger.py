@@ -13,6 +13,7 @@ failed.
 """
 
 import shutil
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
@@ -403,6 +404,35 @@ def test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path):
     context = check.run(root, family=True)
     cited = context.by_id["MD_0006"].front["cited_by"]
     assert 'ToyRepo:"research/toy notes.md" §2' in cited
+
+
+def test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path):
+    """A consumer checkout is scanned through git, and every violation is listed.
+
+    A tracked file and an untracked-but-not-ignored file both reach the
+    consumer's history and fail; a file under a gitignored `.claude/` (a session
+    plan) never does and is not a citation surface. Both failures arrive in one
+    run, so a two-file fix is one round.
+    """
+    root = stage(tmp_path) / "good_private"
+    toy = root / "consumers/ToyRepo"
+    citing = "Relies on MD_0006 (open).\n"
+    (toy / ".gitignore").write_text(".claude/\n", encoding="utf-8")
+    (toy / "docs/tracked.md").write_text(citing, encoding="utf-8")
+    (toy / "docs/untracked.md").write_text(citing, encoding="utf-8")
+    (toy / ".claude/plans").mkdir(parents=True)
+    (toy / ".claude/plans/session-plan.md").write_text(citing, encoding="utf-8")
+    subprocess.run(["git", "init", "-q", str(toy)], check=True)
+    tracked = [str(p.relative_to(toy)) for p in toy.rglob("*") if p.is_file()
+               and not {".git", ".claude"} & set(p.parts) and p.name != "untracked.md"]
+    subprocess.run(["git", "-C", str(toy), "add", "--", *tracked], check=True)
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    lines = str(raised.value).splitlines()
+    assert any("ToyRepo:docs/tracked.md" in line for line in lines)
+    assert any("ToyRepo:docs/untracked.md" in line for line in lines)
+    assert not any(".claude/plans" in line for line in lines)
+    assert all(line.startswith("I21 unlisted citation: ") for line in lines)
 
 
 def test_a_consumer_column_lists_each_entry_once(tmp_path):
