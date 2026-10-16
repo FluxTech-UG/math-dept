@@ -27,6 +27,7 @@ another.
 | Effective temperature and Carnot-form bounds | Per-level-pair effective temperature of a stationary non-Gibbs state, and the efficiency bound in its extreme effective temperatures | log-sum inequalities, Gibbs states | `DeLiberatoUeda2011` |
 | Coarse-graining and closed macro dynamics | A blockwise projection from micro states to macro states that commutes with the dynamics, so the macro update is closed; the supercell construction for cellular automata; instances of one micro rule with distinct exact coarse-grainings at different block sizes | semiconjugacy of maps, quotient dynamics, projection-operator methods | `IsraeliGoldenfeld2006`, `IsraeliGoldenfeld2004` |
 | Generalized Gibbs ensembles | The maximum-entropy state with one Lagrange multiplier per conserved quantity of an integrable model; its numerical test on lattice hard-core bosons and its observation in a split one-dimensional Bose gas | maximum-entropy states under constraints, Gibbs states, non-uniqueness of the macrovariable set | `Langen2015`, `Rigol2007`, `Kinoshita2006` |
+| Numerical integration of ODEs | The derivative of a Runge-Kutta solution with respect to its initial value equals the same method applied to the variational equation; symplecticity of Runge-Kutta methods from conservation of quadratic invariants | chain rule through compositions, ODE flows and their linearization, discrete sensitivities | `Hairer1999` |
 
 ## Entries
 
@@ -168,4 +169,12 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** citation pointer for one-dimensional Bose gases that do not noticeably equilibrate; supporting pointer for the non-uniqueness question, never a statement source
 - **Mathlib:** none found, searched 2026-09-30
+- **Ledger:** none yet
+
+### [Hairer1999] Numerical Geometric Integration
+- **Authors:** Hairer, E.
+- **Source:** Lecture notes, Université de Genève, March 1999 (winter semester 1998/99), 93 pp. Sec. IV.3 Lemma 3.3 (p. 57), Thm 3.4, Thm 3.5; Sec. IV.2 Thm 2.4; Sec. III.3 Thm 3.2. Copy read: https://www.math.mcgill.ca/gantumur/docs/down/Hairer9899.pdf (not linked from www.unige.ch/~hairer/polycop.html, checked 2026-10-17)
+- **Kind:** notes
+- **Used for:** the derivative of a Runge-Kutta solution with respect to its initial value equals the same method applied to the variational equation
+- **Mathlib:** `HasFDerivAt.comp`, `IsPicardLindelof`, `ODE_solution_unique` (v4.33.1; Runge-Kutta methods and the variational equation: none found, searched 2026-10-17)
 - **Ledger:** none yet
