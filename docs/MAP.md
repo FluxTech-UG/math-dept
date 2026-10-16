@@ -206,16 +206,17 @@ _Allocate the next ID and write the entry file._
 - const CANDIDATE_HEADING_RE  ·L34
 - const BULLET_RE  ·L35
 - const LEDGER_IDS_RE  ·L36
-- const STATE_RE  ·L37
-- allocate_id(root: Path) -> str  ·L40: The next free ID across this repo and its sibling.
-- blank_front(entry_id: str) -> dict  ·L51: A schema-complete front matter with every key present and nothing invented.
-- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L76
-- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L102
-- from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str, str]  ·L121: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
-- from_title(root: Path, args) -> tuple[str, str, str]  ·L174: Write an entry raised in this repo, with no consumer request behind it.
-- _write_new(path: Path, text: str) -> None  ·L201
-- _record_on_request(path: Path, entry_id: str) -> None  ·L208: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
-- main(argv: list[str] | None=None) -> int  ·L228
+- const STATE_RE  ·L39
+- allocate_id(root: Path) -> str  ·L42: The next free ID across this repo and its sibling.
+- blank_front(entry_id: str) -> dict  ·L53: A schema-complete front matter with every key present and nothing invented.
+- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L78
+- _bullet_fields(block: str) -> dict  ·L104: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
+- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L126
+- from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str, str]  ·L140: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
+- from_title(root: Path, args) -> tuple[str, str, str]  ·L193: Write an entry raised in this repo, with no consumer request behind it.
+- _write_new(path: Path, text: str) -> None  ·L220
+- _record_on_request(path: Path, entry_id: str) -> None  ·L227: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
+- main(argv: list[str] | None=None) -> int  ·L250
 
 ### mdept/parse.py
 _Read the markdown surfaces: ledger entries, bibliography, requests, role lines._
@@ -519,14 +520,17 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_template_front_matter_validates()  ·L264
 - test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L272
 - test_new_never_reuses_an_id(tmp_path)  ·L293
-- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L302
-- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L312: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
-- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L326: The variable promised a repo, so the variable is what the message names.
-- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L344
-- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L363
-- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L367
-- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L372: The fixture cites `research/toy notes.md`, whose name contains a space.
-- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L385: MD_0006 is cited from two files in ToyRepo and is one row, not two.
+- _stage_wrapped_request(tmp_path: Path) -> Path  ·L302: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
+- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L310
+- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L318
+- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L325
+- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L335: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
+- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L349: The variable promised a repo, so the variable is what the message names.
+- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L367
+- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L386
+- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L390
+- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L395: The fixture cites `research/toy notes.md`, whose name contains a space.
+- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L408: MD_0006 is cited from two files in ToyRepo and is one row, not two.
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._

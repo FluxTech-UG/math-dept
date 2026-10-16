@@ -33,7 +33,9 @@ from . import anchors, config, parse, schema
 
 CANDIDATE_HEADING_RE = re.compile(r"^###\s+(C\d+)\s*(.*?)\s*$", re.MULTILINE)
 BULLET_RE = re.compile(r"^-\s+\*\*(?P<key>[^:*]+):\*\*\s*(?P<value>.*)$")
-LEDGER_IDS_RE = re.compile(r"^(?P<indent>\s*)ledger_ids:\s*\[(?P<items>[^\]]*)\]\s*$", re.MULTILINE)
+LEDGER_IDS_RE = re.compile(
+    r"^(?P<indent>[ \t]*)ledger_ids:[ \t]*\[(?P<items>[^\]\n]*)\](?P<comment>[ \t]*#[^\n]*)?[ \t]*$", re.MULTILINE
+)
 STATE_RE = re.compile(r"^(?P<indent>\s*)state:\s*(?P<value>new|triaged|closed)\b(?P<rest>.*)$", re.MULTILINE)
 
 
@@ -99,6 +101,28 @@ def render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str:
     return f"---\n{dumped}\n---\n{body}"
 
 
+def _bullet_fields(block: str) -> dict:
+    """Each `- **Key:** value` bullet of a candidate block, continuation lines included.
+
+    A bullet runs until the next `- **` bullet, a heading, or a blank line; its
+    lines are stripped of indentation and joined with newlines, so a statement
+    wrapped across lines lands in the entry as one Markdown paragraph.
+    """
+    fields: dict[str, list[str]] = {}
+    key = None
+    for line in block.splitlines():
+        stripped = line.strip()
+        bullet = BULLET_RE.match(stripped)
+        if bullet:
+            key = bullet.group("key").strip()
+            fields[key] = [bullet.group("value").strip()]
+        elif not stripped or stripped.startswith(("#", "- **")):
+            key = None
+        elif key is not None:
+            fields[key].append(stripped)
+    return {k: "\n".join(part for part in parts if part) for k, parts in fields.items()}
+
+
 def _candidate_section(request, candidate: str) -> tuple[str, dict]:
     matches = list(CANDIDATE_HEADING_RE.finditer(request.body))
     for i, match in enumerate(matches):
@@ -106,12 +130,7 @@ def _candidate_section(request, candidate: str) -> tuple[str, dict]:
             continue
         end = matches[i + 1].start() if i + 1 < len(matches) else len(request.body)
         block = request.body[match.end() : end]
-        fields = {}
-        for line in block.splitlines():
-            bullet = BULLET_RE.match(line.strip())
-            if bullet:
-                fields[bullet.group("key").strip()] = bullet.group("value").strip()
-        return match.group(2).strip(), fields
+        return match.group(2).strip(), _bullet_fields(block)
     raise CheckError(
         f"I12 dangling: {request.rel}: field '<candidate>': no '### {candidate}' heading; "
         f"this request offers {request.candidates()}"
@@ -216,7 +235,10 @@ def _record_on_request(path: Path, entry_id: str) -> None:
     items = [i.strip() for i in match.group("items").split(",") if i.strip()]
     if entry_id not in items:
         items.append(entry_id)
-    text = text[: match.start()] + f"{match.group('indent')}ledger_ids: [{', '.join(items)}]" + text[match.end():]
+    text = text[: match.start()] + (
+        f"{match.group('indent')}ledger_ids: [{', '.join(items)}]{match.group('comment') or ''}"
+        + text[match.end():]
+    )
     text = STATE_RE.sub(
         lambda m: f"{m.group('indent')}state: triaged{m.group('rest')}" if m.group("value") == "new" else m.group(0),
         text,

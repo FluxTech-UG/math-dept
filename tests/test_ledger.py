@@ -299,6 +299,29 @@ def test_new_never_reuses_an_id(tmp_path):
     assert (first, second) == ("MD_0005", "MD_0006")
 
 
+def _stage_wrapped_request(tmp_path: Path) -> Path:
+    """The private fixture plus a request shaped like the inbox TEMPLATE: trailing
+    `# ...` comments on its fields and a Statement wrapped across lines."""
+    root = stage(tmp_path) / "good_private"
+    apply_overlay(root, FIXTURES / "requests" / "wrapped")
+    return root
+
+
+def test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path):
+    root = _stage_wrapped_request(tmp_path)
+    entry_id, _, _ = new.from_request(root, "2026-09-02-wrapped", "C1", None)
+    text = (root / "inbox" / "2026-09-02-wrapped.md").read_text(encoding="utf-8")
+    assert f"ledger_ids: [{entry_id}]                       # filled at triage\n" in text
+    assert "state: triaged                           # new | triaged | closed\n" in text
+
+
+def test_new_request_form_carries_a_wrapped_statement_whole(tmp_path):
+    root = _stage_wrapped_request(tmp_path)
+    _, path, _ = new.from_request(root, "2026-09-02-wrapped", "C1", None)
+    statement = parse.body_sections(Path(path).read_text(encoding="utf-8"))["Statement"].strip()
+    assert statement == "For every natural $n$,\n$n \\le 2^n$,\nwith equality nowhere."
+
+
 def test_new_refuses_to_overwrite_an_existing_entry(tmp_path):
     root = stage(tmp_path) / "good_public"
     with pytest.raises(CheckError, match="already exists"):
