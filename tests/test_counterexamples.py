@@ -191,6 +191,18 @@ def test_entry_run_with_no_match_names_the_id(mixed_directory, capsys):
     assert "FAIL no counterexample artifact for MD_0009" in capsys.readouterr().err
 
 
+def test_entry_run_names_an_off_name_artifact_that_does_not_parse(tmp_path):
+    directory = tmp_path / "counterexamples"
+    directory.mkdir()
+    (directory / "renamed_broken.py").write_text(
+        "from mdept.refute import Witness\n\n\ndef refute() -> Witness:\n"
+        '    return Witness(entry="MD_0003", point={"n": 1},\n',
+        encoding="utf-8",
+    )
+    with pytest.raises(CheckError, match="renamed_broken.py"):
+        refute.run_entry(directory, "MD_0003")
+
+
 def test_entry_run_refuses_a_name_match_whose_witness_names_another_entry(tmp_path):
     directory = tmp_path / "counterexamples"
     directory.mkdir()

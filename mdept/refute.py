@@ -21,6 +21,7 @@ import ast
 import importlib.util
 import types
 import json
+import re
 import sys
 from dataclasses import dataclass, field
 from fractions import Fraction
@@ -174,16 +175,21 @@ def _belongs_to(path: Path, entry: str) -> bool:
     return entry in _declared_entries(path)
 
 
+_RAW_ENTRY = re.compile(r"""\bentry\s*=\s*["']([^"'\n]+)["']""")
+
+
 def _declared_entries(path: Path) -> set[str]:
     """Every string literal passed as `entry=` in the artifact's source, read without running it.
 
-    A file that does not parse declares nothing here; it is selected only by
-    its name, and then `load` reports the parse failure.
+    A file that does not parse is scanned as raw text for `entry=` string
+    literals instead, so it is still selected for the entry it names and
+    `load` then reports its parse failure with the file's path.
     """
+    source = path.read_text(encoding="utf-8")
     try:
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        tree = ast.parse(source, filename=str(path))
     except SyntaxError:
-        return set()
+        return set(_RAW_ENTRY.findall(source))
     return {
         keyword.value.value
         for node in ast.walk(tree)
