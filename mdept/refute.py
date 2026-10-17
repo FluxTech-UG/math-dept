@@ -17,6 +17,7 @@ which downgrades what the ledger may claim.
 from __future__ import annotations
 
 import argparse
+import ast
 import importlib.util
 import types
 import json
@@ -120,12 +121,43 @@ def run_all(directory: Path) -> dict:
     that stops verifying is exactly what nobody would notice.
     """
     directory = Path(directory)
-    report: dict[str, list] = {}
     if not directory.is_dir():
-        return report
-    for path in sorted(directory.glob("*.py")):
-        if path.name.startswith("_"):
-            continue
+        return {}
+    return _run_paths(directory, _artifact_paths(directory))
+
+
+def run_entry(directory: Path, entry: str) -> dict:
+    """Run only the artifacts that belong to one entry. Returns the `run_all` shape.
+
+    An artifact belongs to the entry when its file name is the ID followed by
+    `_` (the naming contract), or when its source passes `entry="<ID>"` as a
+    string literal. Selection reads the source as text and executes nothing, so
+    an unrelated artifact that is broken cannot fail this entry's check. Raises
+    when no artifact matches, and when a selected artifact's witness names a
+    different entry.
+    """
+    directory = Path(directory)
+    paths = [path for path in _artifact_paths(directory) if _belongs_to(path, entry)] if directory.is_dir() else []
+    if not paths:
+        raise CheckError(f"no counterexample artifact for {entry} in {directory}")
+    report = _run_paths(directory, paths)
+    strays = sorted(set(report) - {entry})
+    if strays:
+        files = [record["file"] for entry_id in strays for record in report[entry_id]]
+        raise CheckError(
+            f"I6 counterexample: {entry}: field 'entry': {files} were selected for {entry} "
+            f"but their witnesses name {strays}"
+        )
+    return report
+
+
+def _artifact_paths(directory: Path) -> list[Path]:
+    return [path for path in sorted(directory.glob("*.py")) if not path.name.startswith("_")]
+
+
+def _run_paths(directory: Path, paths: list[Path]) -> dict:
+    report: dict[str, list] = {}
+    for path in paths:
         witness = load(path)
         report.setdefault(witness.entry, []).append({
             "file": str(path.relative_to(directory.parent)),
@@ -133,6 +165,34 @@ def run_all(directory: Path) -> dict:
             "exact": not witness.numeric,
         })
     return report
+
+
+def _belongs_to(path: Path, entry: str) -> bool:
+    """True when the file is named for the entry or its source declares `entry="<ID>"`."""
+    if path.stem.startswith(entry + "_"):
+        return True
+    return entry in _declared_entries(path)
+
+
+def _declared_entries(path: Path) -> set[str]:
+    """Every string literal passed as `entry=` in the artifact's source, read without running it.
+
+    A file that does not parse declares nothing here; it is selected only by
+    its name, and then `load` reports the parse failure.
+    """
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except SyntaxError:
+        return set()
+    return {
+        keyword.value.value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        for keyword in node.keywords
+        if keyword.arg == "entry"
+        and isinstance(keyword.value, ast.Constant)
+        and isinstance(keyword.value.value, str)
+    }
 
 
 def artifacts(report: dict) -> list[tuple[str, dict]]:
@@ -157,16 +217,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         root = config.find_repo_root(args.root) if args.root is None else Path(args.root).resolve()
         directory = root / "counterexamples"
-        report = run_all(directory)
+        report = run_all(directory) if args.all else run_entry(directory, args.entry)
     except (CheckError, ConfigError) as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
-
-    if not args.all:
-        if args.entry not in report:
-            print(f"FAIL no counterexample artifact for {args.entry} in {directory}", file=sys.stderr)
-            return 1
-        report = {args.entry: report[args.entry]}
 
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))

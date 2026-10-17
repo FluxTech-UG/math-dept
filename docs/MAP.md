@@ -288,17 +288,22 @@ _Search both ledgers, and resolve a request token, from anywhere in the family._
 
 ### mdept/refute.py
 _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
-- const EXACT_TYPES  ·L34
-- @dataclass class Witness  ·L38: One point that satisfies an entry's hypotheses and violates its conclusion.
-  - verify(self) -> bool  ·L47: True when the claim evaluates to exactly False at this point.
-  - _require_exact(self, name: str, value) -> None  ·L55
-- _is_sympy(value) -> bool  ·L71
-- _as_bool(value, entry: str) -> bool  ·L75
-- load(path: Path) -> Witness  ·L87: Import an artifact and call its `refute()`. Raises when the contract is broken.
-- run_all(directory: Path) -> dict  ·L113: Run every artifact in a directory. Returns {entry id: [{file, verified, exact}]}.
-- artifacts(report: dict) -> list[tuple[str, dict]]  ·L138: Every (entry id, artifact record) pair in a report, in a stable order.
-- all_verified(report: dict) -> bool  ·L143
-- main(argv: list[str] | None=None) -> int  ·L147
+- const EXACT_TYPES  ·L35
+- @dataclass class Witness  ·L39: One point that satisfies an entry's hypotheses and violates its conclusion.
+  - verify(self) -> bool  ·L48: True when the claim evaluates to exactly False at this point.
+  - _require_exact(self, name: str, value) -> None  ·L56
+- _is_sympy(value) -> bool  ·L72
+- _as_bool(value, entry: str) -> bool  ·L76
+- load(path: Path) -> Witness  ·L88: Import an artifact and call its `refute()`. Raises when the contract is broken.
+- run_all(directory: Path) -> dict  ·L114: Run every artifact in a directory. Returns {entry id: [{file, verified, exact}]}.
+- run_entry(directory: Path, entry: str) -> dict  ·L129: Run only the artifacts that belong to one entry. Returns the `run_all` shape.
+- _artifact_paths(directory: Path) -> list[Path]  ·L154
+- _run_paths(directory: Path, paths: list[Path]) -> dict  ·L158
+- _belongs_to(path: Path, entry: str) -> bool  ·L170: True when the file is named for the entry or its source declares `entry="<ID>"`.
+- _declared_entries(path: Path) -> set[str]  ·L177: Every string literal passed as `entry=` in the artifact's source, read without running it.
+- artifacts(report: dict) -> list[tuple[str, dict]]  ·L198: Every (entry id, artifact record) pair in a report, in a stable order.
+- all_verified(report: dict) -> bool  ·L203
+- main(argv: list[str] | None=None) -> int  ·L207
 
 ### mdept/release.py
 _Move a settled entry from the private repo into this public one._
@@ -481,6 +486,13 @@ _Guard: every counterexample artifact still refutes what it claims to refute._
 - test_a_module_without_refute_is_refused(tmp_path)  ·L100
 - test_module_invocation_uses_canonical_witness_class()  ·L107: `python -m mdept.refute` runs refute.py as `__main__`; artifacts import the canonical
 - test_a_relabelled_version_one_audit_is_refused_by_shape(tmp_path)  ·L131: The version number is a claim; the shape is the fact.
+- _write_artifact(directory, name, entry, body="point={'n': 1}, claim=lambda n: n * n > n")  ·L154
+- @pytest.fixture mixed_directory(tmp_path)  ·L165: Three entries' artifacts, one of them broken, one named off the convention.
+- test_entry_run_selects_by_name_prefix_and_skips_broken_neighbours(mixed_directory)  ·L177
+- test_entry_run_selects_by_declared_entry(mixed_directory)  ·L182
+- test_entry_run_with_no_match_names_the_id(mixed_directory, capsys)  ·L187
+- test_entry_run_refuses_a_name_match_whose_witness_names_another_entry(tmp_path)  ·L194
+- test_cli_entry_and_all_forms(mixed_directory, capsys)  ·L202
 
 ### tests/test_lean_build.py
 _Guard: the Lake package builds._

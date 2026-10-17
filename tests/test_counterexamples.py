@@ -149,3 +149,64 @@ def test_a_relabelled_version_one_audit_is_refused_by_shape(tmp_path):
     )
     with pytest.raises(ConfigError, match="version 1 content with a new label"):
         audit.read_cached_audit(tmp_path)
+
+
+def _write_artifact(directory, name, entry, body="point={'n': 1}, claim=lambda n: n * n > n"):
+    (directory / name).write_text(
+        '"""A toy claim that every integer strictly exceeds its own square."""\n\n'
+        "from mdept.refute import Witness\n\n\n"
+        "def refute() -> Witness:\n"
+        f"    return Witness(entry={entry!r}, {body})\n",
+        encoding="utf-8",
+    )
+
+
+@pytest.fixture
+def mixed_directory(tmp_path):
+    """Three entries' artifacts, one of them broken, one named off the convention."""
+    root = tmp_path
+    (root / "ledger").mkdir()
+    directory = root / "counterexamples"
+    directory.mkdir()
+    _write_artifact(directory, "MD_0002_toy.py", "MD_0002")
+    _write_artifact(directory, "renamed_witness.py", "MD_0003")
+    (directory / "MD_0004_broken.py").write_text("raise RuntimeError('unrelated breakage')\n", encoding="utf-8")
+    return root
+
+
+def test_entry_run_selects_by_name_prefix_and_skips_broken_neighbours(mixed_directory):
+    report = refute.run_entry(mixed_directory / "counterexamples", "MD_0002")
+    assert report == {"MD_0002": [{"file": "counterexamples/MD_0002_toy.py", "verified": True, "exact": True}]}
+
+
+def test_entry_run_selects_by_declared_entry(mixed_directory):
+    report = refute.run_entry(mixed_directory / "counterexamples", "MD_0003")
+    assert report == {"MD_0003": [{"file": "counterexamples/renamed_witness.py", "verified": True, "exact": True}]}
+
+
+def test_entry_run_with_no_match_names_the_id(mixed_directory, capsys):
+    with pytest.raises(CheckError, match="MD_0009"):
+        refute.run_entry(mixed_directory / "counterexamples", "MD_0009")
+    assert refute.main(["MD_0009", "--root", str(mixed_directory)]) == 1
+    assert "FAIL no counterexample artifact for MD_0009" in capsys.readouterr().err
+
+
+def test_entry_run_refuses_a_name_match_whose_witness_names_another_entry(tmp_path):
+    directory = tmp_path / "counterexamples"
+    directory.mkdir()
+    _write_artifact(directory, "MD_0002_mislabelled.py", "MD_0005")
+    with pytest.raises(CheckError, match="MD_0005"):
+        refute.run_entry(directory, "MD_0002")
+
+
+def test_cli_entry_and_all_forms(mixed_directory, capsys):
+    assert refute.main(["MD_0002", "--root", str(mixed_directory)]) == 0
+    assert capsys.readouterr().out == "ok  MD_0002 counterexamples/MD_0002_toy.py (exact)\n"
+    assert refute.main(["--all", "--root", str(mixed_directory)]) == 1
+    assert "unrelated breakage" in capsys.readouterr().err
+    (mixed_directory / "counterexamples" / "MD_0004_broken.py").unlink()
+    assert refute.main(["--all", "--root", str(mixed_directory)]) == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "ok  MD_0002 counterexamples/MD_0002_toy.py (exact)",
+        "ok  MD_0003 counterexamples/renamed_witness.py (exact)",
+    ]
