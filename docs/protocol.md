@@ -78,7 +78,8 @@ decision may depend on one.
 Every file that names an entry is a citation, code as much as prose, and each one is
 listed in that entry's `cited_by` as `<repo>:<path>`. I21 fails on a mention the ledger
 does not know about, because an unlisted reliance is the one a refutation never
-reaches; I15 requires the status word on the citing line itself. A generated file is
+reaches; I15 requires the status word on the citing line itself, or at the start of
+the next line when the ID ends a wrapped line. A generated file is
 skipped: the citation belongs in the source it was generated from.
 
 ### 5. Commit in the consumer repo separately

@@ -728,6 +728,24 @@ def i14_request_backlinks(ctx: Context) -> None:
 
 # --- I15 consumer citations -------------------------------------------------
 
+#: A citation may wrap: an ID that starts within this many characters of its
+#: line's end may carry its status word at the start of the next line.
+WRAP_WINDOW = 20
+
+
+def citation_text(lines: list[str], index: int, token: str) -> str:
+    """The text that must carry `token`'s status word for its citation on `lines[index]`.
+
+    That is the line itself, and the next line with it when the token starts in
+    the line's last `WRAP_WINDOW` characters: prose wrapped at a fixed width puts
+    the ID at the end of one line and its status word at the start of the next.
+    """
+    line = lines[index].rstrip()
+    start = line.rfind(token)
+    if start >= 0 and start >= len(line) - WRAP_WINDOW and index + 1 < len(lines):
+        return line + "\n" + lines[index + 1]
+    return line
+
 
 def i15_consumer_citations(ctx: Context) -> None:
     """Every line of a listed file that names an entry carries its status word.
@@ -735,7 +753,8 @@ def i15_consumer_citations(ctx: Context) -> None:
     `cited_by` may name any text file the consumer owns, code included: a
     comment or a docstring that leans on an unsettled statement is a citation,
     and a line is a line wherever it sits. The status word is what makes the
-    reliance readable where it is written, without a trip to the ledger.
+    reliance readable where it is written, without a trip to the ledger. A
+    citation wrapped at a line break counts as one line (`citation_text`).
 
     Every violation across the family is collected and reported together, one
     per line, so a fix that spans several files is one round, not one per file.
@@ -770,16 +789,18 @@ def i15_consumer_citations(ctx: Context) -> None:
                 note(where, f"cited_by[{i}]",
                      f"{doc} is not a text file, so it carries no citation line")
                 continue
-            lines = [(n, l) for n, l in enumerate(text.splitlines(), start=1) if entry.id in l]
-            if not lines:
+            all_lines = text.splitlines()
+            citing = [k for k, l in enumerate(all_lines) if entry.id in l]
+            if not citing:
                 note(where, f"cited_by[{i}]", f"{doc} does not mention {entry.id}")
                 continue
             required = schema.citation_words(entry.status)
             if not required:
                 continue
-            for number, line in lines:
-                if not any(word in line.lower() for word in required):
-                    note(f"{repo}:{rel}:{number}", "<line>",
+            for k in citing:
+                cited = citation_text(all_lines, k, entry.id).lower()
+                if not any(word in cited for word in required):
+                    note(f"{repo}:{rel}:{k + 1}", "<line>",
                          f"cites {entry.id} without any of {list(required)}; "
                          f"the entry is {entry.status}")
     if violations:

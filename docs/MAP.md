@@ -113,19 +113,21 @@ _Ledger invariants I1 to I21._
 - _known_in_sibling(ctx: Context, token: str) -> bool  ·L645: True when a private repo's token names an entry that lives in the public one.
 - i13_inbox(ctx: Context) -> None  ·L662
 - i14_request_backlinks(ctx: Context) -> None  ·L699
-- i15_consumer_citations(ctx: Context) -> None  ·L732: Every line of a listed file that names an entry carries its status word.
-- i16_generated_views(ctx: Context) -> None  ·L792
-- i17_prose(ctx: Context) -> None  ·L812
-- i18_dates(ctx: Context) -> None  ·L826
-- i19_attempt_records(ctx: Context) -> None  ·L845
-- i20_sorry_fence(ctx: Context) -> None  ·L876
-- i21_unlisted_citations(ctx: Context) -> None  ·L888: Every entry mention in a listed consumer appears in that entry's `cited_by`.
-- const INVARIANTS  ·L940
-- bibliography_path(root: Path, kind: str) -> Path  ·L966: The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L986
-- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1035: Narrow the context to the named entries, refusing the modes that read the whole tree.
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1059: Run every invariant in order; `CheckError` names the first failing invariant.
-- main(argv: list[str] | None=None) -> int  ·L1075
+- const WRAP_WINDOW  ·L733
+- citation_text(lines: list[str], index: int, token: str) -> str  ·L736: The text that must carry `token`'s status word for its citation on `lines[index]`.
+- i15_consumer_citations(ctx: Context) -> None  ·L750: Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L813
+- i17_prose(ctx: Context) -> None  ·L833
+- i18_dates(ctx: Context) -> None  ·L847
+- i19_attempt_records(ctx: Context) -> None  ·L866
+- i20_sorry_fence(ctx: Context) -> None  ·L897
+- i21_unlisted_citations(ctx: Context) -> None  ·L909: Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- const INVARIANTS  ·L961
+- bibliography_path(root: Path, kind: str) -> Path  ·L987: The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1007
+- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1056: Narrow the context to the named entries, refusing the modes that read the whole tree.
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1080: Run every invariant in order; `CheckError` names the first failing invariant.
+- main(argv: list[str] | None=None) -> int  ·L1096
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -562,15 +564,20 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L409: A consumer checkout is scanned through git, and every violation is listed.
 - test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L438: MD_0006 is cited from two files in ToyRepo and is one row, not two.
 - test_i15_reports_every_violation_in_one_run(tmp_path)  ·L452: Two citing lines without their status word fail together, one line each.
-- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L474
-- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L480: MD_0001 carries an orphan artifact; MD_0003 is clean.
-- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L492
-- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L499: A half-built Result of MD_0001 and a stale index fail only the full run.
-- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L519
-- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L525
-- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L534
-- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L544
-- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L555
+- const TOY_PARAGRAPH  ·L471
+- _rewrite_toy(root: Path, paragraph: str) -> None  ·L475
+- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L482: An ID in a line's last characters carries its status word at the next line's start.
+- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L491
+- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L502
+- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L514
+- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L520: MD_0001 carries an orphan artifact; MD_0003 is clean.
+- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L532
+- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L539: A half-built Result of MD_0001 and a stale index fail only the full run.
+- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L559
+- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L565
+- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L574
+- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L584
+- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L595
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._

@@ -468,6 +468,46 @@ def test_i15_reports_every_violation_in_one_run(tmp_path):
     assert "cites MD_0006 without any of" in lines[1]
 
 
+TOY_PARAGRAPH = ("This section relies on MD_0005 (conjectured, not yet settled) and on\n"
+                 "MD_0006 (open, pending), so no verdict here depends on either.")
+
+
+def _rewrite_toy(root: Path, paragraph: str) -> None:
+    toy = root / "consumers/ToyRepo/docs/toy.md"
+    text = toy.read_text(encoding="utf-8")
+    assert TOY_PARAGRAPH in text
+    toy.write_text(text.replace(TOY_PARAGRAPH, paragraph), encoding="utf-8")
+
+
+def test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path):
+    """An ID in a line's last characters carries its status word at the next line's start."""
+    root = stage(tmp_path) / "good_private"
+    _rewrite_toy(root, "This section relies on the toy bound MD_0005\n"
+                       "(conjectured, not yet settled) and on MD_0006 (open, pending), so no\n"
+                       "verdict here depends on either.")
+    check.run(root, family=True)
+
+
+def test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    _rewrite_toy(root, "This section relies on MD_0005 as the bound it\n"
+                       "uses (conjectured, not yet settled) and on MD_0006 (open, pending), so\n"
+                       "no verdict here depends on either.")
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    lines = str(raised.value).splitlines()
+    assert len(lines) == 1 and "cites MD_0005 without any of" in lines[0]
+
+
+def test_citation_text_joins_the_next_line_only_inside_the_wrap_window():
+    tail = "x" * (check.WRAP_WINDOW - len("MD_0001") - 1)
+    near = ["relies on MD_0001" + tail, "(conjectured)"]
+    far = ["relies on MD_0001" + tail + "x" * 2, "(conjectured)"]
+    assert check.citation_text(near, 0, "MD_0001") == near[0] + "\n" + near[1]
+    assert check.citation_text(far, 0, "MD_0001") == far[0]
+    assert check.citation_text(near[:1], 0, "MD_0001") == near[0]
+
+
 # --- the scoped run (--entry) -----------------------------------------------
 
 
