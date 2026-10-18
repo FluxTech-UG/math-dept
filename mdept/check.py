@@ -1,10 +1,12 @@
 """Ledger invariants I1 to I21.
 
 Run: `python -m mdept.check [--root PATH] [--run-counterexamples] [--family] [--lean]`
+or, scoped: `python -m mdept.check --entry MD_0007 [--entry MD_0008 ...]`
 
 Every invariant raises `CheckError` on the first violation it finds, naming the
-invariant, the offending path, and the offending field; I21 collects every
-unlisted citation and raises them together, one per line. There is no warnings
+invariant, the offending path, and the offending field, except two that collect:
+I15 (consumer citations) and I21 (unlisted citations) gather every violation
+across the family and raise them together, one per line. There is no warnings
 tier and no partial pass: I9b is the single informational check, and it is
 reported as a notice that also lands in `ledger/INDEX.md` section 7.
 
@@ -17,6 +19,19 @@ Modes:
   listed there and absent from disk fails; it never skips.
 - `--lean`: additionally reads `audit/latest.json` and checks formal pointers,
   axioms, and statement hashes against it. A stale audit fails.
+- `--entry ID` (repeatable): the scoped run, one prover's gate while other
+  sessions work in the same checkout. Every invariant runs over the named
+  entries only. The invariants that walk the tree (I6 orphan artifacts, I11
+  extracts, I12 references, I17 prose, I19 role lines, I20 the sorry fence)
+  consider only the files that belong to a named entry: a stem that is the ID
+  or starts with the ID and an underscore, or a path the entry names in
+  `evidence`, `formal.file` or `source`. Another entry's files are ignored,
+  tracked or untracked; a file on an entry surface that belongs to no entry of
+  either ledger is still reported, since only the running session can own it.
+  I13 and I14 check the requests that name a scoped entry. I16 (the generated
+  views, rendered from the whole ledger) is skipped and left to the full run.
+  `--entry` excludes `--family` and `--lean`, which read the whole family and
+  a digest over every Lean source.
 
 Two scoping decisions worth knowing before reading the code:
 
@@ -34,6 +49,7 @@ Two scoping decisions worth knowing before reading the code:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -86,11 +102,69 @@ class Context:
     sibling: Path | None = None
     audit: dict | None = None
     notices: list = field(default_factory=list)
+    scope: frozenset | None = None
+    all_entries: list = field(default_factory=list)
     _sibling_entries: list | None = field(default=None, repr=False)
 
     @property
     def private(self) -> bool:
         return self.kind == "private"
+
+    @property
+    def scoped(self) -> bool:
+        return self.scope is not None
+
+    def owns(self, path) -> bool:
+        """True when `path` belongs to an entry in scope (always, unscoped).
+
+        A file belongs to an entry when its stem is the entry's ID or starts
+        with the ID and an underscore (`triage/MD_0007.md`,
+        `counterexamples/MD_0007_slug.py`, `MathDeptPrivate/Conjectures/MD_0007.lean`),
+        or when the entry names it in `evidence`, `formal.file` or, for its
+        source extract, `source`.
+        """
+        if self.scope is None:
+            return True
+        owner = owner_id(Path(path))
+        if owner is not None and owner in self.scope:
+            return True
+        return self.rel(path) in self._owned_paths()
+
+    def unowned_by_any(self, path) -> bool:
+        """True when no entry of either ledger claims `path` by stem or by field."""
+        owner = owner_id(Path(path))
+        if owner is not None and owner in self.family_by_id():
+            return False
+        rel = self.rel(path)
+        return not any(rel in _entry_paths(e) for e in self.all_entries)
+
+    def counts(self, path) -> bool:
+        """Whether a scoped run reports on an entry-file surface's `path`.
+
+        Unscoped, every file counts. Scoped, a file counts when it belongs to a
+        named entry, or when it belongs to no entry at all (an orphan that can
+        only be the running session's own); a file of another entry is left to
+        that entry's own run and to the lead's full check.
+        """
+        return self.owns(path) or self.unowned_by_any(path)
+
+    def checked_requests(self) -> list:
+        """The requests whose lifecycle this run checks: all, or those naming an entry in scope."""
+        if self.scope is None:
+            return self.requests
+        stems = set()
+        for entry in self.entries:
+            token = entry.at("provenance.stipulated_by.request")
+            if token is not None:
+                stems.add(schema.REQUEST_TOKEN_RE.fullmatch(token).group(1))
+        return [r for r in self.requests
+                if r.stem in stems or self.scope & parse.id_tokens(r.outcome())]
+
+    def _owned_paths(self) -> set[str]:
+        owned: set[str] = set()
+        for entry in self.entries:
+            owned |= _entry_paths(entry)
+        return owned
 
     def rel(self, path) -> str:
         try:
@@ -112,7 +186,30 @@ class Context:
                 if sibling is not None and sibling != self.root and (sibling / "ledger").is_dir()
                 else []
             )
-        return {e.id: e for e in [*self._sibling_entries, *self.entries]}
+        return {e.id: e for e in [*self._sibling_entries, *(self.all_entries or self.entries)]}
+
+
+_OWNER_RE = re.compile(r"^(MD_\d{4})(?:_|$)")
+
+
+def owner_id(path: Path) -> str | None:
+    """The entry ID a file's stem names, or None."""
+    match = _OWNER_RE.match(path.stem)
+    return match.group(1) if match else None
+
+
+def _entry_paths(entry) -> set[str]:
+    """The repo-relative paths an entry claims through its own fields."""
+    paths = {entry.rel}
+    paths |= {item["path"] for item in entry.front.get("evidence") or []}
+    formal_file = (entry.front.get("formal") or {}).get("file")
+    if formal_file:
+        paths.add(formal_file)
+    source = entry.front.get("source")
+    match = schema.BIB_TAG_RE.match(source) if isinstance(source, str) else None
+    if match:
+        paths.add(f"sources/{match.group(1)}_extract.md")
+    return paths
 
 
 # --- I1 filename = id -------------------------------------------------------
@@ -321,7 +418,7 @@ def i6_counterexamples(ctx: Context) -> None:
         for path in sorted(directory.glob("*.py")):
             if path.name.startswith("_"):
                 continue
-            if path.resolve() not in claimed:
+            if path.resolve() not in claimed and ctx.counts(path):
                 fail("I6 counterexample", ctx.rel(path), "<orphan>",
                      "no ledger entry lists this artifact as evidence")
 
@@ -490,7 +587,13 @@ def i11_tag_sync(ctx: Context) -> None:
         return
     sources = ctx.root / "sources"
     on_disk = {p.stem[: -len("_extract")] for p in sources.glob("*_extract.md")} if sources.is_dir() else set()
-    for tag in sorted(ctx.bibliography):
+    tags = set(ctx.bibliography)
+    if ctx.scoped:
+        # A scoped run checks the extracts its entries rest on, and no other.
+        tags = {schema.BIB_TAG_RE.match(e.front["source"]).group(1)
+                for e in ctx.entries if e.front["source"] is not None}
+        on_disk &= tags
+    for tag in sorted(tags & set(ctx.bibliography)):
         if tag not in on_disk:
             fail("I11 tag sync", "bibliography.md", f"[{tag}]",
                  f"no extract at sources/{tag}_extract.md")
@@ -535,7 +638,8 @@ def _reference_surfaces(ctx: Context) -> list[Path]:
             paths.append(target)
         elif target.is_dir():
             paths.extend(parse.iter_markdown(target))
-    return [p for p in sorted(set(paths)) if p.name not in ("TEMPLATE.md", "INDEX.md")]
+    return [p for p in sorted(set(paths))
+            if p.name not in ("TEMPLATE.md", "INDEX.md") and ctx.owns(p)]
 
 
 def _known_in_sibling(ctx: Context, token: str) -> bool:
@@ -558,7 +662,7 @@ def _known_in_sibling(ctx: Context, token: str) -> bool:
 def i13_inbox(ctx: Context) -> None:
     if not ctx.private:
         return
-    for request in ctx.requests:
+    for request in ctx.checked_requests():
         if not schema.REQUEST_STEM_RE.match(request.stem):
             fail("I13 inbox", request.rel, "<filename>",
                  "a request filename is YYYY-MM-DD-slug.md with a lower-case hyphenated slug")
@@ -611,7 +715,7 @@ def i14_request_backlinks(ctx: Context) -> None:
         if request.closed and entry.id not in parse.id_tokens(request.outcome()):
             fail("I14 back-link", request.rel, "Outcome",
                  f"{entry.id} cites this request but the Outcome does not name it")
-    for request in ctx.requests:
+    for request in ctx.checked_requests():
         for token in sorted(parse.id_tokens(request.outcome())):
             entry = ctx.by_id.get(token)
             if entry is None:
@@ -632,45 +736,65 @@ def i15_consumer_citations(ctx: Context) -> None:
     comment or a docstring that leans on an unsettled statement is a citation,
     and a line is a line wherever it sits. The status word is what makes the
     reliance readable where it is written, without a trip to the ledger.
+
+    Every violation across the family is collected and reported together, one
+    per line, so a fix that spans several files is one round, not one per file.
     """
     if not ctx.family:
         return
+    violations: list[str] = []
+
+    def note(path, field_name: str, message: str) -> None:
+        violations.append(f"I15 citation: {path}: field '{field_name}': {message}")
+
     for entry in ctx.entries:
         for i, citation in enumerate(entry.front["cited_by"]):
+            where = ctx.rel(entry.path)
             repo, rel, _locator = schema.split_cited_by(citation)
             if repo not in ctx.consumers:
-                fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
+                note(where, f"cited_by[{i}]",
                      f"{repo!r} is not a key of repos.yaml consumers {sorted(ctx.consumers)}")
+                continue
             consumer = ctx.consumers[repo]
             if consumer.archived is not None:
-                fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
+                note(where, f"cited_by[{i}]",
                      f"{repo!r} is archived ({consumer.archived}); a citation lives in a "
                      "file the check can read, so an archived repo cites nothing")
+                continue
             doc = _consumer_path(ctx, repo, "I15 citation") / rel
             if not doc.is_file():
-                fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]", f"{doc} does not exist")
+                note(where, f"cited_by[{i}]", f"{doc} does not exist")
+                continue
             text = consumer.text(doc)
             if text is None:
-                fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
+                note(where, f"cited_by[{i}]",
                      f"{doc} is not a text file, so it carries no citation line")
+                continue
             lines = [(n, l) for n, l in enumerate(text.splitlines(), start=1) if entry.id in l]
             if not lines:
-                fail("I15 citation", ctx.rel(entry.path), f"cited_by[{i}]",
-                     f"{doc} does not mention {entry.id}")
+                note(where, f"cited_by[{i}]", f"{doc} does not mention {entry.id}")
+                continue
             required = schema.citation_words(entry.status)
             if not required:
                 continue
             for number, line in lines:
                 if not any(word in line.lower() for word in required):
-                    fail("I15 citation", f"{repo}:{rel}:{number}", "<line>",
+                    note(f"{repo}:{rel}:{number}", "<line>",
                          f"cites {entry.id} without any of {list(required)}; "
                          f"the entry is {entry.status}")
+    if violations:
+        raise CheckError("\n".join(violations))
 
 
 # --- I16 generated views fresh ----------------------------------------------
 
 
 def i16_generated_views(ctx: Context) -> None:
+    if ctx.scoped:
+        # The views are rendered from the whole ledger, so another entry's
+        # in-flight edit stales them; they are regenerated and checked by the
+        # lead after the wave.
+        return
     from . import index as index_mod
 
     for rel, rendered in index_mod.render(ctx.root).items():
@@ -687,6 +811,8 @@ def i16_generated_views(ctx: Context) -> None:
 
 def i17_prose(ctx: Context) -> None:
     for path in parse.iter_markdown(ctx.root, exclude=EM_DASH_EXCLUDE):
+        if not ctx.owns(path):
+            continue
         text = path.read_text(encoding="utf-8")
         for number, line in enumerate(text.splitlines(), start=1):
             if schema.EM_DASH in line:
@@ -722,7 +848,7 @@ def i19_attempt_records(ctx: Context) -> None:
         if not directory.is_dir():
             continue
         for path in parse.iter_markdown(directory):
-            if path.name in ("MAP.md", "TEMPLATE.md", "INDEX.md"):
+            if path.name in ("MAP.md", "TEMPLATE.md", "INDEX.md") or not ctx.owns(path):
                 continue
             parse.parse_role_line(path)
     if not ctx.private:
@@ -748,7 +874,8 @@ def i19_attempt_records(ctx: Context) -> None:
 
 
 def i20_sorry_fence(ctx: Context) -> None:
-    violations = audit_mod.sorry_violations(ctx.root)
+    violations = [v for v in audit_mod.sorry_violations(ctx.root)
+                  if ctx.counts(ctx.root / v["file"])]
     if violations:
         first = violations[0]
         fail("I20 sorry fence", first["file"], "sorry",
@@ -856,7 +983,8 @@ def bibliography_path(root: Path, kind: str) -> Path:
     return sibling / "bibliography.md"
 
 
-def build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context:
+def build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool,
+                  scope: list[str] | None = None) -> Context:
     root = Path(root).resolve()
     _precheck_filenames(root)
     located = family_mod.locate(root)
@@ -874,7 +1002,10 @@ def build_context(root: Path, run_counterexamples: bool, family: bool, lean: boo
         run_counterexamples=run_counterexamples,
         family=family,
         lean=lean,
+        all_entries=entries,
     )
+    if scope is not None:
+        _apply_scope(ctx, scope, family, lean)
     if family:
         repos_yaml = root / "repos.yaml"
         if not repos_yaml.is_file():
@@ -901,20 +1032,54 @@ def build_context(root: Path, run_counterexamples: bool, family: bool, lean: boo
     return ctx
 
 
+def _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None:
+    """Narrow the context to the named entries, refusing the modes that read the whole tree."""
+    if family:
+        raise ConfigError(
+            "--entry and --family are exclusive: --family reads every consumer and both "
+            "ledgers, which is the lead's full check, not one entry's gate")
+    if lean:
+        raise ConfigError(
+            "--entry and --lean are exclusive: audit/latest.json is one digest over every "
+            "Lean source, so another entry's edit stales it; the entry's gate is "
+            "`lake build` of its own module")
+    if not scope:
+        raise ConfigError("--entry names at least one entry ID")
+    for entry_id in scope:
+        if not schema.ID_RE.match(entry_id):
+            raise ConfigError(f"--entry {entry_id!r} is not an entry ID like MD_0007")
+        if entry_id not in ctx.by_id:
+            raise ConfigError(
+                f"--entry {entry_id} has no ledger file in {ctx.root / 'ledger'}; "
+                "a scoped run checks entries of the repo it runs in")
+    ctx.scope = frozenset(scope)
+    ctx.entries = [e for e in ctx.all_entries if e.id in ctx.scope]
+
+
 def run(root: Path | str | None = None,
         run_counterexamples: bool = False,
         family: bool = False,
-        lean: bool = False) -> Context:
-    """Run every invariant in order. Raises `CheckError` on the first violation."""
+        lean: bool = False,
+        entries: list[str] | None = None) -> Context:
+    """Run every invariant in order; `CheckError` names the first failing invariant.
+
+    `entries` scopes the run to those entry IDs (the CLI's `--entry`).
+    """
     resolved = config.find_repo_root(root) if root is None else Path(root).resolve()
-    ctx = build_context(resolved, run_counterexamples, family, lean)
+    ctx = build_context(resolved, run_counterexamples, family, lean, entries)
     for invariant in INVARIANTS:
         invariant(ctx)
     return ctx
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="python -m mdept.check", description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        prog="python -m mdept.check", description=__doc__.splitlines()[0],
+        epilog="A scoped run, `--entry MD_0007 [--entry MD_0008 ...]`, is one entry's gate while "
+               "other sessions work in the same checkout: every invariant over the named entries "
+               "and the files that belong to them, other entries' files ignored, an orphan file "
+               "that belongs to no entry still reported. The generated views (I16) are left to "
+               "the full run. It excludes --family and --lean.")
     parser.add_argument("--root", default=None, help="repo root (default: nearest ancestor with ledger/)")
     parser.add_argument("--run-counterexamples", action="store_true",
                         help="execute every counterexample artifact and require its witness to verify")
@@ -922,16 +1087,20 @@ def main(argv: list[str] | None = None) -> int:
                         help="resolve sibling and consumer repos through repos.yaml")
     parser.add_argument("--lean", action="store_true",
                         help="check formal pointers against the cached audit/latest.json")
+    parser.add_argument("--entry", action="append", default=None, metavar="ID",
+                        help="scope the run to this entry and its files; repeatable; "
+                             "excludes --family and --lean")
     args = parser.parse_args(argv)
     try:
-        ctx = run(args.root, args.run_counterexamples, args.family, args.lean)
+        ctx = run(args.root, args.run_counterexamples, args.family, args.lean, args.entry)
     except (CheckError, ConfigError) as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
     modes = [name for name, on in
              (("counterexamples", args.run_counterexamples), ("family", args.family), ("lean", args.lean)) if on]
     print(f"ok {len(ctx.entries)} entries, {len(INVARIANTS)} invariants"
-          f"{', modes: ' + ', '.join(modes) if modes else ''} [{ctx.kind} repo]")
+          f"{', modes: ' + ', '.join(modes) if modes else ''}"
+          f"{', scope: ' + ', '.join(sorted(ctx.scope)) if ctx.scoped else ''} [{ctx.kind} repo]")
     for notice in ctx.notices:
         print(f"notice {notice}")
     return 0

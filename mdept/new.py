@@ -2,12 +2,18 @@
 
 Run either form:
 
-    python -m mdept.new --request 2026-09-04-three-basin --candidate C2
+    python -m mdept.new --request 2026-09-04-three-basin --candidate C2 [--kind K] [--topics a,b] [--domain "..."]
     python -m mdept.new --title "..." --kind lemma --topics a,b --domain "..." --who claude
 
 The first form is the normal path: a candidate in an inbox request becomes an
 entry with its provenance already filled in and its statement carried over. The
 second is for a statement born in this repo, with no consumer behind it.
+
+On the request form, `--kind`, `--topics` and `--domain` fill the candidate's
+`Kind`, `Topics` and `Domain` bullets: a flag given where the bullet is absent
+applies, a flag that disagrees with the bullet raises, naming both values.
+`--title`, `--who` and `--repo` belong to the title form (the request carries
+the title, the stipulator and the repo) and raise when given with `--request`.
 
 IDs are allocated as max plus one across BOTH repos, because entries are born
 private and released with gaps. Allocating from one repo alone would reissue an
@@ -137,7 +143,28 @@ def _candidate_section(request, candidate: str) -> tuple[str, dict]:
     )
 
 
-def from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str, str]:
+def _topics(value: str) -> list[str]:
+    return [t.strip() for t in value.split(",") if t.strip()]
+
+
+def _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None,
+                same=lambda a, b: a == b) -> str | None:
+    """The candidate's bullet, or the flag where the bullet is absent; a disagreement raises."""
+    if flag is None:
+        return block
+    if block is None:
+        return flag
+    if not same(block, flag):
+        raise ConfigError(
+            f"--{bullet.lower()} {flag!r} conflicts with the '{bullet}' bullet of {candidate} in "
+            f"{request.rel}, which says {block!r}; drop the flag or edit the request"
+        )
+    return block
+
+
+def from_request(root: Path, stem: str, candidate: str, model: str | None,
+                 kind: str | None = None, topics: str | None = None,
+                 domain: str | None = None) -> tuple[str, str, str]:
     """Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
 
     The anchor is copied from the request, never invented here, and its form is
@@ -157,15 +184,19 @@ def from_request(root: Path, stem: str, candidate: str, model: str | None) -> tu
         raise CheckError(f"I12 dangling: inbox/{stem}.md: field '<request>': no such request")
     title, fields = _candidate_section(request, candidate)
     source = request.front.get("from") or {}
+    kind = _merge_flag(request, candidate, "Kind", fields.get("Kind"), kind)
+    topics = _merge_flag(request, candidate, "Topics", fields.get("Topics"), topics,
+                         same=lambda a, b: _topics(a) == _topics(b))
+    domain = _merge_flag(request, candidate, "Domain", fields.get("Domain"), domain)
 
     entry_id = allocate_id(root)
     front = blank_front(entry_id)
     front["title"] = title
-    front["kind"] = fields.get("Kind", "lemma")
-    front["topics"] = [t.strip() for t in fields.get("Topics", "unsorted").split(",") if t.strip()]
+    front["kind"] = kind or "lemma"
+    front["topics"] = _topics(topics or "unsorted")
     front["provenance"]["raised_by"] = {
         "repo": source.get("repo"),
-        "domain": fields.get("Domain") or source.get("repo"),
+        "domain": domain or source.get("repo"),
         "doc": source.get("doc"),
         "anchor": source.get("anchor"),
         "application": parse.body_sections(request.body).get("Application", "").strip() or None,
@@ -197,9 +228,9 @@ def from_title(root: Path, args) -> tuple[str, str, str]:
     front = blank_front(entry_id)
     front["title"] = args.title
     front["kind"] = args.kind
-    front["topics"] = [t.strip() for t in args.topics.split(",") if t.strip()]
+    front["topics"] = _topics(args.topics)
     front["provenance"]["raised_by"] = {
-        "repo": args.repo,
+        "repo": args.repo or "math-dept",
         "domain": args.domain,
         "doc": None,
         "anchor": None,
@@ -257,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--topics", default=None, help="comma-separated, lower-case-hyphenated")
     parser.add_argument("--domain", default=None, help="one neutral line naming the mathematical domain")
     parser.add_argument("--who", default=None, choices=schema.WHO, help="who stipulated it")
-    parser.add_argument("--repo", default="math-dept", help="the repo that raised it (title form)")
+    parser.add_argument("--repo", default=None, help="the repo that raised it (title form; default math-dept)")
     parser.add_argument("--model", default=None, help="model identifier for the credit trail")
     args = parser.parse_args(argv)
 
@@ -266,7 +297,11 @@ def main(argv: list[str] | None = None) -> int:
         if args.request or args.candidate:
             if not (args.request and args.candidate):
                 parser.error("--request and --candidate are used together")
-            entry_id, path, anchor_form = from_request(root, args.request, args.candidate, args.model)
+            title_only = [f"--{f}" for f in ("title", "who", "repo") if getattr(args, f) is not None]
+            if title_only:
+                parser.error(f"{title_only} belong to the title form; the request carries them")
+            entry_id, path, anchor_form = from_request(root, args.request, args.candidate, args.model,
+                                                       args.kind, args.topics, args.domain)
         else:
             missing = [f for f in ("title", "kind", "topics", "domain", "who") if getattr(args, f) is None]
             if missing:

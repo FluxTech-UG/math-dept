@@ -147,6 +147,10 @@ now, and dated attempts live in the private `triage/` record.
 
 `python -m mdept.check` also takes `--run-counterexamples`, `--lean` and `--family`. A
 repo listed in `repos.yaml` by path that is absent fails the family check; it never skips.
+`--entry MD_0007` (repeatable) is the scoped run, one entry's gate while other sessions
+share the checkout: every invariant over the named entries and the files that belong to
+them, other entries' files ignored, a file that belongs to no entry still reported, I16
+left to the full run; it excludes `--family` and `--lean`.
 
 `repos.yaml` lists each consumer as a bare path, as `{path, ignore, view}`, or as
 `{archived: <where>}` for a repo whose files are kept off-line. An archived consumer

@@ -160,6 +160,9 @@ Underneath those:
   ledger. `--lean` reads the cached audit JSON and fails if it is stale against the Lean
   sources. `--family` resolves sibling repos through the private repo's `repos.yaml`, so
   it belongs to a session in `math-dept-private`.
+- `python -m mdept.check --entry MD_0007 [--entry ...]` is one entry's gate while other
+  sessions share the checkout: every invariant over the named entries and their own
+  files, other entries' files ignored (the module docstring has the rules).
 - `python -m mdept.index --check` regenerates the views in memory and fails on drift.
 - `python -m mdept.audit all --json` is the contract the validator consumes: sorry scan,
   per-declaration axioms and pretty-printed types, counterexample results.

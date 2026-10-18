@@ -444,3 +444,116 @@ def test_a_consumer_column_lists_each_entry_once(tmp_path):
     ]
     assert len(consumer_section) == 1
     assert consumer_section[0].count("MD_0006") == 2, "once as raised, once as cited"
+
+
+# --- I15 collects every violation -------------------------------------------
+
+
+def test_i15_reports_every_violation_in_one_run(tmp_path):
+    """Two citing lines without their status word fail together, one line each."""
+    root = stage(tmp_path) / "good_private"
+    toy = root / "consumers/ToyRepo/docs/toy.md"
+    text = toy.read_text(encoding="utf-8")
+    toy.write_text(text.replace(
+        "This section relies on MD_0005 (conjectured, not yet settled) and on\n"
+        "MD_0006 (open, pending), so no verdict here depends on either.",
+        "This section relies on MD_0005 as a result and on\n"
+        "MD_0006 as another, so verdicts here depend on both."), encoding="utf-8")
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    lines = str(raised.value).splitlines()
+    assert len(lines) == 2
+    assert all(line.startswith("I15 citation: ToyRepo:docs/toy.md:") for line in lines)
+    assert "cites MD_0005 without any of" in lines[0]
+    assert "cites MD_0006 without any of" in lines[1]
+
+
+# --- the scoped run (--entry) -----------------------------------------------
+
+
+def _orphan_for(root: Path, entry_id: str, slug: str = "stray") -> Path:
+    orphan = root / "counterexamples" / f"{entry_id}_{slug}.py"
+    orphan.write_text("def refute():\n    raise NotImplementedError\n", encoding="utf-8")
+    return orphan
+
+
+def test_a_scoped_run_ignores_another_entrys_orphan(tmp_path):
+    """MD_0001 carries an orphan artifact; MD_0003 is clean."""
+    root = stage(tmp_path) / "good_public"
+    _orphan_for(root, "MD_0001")
+    context = check.run(root, entries=["MD_0003"])
+    assert [e.id for e in context.entries] == ["MD_0003"]
+    with pytest.raises(CheckError, match=r"^I6 counterexample: counterexamples/MD_0001_stray\.py"):
+        check.run(root, entries=["MD_0001"])
+    with pytest.raises(CheckError, match=r"^I6 counterexample: counterexamples/MD_0001_stray\.py"):
+        check.run(root)
+
+
+def test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path):
+    root = stage(tmp_path) / "good_public"
+    _orphan_for(root, "MD_0042")
+    with pytest.raises(CheckError, match=r"^I6 counterexample: counterexamples/MD_0042_stray\.py"):
+        check.run(root, entries=["MD_0003"])
+
+
+def test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path):
+    """A half-built Result of MD_0001 and a stale index fail only the full run."""
+    root = stage(tmp_path) / "good_public"
+    lean = root / "MathDept/Results/MD_0001.lean"
+    lean.write_text(lean.read_text(encoding="utf-8").replace("  simp", "  sorry"), encoding="utf-8")
+    check.run(root, entries=["MD_0003"])
+    with pytest.raises(CheckError, match=r"^I20 sorry fence"):
+        check.run(root, entries=["MD_0001"])
+    (root / "ledger/INDEX.md").write_text("stale\n", encoding="utf-8")
+    check.run(root, entries=["MD_0003"])
+    with pytest.raises(CheckError, match=r"^I16 generated"):
+        check.run(root)
+
+
+@pytest.mark.parametrize("flags, message", [
+    (["--entry", "MD_0003", "--family"], "--entry and --family are exclusive"),
+    (["--entry", "MD_0003", "--lean"], "--entry and --lean are exclusive"),
+    (["--entry", "MD_0099"], "has no ledger file"),
+    (["--entry", "0003"], "is not an entry ID"),
+])
+def test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys):
+    root = stage(tmp_path) / "good_public"
+    assert check.main(["--root", str(root), *flags]) == 1
+    assert message in capsys.readouterr().err
+
+
+def test_the_scoped_cli_names_its_scope(tmp_path, capsys):
+    root = stage(tmp_path) / "good_public"
+    assert check.main(["--root", str(root), "--entry", "MD_0003", "--entry", "MD_0002"]) == 0
+    assert "scope: MD_0002, MD_0003" in capsys.readouterr().out
+
+
+# --- new: request-form flags apply or raise ---------------------------------
+
+
+def test_new_request_form_applies_kind_and_topics(tmp_path):
+    root = _stage_wrapped_request(tmp_path)
+    _, path, _ = new.from_request(root, "2026-09-02-wrapped", "C1", None,
+                                  kind="proposition", topics="toy, arithmetic")
+    front = parse.load_entries(root)[-1].front
+    assert Path(path).stem == front["id"]
+    assert front["kind"] == "proposition"
+    assert front["topics"] == ["toy", "arithmetic"]
+
+
+def test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path):
+    root = _stage_wrapped_request(tmp_path)
+    request = root / "inbox" / "2026-09-02-wrapped.md"
+    text = request.read_text(encoding="utf-8")
+    request.write_text(text.replace("- **Relation:** generalizes",
+                                    "- **Topics:** toy\n- **Relation:** generalizes"), encoding="utf-8")
+    with pytest.raises(ConfigError, match=r"--topics 'other' conflicts with the 'Topics' bullet"):
+        new.from_request(root, "2026-09-02-wrapped", "C1", None, topics="other")
+    assert not (root / "ledger" / "MD_0008.md").exists(), "nothing is written on a conflict"
+
+
+def test_new_request_form_refuses_title_form_flags(tmp_path):
+    root = _stage_wrapped_request(tmp_path)
+    with pytest.raises(SystemExit):
+        new.main(["--root", str(root), "--request", "2026-09-02-wrapped", "--candidate", "C1",
+                  "--who", "john"])

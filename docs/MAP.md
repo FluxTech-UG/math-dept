@@ -71,51 +71,61 @@ _Three guards over the Lean side, and the JSON contract the ledger reads._
 
 ### mdept/check.py
 _Ledger invariants I1 to I21._
-- const REFERENCE_SURFACES  ·L48
-- const EM_DASH_EXCLUDE  ·L61
-- const ROLE_LINE_SURFACES  ·L65
-- const STANDARD_AXIOMS  ·L67
-- fail(invariant: str, path, field_name: str, message: str) -> None  ·L70
-- @dataclass class Context  ·L75
-  - @property private(self) -> bool  ·L92
-  - rel(self, path) -> str  ·L95
-  - family_by_id(self) -> dict  ·L101: Both ledgers' entries by ID: an ID resolves wherever it lives.
-- i1_filename_is_id(ctx: Context) -> None  ·L121
-- _precheck_filenames(root: Path) -> None  ·L128
-- i2_permanence(ctx: Context) -> None  ·L138
-- i3_schema(ctx: Context) -> None  ·L169
-- i4_status_evidence(ctx: Context) -> None  ·L182
-- _require_how(ctx: Context, entry, settled, how: str) -> None  ·L238
-- i5_formal_pointer(ctx: Context) -> None  ·L247
-- i6_counterexamples(ctx: Context) -> None  ·L288
-- i7_raised_by(ctx: Context) -> None  ·L332: Every anchor is a form of the grammar, and resolves to one place.
-- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L351
-- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L390
-- i8_links(ctx: Context) -> None  ·L405
-- const _IMPLIED_BY  ·L425
-- const _IMPLIES  ·L426
-- const _ESTABLISHED  ·L427
-- i9a_no_contradiction(ctx: Context) -> None  ·L430
-- i9b_inheritance_notice(ctx: Context) -> None  ·L451: The one informational check. Its notices are section 7 of the generated index.
-- i10_cited_sources(ctx: Context) -> None  ·L461
-- i11_tag_sync(ctx: Context) -> None  ·L488
-- i12_dangling_references(ctx: Context) -> None  ·L510
-- _reference_surfaces(ctx: Context) -> list[Path]  ·L530
-- _known_in_sibling(ctx: Context, token: str) -> bool  ·L541: True when a private repo's token names an entry that lives in the public one.
-- i13_inbox(ctx: Context) -> None  ·L558
-- i14_request_backlinks(ctx: Context) -> None  ·L595
-- i15_consumer_citations(ctx: Context) -> None  ·L628: Every line of a listed file that names an entry carries its status word.
-- i16_generated_views(ctx: Context) -> None  ·L673
-- i17_prose(ctx: Context) -> None  ·L688
-- i18_dates(ctx: Context) -> None  ·L700
-- i19_attempt_records(ctx: Context) -> None  ·L719
-- i20_sorry_fence(ctx: Context) -> None  ·L750
-- i21_unlisted_citations(ctx: Context) -> None  ·L761: Every entry mention in a listed consumer appears in that entry's `cited_by`.
-- const INVARIANTS  ·L813
-- bibliography_path(root: Path, kind: str) -> Path  ·L839: The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool) -> Context  ·L859
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False) -> Context  ·L904: Run every invariant in order. Raises `CheckError` on the first violation.
-- main(argv: list[str] | None=None) -> int  ·L916
+- const REFERENCE_SURFACES  ·L64
+- const EM_DASH_EXCLUDE  ·L77
+- const ROLE_LINE_SURFACES  ·L81
+- const STANDARD_AXIOMS  ·L83
+- fail(invariant: str, path, field_name: str, message: str) -> None  ·L86
+- @dataclass class Context  ·L91
+  - @property private(self) -> bool  ·L110
+  - @property scoped(self) -> bool  ·L114
+  - owns(self, path) -> bool  ·L117: True when `path` belongs to an entry in scope (always, unscoped).
+  - unowned_by_any(self, path) -> bool  ·L133: True when no entry of either ledger claims `path` by stem or by field.
+  - counts(self, path) -> bool  ·L141: Whether a scoped run reports on an entry-file surface's `path`.
+  - checked_requests(self) -> list  ·L151: The requests whose lifecycle this run checks: all, or those naming an entry in scope.
+  - _owned_paths(self) -> set[str]  ·L163
+  - rel(self, path) -> str  ·L169
+  - family_by_id(self) -> dict  ·L175: Both ledgers' entries by ID: an ID resolves wherever it lives.
+- const _OWNER_RE  ·L192
+- owner_id(path: Path) -> str | None  ·L195: The entry ID a file's stem names, or None.
+- _entry_paths(entry) -> set[str]  ·L201: The repo-relative paths an entry claims through its own fields.
+- i1_filename_is_id(ctx: Context) -> None  ·L218
+- _precheck_filenames(root: Path) -> None  ·L225
+- i2_permanence(ctx: Context) -> None  ·L235
+- i3_schema(ctx: Context) -> None  ·L266
+- i4_status_evidence(ctx: Context) -> None  ·L279
+- _require_how(ctx: Context, entry, settled, how: str) -> None  ·L335
+- i5_formal_pointer(ctx: Context) -> None  ·L344
+- i6_counterexamples(ctx: Context) -> None  ·L385
+- i7_raised_by(ctx: Context) -> None  ·L429: Every anchor is a form of the grammar, and resolves to one place.
+- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L448
+- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L487
+- i8_links(ctx: Context) -> None  ·L502
+- const _IMPLIED_BY  ·L522
+- const _IMPLIES  ·L523
+- const _ESTABLISHED  ·L524
+- i9a_no_contradiction(ctx: Context) -> None  ·L527
+- i9b_inheritance_notice(ctx: Context) -> None  ·L548: The one informational check. Its notices are section 7 of the generated index.
+- i10_cited_sources(ctx: Context) -> None  ·L558
+- i11_tag_sync(ctx: Context) -> None  ·L585
+- i12_dangling_references(ctx: Context) -> None  ·L613
+- _reference_surfaces(ctx: Context) -> list[Path]  ·L633
+- _known_in_sibling(ctx: Context, token: str) -> bool  ·L645: True when a private repo's token names an entry that lives in the public one.
+- i13_inbox(ctx: Context) -> None  ·L662
+- i14_request_backlinks(ctx: Context) -> None  ·L699
+- i15_consumer_citations(ctx: Context) -> None  ·L732: Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L792
+- i17_prose(ctx: Context) -> None  ·L812
+- i18_dates(ctx: Context) -> None  ·L826
+- i19_attempt_records(ctx: Context) -> None  ·L845
+- i20_sorry_fence(ctx: Context) -> None  ·L876
+- i21_unlisted_citations(ctx: Context) -> None  ·L888: Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- const INVARIANTS  ·L940
+- bibliography_path(root: Path, kind: str) -> Path  ·L966: The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L986
+- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1035: Narrow the context to the named entries, refusing the modes that read the whole tree.
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1059: Run every invariant in order; `CheckError` names the first failing invariant.
+- main(argv: list[str] | None=None) -> int  ·L1075
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -206,20 +216,22 @@ _The generated views: `ledger/INDEX.md` and `ledger.json`._
 
 ### mdept/new.py
 _Allocate the next ID and write the entry file._
-- const CANDIDATE_HEADING_RE  ·L34
-- const BULLET_RE  ·L35
-- const LEDGER_IDS_RE  ·L36
-- const STATE_RE  ·L39
-- allocate_id(root: Path) -> str  ·L42: The next free ID across this repo and its sibling.
-- blank_front(entry_id: str) -> dict  ·L53: A schema-complete front matter with every key present and nothing invented.
-- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L78
-- _bullet_fields(block: str) -> dict  ·L104: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
-- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L126
-- from_request(root: Path, stem: str, candidate: str, model: str | None) -> tuple[str, str, str]  ·L140: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
-- from_title(root: Path, args) -> tuple[str, str, str]  ·L193: Write an entry raised in this repo, with no consumer request behind it.
-- _write_new(path: Path, text: str) -> None  ·L220
-- _record_on_request(path: Path, entry_id: str) -> None  ·L227: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
-- main(argv: list[str] | None=None) -> int  ·L250
+- const CANDIDATE_HEADING_RE  ·L40
+- const BULLET_RE  ·L41
+- const LEDGER_IDS_RE  ·L42
+- const STATE_RE  ·L45
+- allocate_id(root: Path) -> str  ·L48: The next free ID across this repo and its sibling.
+- blank_front(entry_id: str) -> dict  ·L59: A schema-complete front matter with every key present and nothing invented.
+- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L84
+- _bullet_fields(block: str) -> dict  ·L110: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
+- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L132
+- _topics(value: str) -> list[str]  ·L146
+- _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None, same=lambda a, b: a == b) -> str | None  ·L150: The candidate's bullet, or the flag where the bullet is absent; a disagreement raises.
+- from_request(root: Path, stem: str, candidate: str, model: str | None, kind: str | None=None, topics: str | None=None, domain: str | None=None) -> tuple[str, str, str]  ·L165: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
+- from_title(root: Path, args) -> tuple[str, str, str]  ·L224: Write an entry raised in this repo, with no consumer request behind it.
+- _write_new(path: Path, text: str) -> None  ·L251
+- _record_on_request(path: Path, entry_id: str) -> None  ·L258: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
+- main(argv: list[str] | None=None) -> int  ·L281
 
 ### mdept/parse.py
 _Read the markdown surfaces: ledger entries, bibliography, requests, role lines._
@@ -549,6 +561,16 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L396: The fixture cites `research/toy notes.md`, whose name contains a space.
 - test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L409: A consumer checkout is scanned through git, and every violation is listed.
 - test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L438: MD_0006 is cited from two files in ToyRepo and is one row, not two.
+- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L452: Two citing lines without their status word fail together, one line each.
+- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L474
+- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L480: MD_0001 carries an orphan artifact; MD_0003 is clean.
+- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L492
+- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L499: A half-built Result of MD_0001 and a stale index fail only the full run.
+- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L519
+- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L525
+- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L534
+- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L544
+- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L555
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._
