@@ -72,7 +72,7 @@ As a `prover` agent in a wave under `math-orchestration`, the run ends at the ar
 the entry's Lean file, carrying the stuck-path attempt notes when the proof stalled.
 Leave it where it sits and report the entry ID, the outcome (proven, stuck, or looks
 false), the artifact path, what was tried and where progress stopped, and anything the
-lead must decide.
+lead must decide. The agent's gate is scoped to its own entry: `python -m mdept.check --entry MD_####` and `lake build` of the entry's module, both results quoted in the report. The full `make check` and the pytest suite are the lead's, run once per wave, since in a shared checkout they fail on other agents' in-flight files.
 
 Everything shared is the lead's, after the wave: `status` and every other ledger field,
 the `git mv` into `Results/`, the commit, and `make regen` with its three parts

@@ -103,7 +103,7 @@ As a `prover` agent in a wave under `math-orchestration`, the run ends at the ar
 `counterexamples/MD_####_slug.py`, with `python -m mdept.refute MD_####` verifying.
 Leave it in place and report the entry ID, the outcome (exact witness, numeric witness,
 or none found), the artifact path, what was tried, the evidence tier it reaches, and
-anything the lead must decide. Steps 1 to 5 below and the `git mv` into `Results/` are
+anything the lead must decide. The agent's gate is scoped to its own entry: `python -m mdept.check --entry MD_####` and `lake build` of the entry's module, both results quoted in the report. The full `make check` and the pytest suite are the lead's, run once per wave, since in a shared checkout they fail on other agents' in-flight files. Steps 1 to 5 below and the `git mv` into `Results/` are
 the lead's, after the wave: set no `status` or other ledger field, run no `make regen`
 or any part of it (`gen_root.py`, `mdept.index`, `repo-outline`), and make no commit. A
 status the adversarial review has not seen is a status nobody checked, and each
