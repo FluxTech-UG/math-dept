@@ -28,6 +28,7 @@ another.
 | Coarse-graining and closed macro dynamics | A blockwise projection from micro states to macro states that commutes with the dynamics, so the macro update is closed; the supercell construction for cellular automata; instances of one micro rule with distinct exact coarse-grainings at different block sizes | semiconjugacy of maps, quotient dynamics, projection-operator methods | `IsraeliGoldenfeld2006`, `IsraeliGoldenfeld2004` |
 | Generalized Gibbs ensembles | The maximum-entropy state with one Lagrange multiplier per conserved quantity of an integrable model; its numerical test on lattice hard-core bosons and its observation in a split one-dimensional Bose gas | maximum-entropy states under constraints, Gibbs states, non-uniqueness of the macrovariable set | `Langen2015`, `Rigol2007`, `Kinoshita2006` |
 | Numerical integration of ODEs | The derivative of a Runge-Kutta solution with respect to its initial value equals the same method applied to the variational equation; symplecticity of Runge-Kutta methods from conservation of quadratic invariants | chain rule through compositions, ODE flows and their linearization, discrete sensitivities | `Hairer1999` |
+| Memory and conditioning in regulatory network models | Simulation surveys of memory types (UCS-based, pairing, transfer, associative, consolidation) under stimulus-clamp training protocols, in Boolean gene regulatory networks and in ODE pathway models, against random networks | input-driven dynamical systems, attractors and basins, Boolean networks | `BiswasManickaHoelLevin2021`, `BiswasClawsonLevin2022` |
 
 ## Entries
 
@@ -178,3 +179,19 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Used for:** the derivative of a Runge-Kutta solution with respect to its initial value equals the same method applied to the variational equation
 - **Mathlib:** `HasFDerivAt.comp`, `IsPicardLindelof`, `ODE_solution_unique` (v4.33.1; Runge-Kutta methods and the variational equation: none found, searched 2026-10-17)
 - **Ledger:** none yet
+
+### [BiswasManickaHoelLevin2021] Gene regulatory networks exhibit several kinds of memory: quantification of memory in biological and random transcriptional networks
+- **Authors:** Biswas, S.; Manicka, S.; Hoel, E.; Levin, M.
+- **Source:** iScience 24(3), 102131 (2021). DOI 10.1016/j.isci.2021.102131; PMC7970124. Results (memory prerequisites, Figs. 2-4; minimal networks, Fig. 5; prevalence, Figs. 6-9); Discussion; Limitations. Supplement Document S1 (Transparent methods) not read, unreachable 2026-10-25
+- **Kind:** paper
+- **Used for:** empirical survey of memory types, associative memory included, in Boolean gene regulatory networks against configuration models and random Boolean networks
+- **Mathlib:** `Function.IsFixedPt`; Boolean networks: none found, searched 2026-10-25
+- **Ledger:** MD_0097, MD_0099
+
+### [BiswasClawsonLevin2022] Learning in transcriptional network models: computational discovery of pathway-level memory and effective interventions
+- **Authors:** Biswas, S.; Clawson, W.; Levin, M.
+- **Source:** International Journal of Molecular Sciences 24(1), 285 (published online December 2022). DOI 10.3390/ijms24010285; PMC9820177. Secs. 2.1-2.8 (Figs. 2-4, 7-11), 4.1-4.6
+- **Kind:** paper
+- **Used for:** empirical survey of memory types, associative memory included, and of habituation and sensitization, in ODE pathway models from BioModels against random gene-circuit ODEs
+- **Mathlib:** `IsPicardLindelof`, `ODE_solution_unique`; input-driven attractor dynamics: none found, searched 2026-10-25
+- **Ledger:** MD_0096, MD_0097, MD_0098, MD_0099, MD_0100
