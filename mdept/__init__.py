@@ -11,6 +11,7 @@ Modules, each also runnable as `python -m mdept.<module>`:
 - `check`   invariants I1 to I20 over a ledger tree
 - `index`   the generated views `ledger/INDEX.md` and `ledger.json`
 - `new`     allocate the next ID and write an entry from the template
+- `settle`  set an entry's status and settled_by, the formal pointer from the audit
 - `release` move an entry from the private sibling into the public repo
 - `audit`   the `sorry` fence, the Lean axiom audit, the counterexample sweep
 - `refute`  the `Witness` contract and the counterexample runner

@@ -36,6 +36,14 @@ PROVEN_STATUSES = ("proven-formal", "proven-informal")
 KINDS = ("theorem", "lemma", "proposition", "identity", "bound", "definition")
 WHO = ("john", "claude", "both")
 HOW = ("citation", "counterexample", "lean", "informal-proof")
+#: The `settled_by.how` each settled status requires (I4). `merged` names none:
+#: a duplicate is settled by whatever settled the entry it merged into.
+SETTLING_HOW = {
+    "cited": "citation",
+    "proven-formal": "lean",
+    "proven-informal": "informal-proof",
+    "refuted": "counterexample",
+}
 EVIDENCE_KINDS = ("extract", "proof", "counterexample", "triage", "experiment")
 
 #: Evidence surfaces that exist only in the private repo. A released entry

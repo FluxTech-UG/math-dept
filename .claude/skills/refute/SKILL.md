@@ -115,7 +115,8 @@ collides with entries the agent did not write.
 1. `python scripts/gen_root.py --write` (when a Lean file moved)
 2. `python -m pytest`
 3. `repo-outline --write`
-4. Update `ledger/MD_####.md`: `status`, `evidence` (the counterexample path),
-   `provenance.settled_by` with `how: counterexample`, and `formal.decl` and
-   `formal.file` when the negation compiled.
+4. Add the counterexample path to `evidence` in `ledger/MD_####.md`, then
+   `python -m mdept.settle MD_#### --status refuted --by <who> --model <model>`
+   (`--decl <negation>` after `make lean` when the negation compiled), which writes
+   `status` and `provenance.settled_by` with `how: counterexample`.
 5. `git commit -m "MD_####: refuted"`

@@ -90,9 +90,10 @@ With no orchestration above the run, this close-out is yours.
 3. `python scripts/gen_root.py --write`
 4. `python -m pytest`
 5. `repo-outline --write`
-6. Update `ledger/MD_####.md`: `status`, `formal.decl`, `formal.file`,
-   `evidence`, `provenance.settled_by`, and `statement_hash` from the audit's
-   pretty-printed type.
+6. `make lean`, add any `evidence` rows to `ledger/MD_####.md`, then
+   `python -m mdept.settle MD_#### --status proven-formal --by <who> --model <model>`,
+   which writes `status`, `formal.decl`, `formal.file`, `provenance.settled_by` and
+   `statement_hash` from the audit (`docs/protocol.md`, close-out).
 7. `git commit -m "MD_####: proven"`
 
 ## Close out: stuck

@@ -168,6 +168,11 @@ Underneath those:
   per-declaration axioms and pretty-printed types, counterexample results.
 - `python -m mdept.refute --all` verifies every counterexample witness.
 - `python -m mdept.new` allocates the next ID with provenance pre-filled.
+- `python -m mdept.settle MD_0007 --status S --by WHO --model M [--how H] [--date D]
+  [--checked-by D] [--decl NAME] [--merged-into ID]` is the way a lead sets status: it
+  writes `status` and `provenance.settled_by` (for `proven-formal` also the formal
+  pointer and `statement_hash` from `audit/latest.json`), touches no other line, and
+  keeps the edit only when the entry's scoped check passes.
 - `python -m mdept.release MD_0007` moves a settled entry from private to public and
   abstracts its provenance.
 - `python scripts/gen_root.py --write` regenerates `MathDept.lean` after adding or moving

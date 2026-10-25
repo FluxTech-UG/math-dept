@@ -301,12 +301,12 @@ def i4_status_evidence(ctx: Context) -> None:
             if entry.front["source"] is None:
                 fail("I4 status/evidence", ctx.rel(entry.path), "source",
                      "a cited entry names the bibliography tag it rests on")
-            _require_how(ctx, entry, settled, "citation")
+            _require_how(ctx, entry, settled)
         elif status == "proven-formal":
             if entry.at("formal.decl") is None:
                 fail("I4 status/evidence", ctx.rel(entry.path), "formal.decl",
                      "a proven-formal entry points at the Lean declaration that proves it")
-            _require_how(ctx, entry, settled, "lean")
+            _require_how(ctx, entry, settled)
         elif status == "proven-informal":
             expected = f"proofs/{entry.id}.md"
             if expected not in by_kind.get("proof", []):
@@ -317,7 +317,7 @@ def i4_status_evidence(ctx: Context) -> None:
                 fail("I4 status/evidence", expected, "<body>",
                      "an informal proof states what blocks its formalization "
                      "under a 'Formalization blockers' heading")
-            _require_how(ctx, entry, settled, "informal-proof")
+            _require_how(ctx, entry, settled)
             if settled.get("checked_by") is None:
                 fail("I4 status/evidence", ctx.rel(entry.path), "provenance.settled_by.checked_by",
                      "an informal proof is only proven once a second session has checked it")
@@ -325,14 +325,15 @@ def i4_status_evidence(ctx: Context) -> None:
             if not by_kind.get("counterexample"):
                 fail("I4 status/evidence", ctx.rel(entry.path), "evidence",
                      "a refuted entry carries evidence {kind: counterexample, path: counterexamples/...}")
-            _require_how(ctx, entry, settled, "counterexample")
+            _require_how(ctx, entry, settled)
         elif status == "merged":
             if entry.front["merged_into"] is None:
                 fail("I4 status/evidence", ctx.rel(entry.path), "merged_into",
                      "a merged entry names the entry it merged into")
 
 
-def _require_how(ctx: Context, entry, settled, how: str) -> None:
+def _require_how(ctx: Context, entry, settled) -> None:
+    how = schema.SETTLING_HOW[entry.status]
     if settled.get("how") != how:
         fail("I4 status/evidence", ctx.rel(entry.path), "provenance.settled_by.how",
              f"status {entry.status!r} requires how {how!r}, found {settled.get('how')!r}")

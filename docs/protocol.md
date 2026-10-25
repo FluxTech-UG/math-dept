@@ -94,8 +94,14 @@ Fidelity checking, ID allocation, the cheap-first ladder and the triage record a
 
 ### Close-out
 
-1. Set the entry's `status`, its `evidence` list, and `provenance.settled_by` (who,
-   date, how, checked_by, model).
+1. Add the entry's `evidence` rows, then set its status with
+   `python -m mdept.settle MD_#### --status <status> --by <who> --model <model>`
+   (`--how`, `--date`, `--checked-by`, `--decl` and `--merged-into` where they apply).
+   It is the way a lead sets status: it writes `status` and `provenance.settled_by`
+   (who, date, how, checked_by, model), for `proven-formal` also `formal.decl`,
+   `formal.file` and `statement_hash` from `audit/latest.json`, changes no other
+   line, and keeps the edit only when `python -m mdept.check --entry MD_####`
+   passes. Its module docstring states every refusal.
 2. Append the Outcome block to the request, one line per candidate, each mapping
    `C<n>` to a ledger ID or to `declined: <reason>`. That block is what
    `mdept.query --resolve` reads back to the consumer.
