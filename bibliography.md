@@ -186,7 +186,7 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** empirical survey of memory types, associative memory included, in Boolean gene regulatory networks against configuration models and random Boolean networks
 - **Mathlib:** `Function.IsFixedPt`; Boolean networks: none found, searched 2026-10-25
-- **Ledger:** MD_0097, MD_0099
+- **Ledger:** none yet
 
 ### [BiswasClawsonLevin2022] Learning in transcriptional network models: computational discovery of pathway-level memory and effective interventions
 - **Authors:** Biswas, S.; Clawson, W.; Levin, M.
@@ -194,4 +194,4 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** empirical survey of memory types, associative memory included, and of habituation and sensitization, in ODE pathway models from BioModels against random gene-circuit ODEs
 - **Mathlib:** `IsPicardLindelof`, `ODE_solution_unique`; input-driven attractor dynamics: none found, searched 2026-10-25
-- **Ledger:** MD_0096, MD_0097, MD_0098, MD_0099, MD_0100
+- **Ledger:** none yet
