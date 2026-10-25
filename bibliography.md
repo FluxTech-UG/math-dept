@@ -29,6 +29,8 @@ another.
 | Generalized Gibbs ensembles | The maximum-entropy state with one Lagrange multiplier per conserved quantity of an integrable model; its numerical test on lattice hard-core bosons and its observation in a split one-dimensional Bose gas | maximum-entropy states under constraints, Gibbs states, non-uniqueness of the macrovariable set | `Langen2015`, `Rigol2007`, `Kinoshita2006` |
 | Numerical integration of ODEs | The derivative of a Runge-Kutta solution with respect to its initial value equals the same method applied to the variational equation; symplecticity of Runge-Kutta methods from conservation of quadratic invariants | chain rule through compositions, ODE flows and their linearization, discrete sensitivities | `Hairer1999` |
 | Memory and conditioning in regulatory network models | Simulation surveys of memory types (UCS-based, pairing, transfer, associative, consolidation) under stimulus-clamp training protocols, in Boolean gene regulatory networks and in ODE pathway models, against random networks | input-driven dynamical systems, attractors and basins, Boolean networks | `BiswasManickaHoelLevin2021`, `BiswasClawsonLevin2022` |
+| Physiological adaptation in regeneration | Experimental record of planarians regenerating a head insensitive to a potassium-channel blocker, its time course, its loss in water, and the transcriptional and pharmacological data behind it | membrane-potential models, ion-channel conductances, regulatory network memory | `EmmonsBell2019` |
+| Averaging and slow-fast systems | First-order averaging over one fast angle with angle-dependent frequency on the time scale 1/epsilon; averaged slow drift along a normally hyperbolic manifold of periodic orbits, generalising the Pontryagin-Rodygin theorem | Gronwall estimates, near-identity transformations, Floquet theory, invariant manifolds | `SandersVerhulstMurdock2007`, `RinkVoWechselberger2025` |
 
 ## Entries
 
@@ -194,4 +196,28 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** empirical survey of memory types, associative memory included, and of habituation and sensitization, in ODE pathway models from BioModels against random gene-circuit ODEs
 - **Mathlib:** `IsPicardLindelof`, `ODE_solution_unique`; input-driven attractor dynamics: none found, searched 2026-10-25
+- **Ledger:** none yet
+
+### [EmmonsBell2019] Regenerative Adaptation to Electrochemical Perturbation in Planaria: A Molecular Analysis of Physiological Plasticity
+- **Authors:** Emmons-Bell, M.; Durant, F.; Tung, A.; Pietak, A.; Miller, K.; Kane, A.; Martyniuk, C. J.; Davidian, D.; Morokuma, J.; Levin, M.
+- **Source:** iScience 22, 147-165 (2019). DOI 10.1016/j.isci.2019.11.014; PMC6881696; PMID 31765995. Results 2.1-2.7 (Fig. 1, Fig. 2, Tables 2-4); Discussion; Limitations of the Study. Supplement Document S1 (Transparent Methods) and Tables S1, S5 not read, unreachable 2026-10-25
+- **Kind:** paper
+- **Used for:** time course, reversal and transcriptional profile of planarian head regeneration under a potassium-channel blocker
+- **Mathlib:** none found, searched 2026-10-25
+- **Ledger:** none yet
+
+### [SandersVerhulstMurdock2007] Averaging Methods in Nonlinear Dynamical Systems, 2nd ed.
+- **Authors:** Sanders, J. A.; Verhulst, F.; Murdock, J.
+- **Source:** Springer, New York (2007), Applied Mathematical Sciences 59. DOI 10.1007/978-0-387-48918-6. Def. 1.4.9; Assumption 7.8.1; Lemmas 7.8.2, 7.8.3, Thm 7.8.4; Lemmas 7.10.1, 7.10.2, Thm 7.10.4; Sec. 5.8; App. C.2. Copy read: authors' manuscript dated June 15, 2007, https://www.cs.vu.nl/~jansa/ftp/BK0/book.pdf
+- **Kind:** book
+- **Used for:** first-order averaging over one fast angle with angle-dependent frequency, O(epsilon) on the time scale 1/epsilon
+- **Mathlib:** `gronwallBound`, `dist_le_of_approx_trajectories_ODE` (v4.33.1); averaging and limit cycles: none found, searched 2026-10-25
+- **Ledger:** none yet
+
+### [RinkVoWechselberger2025] A coordinate-independent Pontryagin-Rodygin theorem for slow-fast averaging
+- **Authors:** Rink, B.; Vo, T.; Wechselberger, M.
+- **Source:** Quarterly of Applied Mathematics 84(2), 285-324 (online December 2025). DOI 10.1090/qam/1735. Read as arXiv:2509.06589v1: Assumptions 2.1, 2.2, 2.5; Thm 2.6; Thm 4.1; Def. 4.3, Cor. 4.4; Sec. 3.3 Step 1; Sec. 4.1
+- **Kind:** paper
+- **Used for:** averaged slow drift along a normally hyperbolic manifold of periodic orbits, O(epsilon) on the time scale 1/epsilon
+- **Mathlib:** `dist_le_of_approx_trajectories_ODE` (v4.33.1); normally hyperbolic manifolds, Floquet theory, averaging: none found, searched 2026-10-25
 - **Ledger:** none yet
