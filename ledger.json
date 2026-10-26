@@ -1,6 +1,2678 @@
 {
-  "entries": [],
-  "generated_from": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "entries": [
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim3:docs/design/21-real-fluid-gain.md \u00a721.3",
+        "1DSim4:twe4/sources/regenerator/two_parameter.py",
+        "1DSim4:docs/design/21-bed-one-pore.md"
+      ],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0011.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0011",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0011.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Transverse diffusion problems in a pore cross-section, their averages, singular limits and asymptotics",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": "2026-10-08",
+          "date": "2026-09-16",
+          "how": "informal-proof",
+          "model": "claude-opus-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-16",
+          "model": "claude-opus-5",
+          "request": "MDR:2026-09-16-two-parameter-gain#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "proven-informal",
+      "title": "The cross-diffusivity gain function collapses on a single geometry",
+      "topics": [
+        "thermoacoustics",
+        "boundary-layer-functions",
+        "transverse-diffusion"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim3:docs/design/21-real-fluid-gain.md \u00a721.3"
+      ],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0012_sign_of_derivative_term.py"
+        },
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0012.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0012",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0012.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Transverse diffusion problems in a pore cross-section, their averages, singular limits and asymptotics",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-09-16",
+          "how": "counterexample",
+          "model": "claude-opus-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-16",
+          "model": "claude-opus-5",
+          "request": "MDR:2026-09-16-two-parameter-gain#C2",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The unit-Prandtl limit is a logarithmic diffusivity derivative",
+      "topics": [
+        "thermoacoustics",
+        "boundary-layer-functions",
+        "removable-singularity"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim3:docs/design/21-real-fluid-gain.md \u00a721.3",
+        "1DSim3:twe/sources/cross_gain.py"
+      ],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0015.md"
+        },
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0015_shape_varying_duct.py"
+        },
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0015_single_length_high_frequency.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0015",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0015.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Transverse diffusion problems in a pore cross-section, their averages, singular limits and asymptotics",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": "2026-10-08",
+          "date": "2026-09-16",
+          "how": "counterexample",
+          "model": "claude-opus-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-16",
+          "model": "claude-opus-5",
+          "request": "MDR:2026-09-16-two-parameter-gain#C5",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The high-frequency cross term carries a third geometric length",
+      "topics": [
+        "thermoacoustics",
+        "boundary-layer-asymptotics",
+        "porous-media"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim3:docs/design/21-real-fluid-gain.md \u00a721.3"
+      ],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0016.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0016",
+      "kind": "identity",
+      "merged_into": null,
+      "path": "ledger/MD_0016.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Transverse diffusion problems in a pore cross-section, their averages, singular limits and asymptotics",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": "2026-10-08",
+          "date": "2026-09-16",
+          "how": "informal-proof",
+          "model": "claude-opus-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-16",
+          "model": "claude-opus-5",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0012",
+      "source": null,
+      "statement_hash": null,
+      "status": "proven-informal",
+      "title": "The unit-Prandtl limit of the cross-diffusivity gain is 1 - F(a) - a F'(a)",
+      "topics": [
+        "thermoacoustics",
+        "boundary-layer-functions",
+        "removable-singularity"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim3:docs/design/21-real-fluid-gain.md \u00a721.3",
+        "1DSim3:twe/sources/cross_gain.py",
+        "1DSim3:twe/sources/pore_cell.py",
+        "1DSim4:twe4/config/blocks/__init__.py",
+        "1DSim4:docs/design/21-bed-one-pore.md",
+        "1DSim4:tests/test_onepore.py",
+        "1DSim4:twe4/sources/regenerator/pore.py"
+      ],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0017.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0017",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0017.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Transverse diffusion problems in a pore cross-section, their averages, singular limits and asymptotics",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": "2026-10-08",
+          "date": "2026-09-16",
+          "how": "informal-proof",
+          "model": "claude-opus-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-09-16",
+          "model": "claude-opus-5",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0014",
+      "source": null,
+      "statement_hash": null,
+      "status": "proven-informal",
+      "title": "The static gain is a Poisson bilinear form: bounded witness pair, disc against square duct",
+      "topics": [
+        "thermoacoustics",
+        "poisson-potentials",
+        "low-frequency-asymptotics"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0020_expanding_step_map.py"
+        },
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0020.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0020",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0020.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "1DSim3",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-16-adaptive-grid-gradient#C2",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The controller term has the same order and buys nothing",
+      "topics": [
+        "unsorted"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0021_fat_cantor_decision_set.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0021",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0021.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "1DSim3",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-sonnet",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-16-adaptive-grid-gradient#C3",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "Without the fixed-decision hypothesis the discrete solution is only piecewise smooth",
+      "topics": [
+        "unsorted"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md"
+      ],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0022_dense_output_kink.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0022",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0022.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "1DSim3",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-sonnet",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-16-adaptive-grid-gradient#C4",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "Adaptivity as a smooth time reparametrization is differentiable at order p",
+      "topics": [
+        "unsorted"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0023_resolvent_squared_scalar.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0023",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0023.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "1DSim3",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-sonnet",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-16-adaptive-grid-gradient#C5",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The frozen-grid stroboscopic map has a fixed point whose sensitivity converges at order p",
+      "topics": [
+        "unsorted"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md"
+      ],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0025_hermite_inflection.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0025",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0025.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of parameter-dependent ODEs and their parameter derivatives",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-sonnet",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0022",
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "With a C1-glued continuous extension the reparametrized adaptive solve is C1 in the parameter",
+      "topics": [
+        "numerical-ode",
+        "sensitivity-analysis",
+        "runge-kutta"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0026_resolvent_cubed_exact.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0026",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0026.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of parameter-dependent ODEs and their parameter derivatives",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-sonnet",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0023",
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The frozen-grid period-map sensitivity converges with the squared resolvent factor",
+      "topics": [
+        "numerical-ode",
+        "sensitivity-analysis",
+        "runge-kutta"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0027_oscillating_gradient_estimate.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0027",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0027.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of parameter-dependent ODEs and their parameter derivatives",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-sonnet",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0020",
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "With a stable step-size map and a nondegenerate estimate the controller term has the same order",
+      "topics": [
+        "numerical-ode",
+        "sensitivity-analysis",
+        "runge-kutta"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md"
+      ],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0029_g_steep_outside_tube.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0029",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0029.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of parameter-dependent ODEs and their parameter derivatives",
+          "repo": "1DSim3"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-sonnet",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-fable-5-1",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0025",
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "With a C1-glued extension and a small reparametrization step the adaptive solve is C1 in the parameter",
+      "topics": [
+        "numerical-ode",
+        "sensitivity-analysis",
+        "runge-kutta"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [
+          "MD_0036"
+        ],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:twe4/ledger.py",
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/03-energy-state.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0033.statement",
+        "file": "MathDept/Results/MD_0033.lean"
+      },
+      "id": "MD_0033",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0033.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of ODEs and their conserved quantities",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-rk-linear-invariant#C1",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "59d314b62ecc8c955f2b732d8e1073561945737e9a1aadb5c8da943dd1be8377",
+      "status": "proven-formal",
+      "title": "Linear invariants survive adaptive steps, an invariant-preserving post-step map and any dense output",
+      "topics": [
+        "numerical-ode",
+        "runge-kutta",
+        "linear-invariants"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0034_dense_weight_overshoot.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0034",
+      "kind": "bound",
+      "merged_into": null,
+      "path": "ledger/MD_0034.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of ODEs and their conserved quantities",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-rk-linear-invariant#C2",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "Drift bound when the invariant holds only to a tolerance",
+      "topics": [
+        "numerical-ode",
+        "runge-kutta",
+        "linear-invariants"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:twe4/ledger.py",
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/03-energy-state.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0035.statement",
+        "file": "MathDept/Results/MD_0035.lean"
+      },
+      "id": "MD_0035",
+      "kind": "identity",
+      "merged_into": null,
+      "path": "ledger/MD_0035.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Discrete Fourier spectral differentiation and dealiased products on periodic grids",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-rk-linear-invariant#C3",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "cf68f6d7f2c1a35c7235cd53ccea892d014994837e6e93b0adfefdeb1558e882",
+      "status": "proven-formal",
+      "title": "The discrete Fourier derivative has zero sum, with dealiasing",
+      "topics": [
+        "spectral-methods",
+        "discrete-fourier"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [
+          "MD_0033"
+        ],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0036.statement",
+        "file": "MathDept/Results/MD_0036.lean"
+      },
+      "id": "MD_0036",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0036.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of ODEs and their conserved quantities",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-rk-linear-invariant#C4",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "fb399bbc54a441cf6871ee183dcc0e08a05242fd3fb127cc46216dee9c9961ba",
+      "status": "proven-formal",
+      "title": "The embedded error estimate is invariant-free",
+      "topics": [
+        "numerical-ode",
+        "runge-kutta",
+        "linear-invariants"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0038.statement",
+        "file": "MathDept/Results/MD_0038.lean"
+      },
+      "id": "MD_0038",
+      "kind": "bound",
+      "merged_into": null,
+      "path": "ledger/MD_0038.md",
+      "provenance": {
+        "connects": [
+          "MD_0033"
+        ],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Runge-Kutta discretizations of ODEs and their conserved quantities",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0034",
+      "source": null,
+      "statement_hash": "87b1efffe76584a5a4ea4bbba32a3691e57594b0b268aa724d25dcb7a0c6a2ec",
+      "status": "proven-formal",
+      "title": "Sharp per-step drift bound for a linear functional that the vector field moves by at most delta",
+      "topics": [
+        "numerical-ode",
+        "runge-kutta",
+        "linear-invariants"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:twe4/ledger.py",
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/03-energy-state.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0039.statement",
+        "file": "MathDept/Results/MD_0039.lean"
+      },
+      "id": "MD_0039",
+      "kind": "identity",
+      "merged_into": null,
+      "path": "ledger/MD_0039.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Discrete Fourier spectral differentiation and dealiased products on periodic grids",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": null,
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "49d4f64c2d758a6992e667fef88b22378108591d42d9ae9d9e4243eb85be2f65",
+      "status": "proven-formal",
+      "title": "Expanded product-rule pairs of 3/2-rule dealiased products have zero loop sum",
+      "topics": [
+        "spectral-methods",
+        "discrete-fourier"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md",
+        "1DSim4:twe4/orbit/invariants.py"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0041.statement",
+        "file": "MathDept/Results/MD_0041.lean"
+      },
+      "id": "MD_0041",
+      "kind": "identity",
+      "merged_into": null,
+      "path": "ledger/MD_0041.md",
+      "provenance": {
+        "connects": [
+          "MD_0035"
+        ],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Fourier differentiation matrices, conserved functionals and the linear algebra of period maps",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-orbit-unit-multipliers#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "4d5443388adce8c0735182b85c7f40d8e2bb2f7fda0e6aa8c93abe26f58c9b58",
+      "status": "proven-formal",
+      "title": "The Nyquist-weighted sum of a Fourier derivative vanishes",
+      "topics": [
+        "spectral-methods",
+        "conservation-laws"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md",
+        "1DSim4:twe4/orbit/invariants.py"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0042.statement",
+        "file": "MathDept/Results/MD_0042.lean"
+      },
+      "id": "MD_0042",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0042.md",
+      "provenance": {
+        "connects": [
+          "MD_0035"
+        ],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Fourier differentiation matrices, conserved functionals and the linear algebra of period maps",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-orbit-unit-multipliers#C2",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "e5cda08ea391ef199cc812328c1bff4d14caf89f102edda3fbd5286bab8f889a",
+      "status": "proven-formal",
+      "title": "These two weights are the only ones the derivative annihilates",
+      "topics": [
+        "spectral-methods",
+        "linear-algebra"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0043.statement",
+        "file": "MathDept/Results/MD_0043.lean"
+      },
+      "id": "MD_0043",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0043.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Fourier differentiation matrices, conserved functionals and the linear algebra of period maps",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-orbit-unit-multipliers#C3",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "b855b971928481bbe03d38582182775d9ab0abc54832510c4908f3f4cd1012a7",
+      "status": "proven-formal",
+      "title": "A conserved differentiable functional is a left unit eigenvector of the monodromy",
+      "topics": [
+        "dynamical-systems",
+        "floquet"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0044.statement",
+        "file": "MathDept/Results/MD_0044.lean"
+      },
+      "id": "MD_0044",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0044.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Fourier differentiation matrices, conserved functionals and the linear algebra of period maps",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-orbit-unit-multipliers#C4",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "f48c708b05e889f65c666964a943e9e9aa643c5b86f450d8fda5c8bb7ce52b2a",
+      "status": "proven-formal",
+      "title": "Deflating left unit eigenvectors removes exactly their multipliers",
+      "topics": [
+        "linear-algebra",
+        "floquet"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0045.statement",
+        "file": "MathDept/Results/MD_0045.lean"
+      },
+      "id": "MD_0045",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0045.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Fourier differentiation matrices, conserved functionals and the linear algebra of period maps",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-orbit-unit-multipliers#C5",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "3be7e39f3e38f9a615584cb7b91996d9c6840a4daea06cc8780adcbed6dbcf87",
+      "status": "proven-formal",
+      "title": "The shooting residual lies in the deflated subspace",
+      "topics": [
+        "dynamical-systems",
+        "linear-algebra"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0046.statement",
+        "file": "MathDept/Results/MD_0046.lean"
+      },
+      "id": "MD_0046",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0046.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Spectra of discretized diffusion-advection operators with partial absorption",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-gap-entropy-cluster#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "2143e221c36af51cd65a7d9f8b775435ebe9f3ef0d56b0211d15b20967948021",
+      "status": "proven-formal",
+      "title": "Diffusion plus a sink off the gaps is positive definite",
+      "topics": [
+        "spectral-methods",
+        "linear-algebra"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md"
+      ],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0049_alternating_velocity.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0049",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0049.md",
+      "provenance": {
+        "connects": [
+          "MD_0064"
+        ],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Spectra of discretized diffusion-advection operators with partial absorption",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-gap-entropy-cluster#C4",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "With a spatially varying velocity the spectrum stays in the left half-plane",
+      "topics": [
+        "spectral-methods",
+        "non-normal"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0051.statement",
+        "file": "MathDept/Results/MD_0051.lean"
+      },
+      "id": "MD_0051",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0051.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Eigenvalue and pseudospectrum enclosures for non-normal matrices",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "lean",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-nonnormal-residual-certificate#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "719fd664ed1eb80bff4347e5d0ebac828cc4bd39a93797367bbdd9d14e3595e8",
+      "status": "proven-formal",
+      "title": "A residual places the Ritz value in the pseudospectrum",
+      "topics": [
+        "pseudospectra",
+        "linear-algebra"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/STATUS.md",
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/12-orbit.md",
+        "1DSim4:twe4/orbit/block_krylov.py"
+      ],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0052_jordan_residual.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0052",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0052.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Eigenvalue and pseudospectrum enclosures for non-normal matrices",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-17",
+          "how": "counterexample",
+          "model": "claude-opus",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-17",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-17-nonnormal-residual-certificate#C2",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "A residual smaller than the distance to the unit circle places an eigenvalue within the residual",
+      "topics": [
+        "pseudospectra",
+        "non-normal"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:CLAUDE.md",
+        "1DSim4:docs/STATUS.md",
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/21-bed-one-pore.md",
+        "1DSim4:tests/test_onepore.py",
+        "1DSim4:twe4/sources/regenerator/onepore.py",
+        "1DSim4:twe4/sources/regenerator/stieltjes.py"
+      ],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0070.md"
+        }
+      ],
+      "formal": {
+        "decl": "MathDept.MD_0070.statement",
+        "file": "MathDept/Results/MD_0070.lean"
+      },
+      "id": "MD_0070",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0070.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Passivity of time-varying diagonal linear realisations",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-18",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-18",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-18-passive-wall-realisation#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "b80888c876c0a74a280e87e856f69d1574c62f7ad97df32d5d203265b103f1ce",
+      "status": "proven-formal",
+      "title": "The balanced realisation is passive for arbitrary time-varying nonnegative coefficients",
+      "topics": [
+        "passivity",
+        "time-varying-systems"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0071_input_weighted_two_state.py"
+        },
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0071_output_weighted_two_state.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0071",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0071.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Passivity of time-varying diagonal linear realisations",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-18",
+          "how": "counterexample",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-18",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-18-passive-wall-realisation#C2",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "Output-weighted and input-weighted realisations need a rate condition, with opposite signs",
+      "topics": [
+        "passivity",
+        "time-varying-systems"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:CLAUDE.md",
+        "1DSim4:docs/STATUS.md",
+        "1DSim4:docs/design.md",
+        "1DSim4:docs/design/22-damping-budget.md",
+        "1DSim4:scripts/damping_budget.py",
+        "1DSim4:tests/test_damping_budget.py",
+        "1DSim4:twe4/analysis/damping_budget/instrument.py",
+        "1DSim4:twe4/analysis/damping_budget/spectrum.py"
+      ],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0073.md"
+        }
+      ],
+      "formal": {
+        "decl": "MathDept.MD_0073.statement",
+        "file": "MathDept/Results/MD_0073.lean"
+      },
+      "id": "MD_0073",
+      "kind": "identity",
+      "merged_into": null,
+      "path": "ledger/MD_0073.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Eigenvalue decompositions over additive matrix splittings",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-18",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-18",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-18-eigenvalue-damping-budget#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "89c9b7fb39361c4adeffa830ba68a748960f9d069207782529cd9ff84ee40013",
+      "status": "proven-formal",
+      "title": "The left-right eigenvector budget sums exactly to the eigenvalue",
+      "topics": [
+        "linear-algebra",
+        "eigenvalue-perturbation"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0077_detached_solid.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0077",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0077.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Spectral representation of a two-phase diffusion response",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-18",
+          "how": "counterexample",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-18",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-18-finite-solid-capacity#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The conjugate gas-solid thermal function is Stieltjes with a capacity offset",
+      "topics": [
+        "stieltjes-functions",
+        "conjugate-heat-transfer"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0083_phase_drift_family.py"
+        },
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0083_pitchfork_of_cycles.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0083",
+      "kind": "theorem",
+      "merged_into": null,
+      "path": "ledger/MD_0083.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Limit points of cycles of autonomous ODEs",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-18",
+          "how": "counterexample",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-18",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-18-triggered-onset-fold#C3",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "In the autonomous problem the fold is a double trivial multiplier",
+      "topics": [
+        "bifurcation-theory",
+        "floquet",
+        "dynamical-systems"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0084_inflection_at_equality.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0084",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0084.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Bifurcation of equilibria of a scalar polynomial amplitude equation",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-18",
+          "how": "counterexample",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-18",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-18-triggered-onset-fold#C4",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The reverse threshold lies below linear onset iff the cubic gain beats the quadratic drag",
+      "topics": [
+        "bifurcation-theory",
+        "dynamical-systems"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "1DSim4:docs/design/21-bed-one-pore.md"
+      ],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0094_negative_frequency.py"
+        },
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0094.md"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0094",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0094.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "1DSim4",
+          "repo": "1DSim4"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-18",
+          "how": "counterexample",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-18",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-18-cross-gain-two-pole#C5",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The two-stage cascade realisation is exact, bounded and converges fast with a static remainder",
+      "topics": [
+        "unsorted"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "counterexample",
+          "path": "counterexamples/MD_0097_one_node_even_window.py"
+        }
+      ],
+      "formal": {
+        "decl": null,
+        "file": null
+      },
+      "id": "MD_0097",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0097.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Synchronous Boolean networks with source inputs and a readout node",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "counterexample",
+          "model": "claude-fable-5-1",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-fable-5-1",
+          "request": "MDR:2026-10-25-associative-conditioning-network#C2",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": null,
+      "status": "refuted",
+      "title": "The minimal Boolean network for associative conditioning has four nodes",
+      "topics": [
+        "boolean-networks",
+        "finite-enumeration",
+        "learning"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0101.md"
+        }
+      ],
+      "formal": {
+        "decl": "MathDept.MD_0101.statement",
+        "file": "MathDept/Results/MD_0101.lean"
+      },
+      "id": "MD_0101",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0101.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Synchronous Boolean networks with source inputs and a readout node",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-fable-5-1",
+          "request": "MDR:2026-10-25-associative-conditioning-network#C2",
+          "who": "claude"
+        }
+      },
+      "revises": "MD_0097",
+      "source": null,
+      "statement_hash": "16bc5187367531bfd133b5bb777373cfd14720a703cb295833d3c9381c6406d7",
+      "status": "proven-formal",
+      "title": "The minimal Boolean network for associative conditioning at odd windows has two internal nodes",
+      "topics": [
+        "boolean-networks",
+        "finite-enumeration",
+        "learning"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": [
+          "MD_0096"
+        ]
+      },
+      "cited_by": [],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0102.statement",
+        "file": "MathDept/Results/MD_0102.lean"
+      },
+      "id": "MD_0102",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0102.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Synchronous Boolean networks with source inputs and a readout node",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-fable-5-1",
+          "request": "MDR:2026-10-25-associative-conditioning-network#C1",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "24d4962f450c5bc16f39d52064bb0f1bbcb4b13f8a2877c737decb3aa22685c5",
+      "status": "proven-formal",
+      "title": "A Boolean network whose input-free dynamics reach one fixed point within m steps shows no associative conditioning at gaps of m or more",
+      "topics": [
+        "boolean-networks",
+        "learning",
+        "dynamical-systems"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": [
+          "MD_0100"
+        ]
+      },
+      "cited_by": [],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0103.statement",
+        "file": "MathDept/Results/MD_0103.lean"
+      },
+      "id": "MD_0103",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0103.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Synchronous Boolean networks with source inputs and a readout node",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-fable-5-1",
+          "request": "MDR:2026-10-25-associative-conditioning-network#C5",
+          "who": "claude"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "8b38ae3754e0efa1ad060b8532d78f5c644c3ec2655dd9944af2082e397f5371",
+      "status": "proven-formal",
+      "title": "An acyclic Boolean network of depth d has one fixed point, reached within d plus one steps, and shows no associative conditioning at gaps beyond d",
+      "topics": [
+        "boolean-networks",
+        "learning",
+        "dynamical-systems"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "Formal Ontology:330-application-morphospace.md \u00a72"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0104.statement",
+        "file": "MathDept/Results/MD_0104.lean"
+      },
+      "id": "MD_0104",
+      "kind": "lemma",
+      "merged_into": null,
+      "path": "ledger/MD_0104.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Iteration of a self-map of a finite set",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-25-monodromy-orbit-search#C1",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "bbbf8bf0ad138f5e761c4b7a83a4e68c7065315a1a1ff4d8233050a8f37cefd3",
+      "status": "proven-formal",
+      "title": "The autonomous reachable set is one orbit",
+      "topics": [
+        "finite-dynamics",
+        "orbits"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "Formal Ontology:330-application-morphospace.md \u00a72"
+      ],
+      "evidence": [
+        {
+          "kind": "proof",
+          "path": "proofs/MD_0105.md"
+        }
+      ],
+      "formal": {
+        "decl": "MathDept.MD_0105.statement",
+        "file": "MathDept/Results/MD_0105.lean"
+      },
+      "id": "MD_0105",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0105.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Words in a family of self-maps of a finite set acting on a point",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-25-monodromy-orbit-search#C2",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "74988a7be27cea6466978e60c14a72f97576a262918cb315e1f932cad3e8735e",
+      "status": "proven-formal",
+      "title": "Commuting holonomies give polynomial growth of the reachable set",
+      "topics": [
+        "finite-dynamics",
+        "combinatorics",
+        "semigroup-actions"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "Formal Ontology:330-application-morphospace.md \u00a72"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0107.statement",
+        "file": "MathDept/Results/MD_0107.lean"
+      },
+      "id": "MD_0107",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0107.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Orbits of a linear endomorphism of a finite-dimensional vector space",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-25-monodromy-orbit-search#C4",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "b8af6a53e1133fb23fe0f325f986a05a2dca2579f877338542fc12bb55c12679",
+      "status": "proven-formal",
+      "title": "The linear orbit lies in a Krylov subspace cut by the protected invariants",
+      "topics": [
+        "linear-algebra",
+        "krylov-subspaces",
+        "invariants"
+      ]
+    },
+    {
+      "between": {
+        "above_of": [],
+        "below_of": [],
+        "generalizes": [],
+        "special_case_of": []
+      },
+      "cited_by": [
+        "Formal Ontology:330-application-morphospace.md \u00a72"
+      ],
+      "evidence": [],
+      "formal": {
+        "decl": "MathDept.MD_0108.statement",
+        "file": "MathDept/Results/MD_0108.lean"
+      },
+      "id": "MD_0108",
+      "kind": "proposition",
+      "merged_into": null,
+      "path": "ledger/MD_0108.md",
+      "provenance": {
+        "connects": [],
+        "raised_by": {
+          "anchor": null,
+          "application": null,
+          "doc": null,
+          "domain": "Hitting probabilities of a deterministic orbit and of independent uniform sampling on a finite set",
+          "repo": "Formal Ontology"
+        },
+        "settled_by": {
+          "checked_by": null,
+          "date": "2026-10-25",
+          "how": "lean",
+          "model": "claude-opus-5-5",
+          "who": "claude"
+        },
+        "stipulated_by": {
+          "date": "2026-10-25",
+          "model": "claude-opus-5-5",
+          "request": "MDR:2026-10-25-monodromy-orbit-search#C5",
+          "who": "both"
+        }
+      },
+      "revises": null,
+      "source": null,
+      "statement_hash": "a100f7e8475e487b5802f429f5c0562dd6ce627c659dcbe244e28e8d7af47c06",
+      "status": "proven-formal",
+      "title": "The orbit walk cannot beat memoryless search on an unstructured target",
+      "topics": [
+        "probability",
+        "search",
+        "finite-dynamics"
+      ]
+    }
+  ],
+  "generated_from": "b2cd7e931b23825a8d145d7d41b97e724fad630afde114892f070f4a106fbe99",
   "requests": [],
-  "schema_version": 1
+  "schema_version": 1,
+  "unreleased": [
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0013",
+      "named_by": [
+        {
+          "entry": "MD_0011",
+          "field": "<proof>"
+        },
+        {
+          "entry": "MD_0012",
+          "field": "<proof>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0014",
+      "named_by": [
+        {
+          "entry": "MD_0011",
+          "field": "<proof>"
+        },
+        {
+          "entry": "MD_0015",
+          "field": "<proof>"
+        },
+        {
+          "entry": "MD_0016",
+          "field": "<proof>"
+        },
+        {
+          "entry": "MD_0017",
+          "field": "revises"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0018",
+      "named_by": [
+        {
+          "entry": "MD_0015",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0019",
+      "named_by": [
+        {
+          "entry": "MD_0020",
+          "field": "<body>"
+        },
+        {
+          "entry": "MD_0027",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0024",
+      "named_by": [
+        {
+          "entry": "MD_0021",
+          "field": "<body>"
+        },
+        {
+          "entry": "MD_0027",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0030",
+      "named_by": [
+        {
+          "entry": "MD_0027",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0031",
+      "named_by": [
+        {
+          "entry": "MD_0025",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0032",
+      "named_by": [
+        {
+          "entry": "MD_0026",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0053",
+      "named_by": [
+        {
+          "entry": "MD_0052",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0054",
+      "named_by": [
+        {
+          "entry": "MD_0052",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0055",
+      "named_by": [
+        {
+          "entry": "MD_0052",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0064",
+      "named_by": [
+        {
+          "entry": "MD_0049",
+          "field": "provenance.connects"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0065",
+      "named_by": [
+        {
+          "entry": "MD_0094",
+          "field": "<proof>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0086",
+      "named_by": [
+        {
+          "entry": "MD_0071",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0087",
+      "named_by": [
+        {
+          "entry": "MD_0077",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0088",
+      "named_by": [
+        {
+          "entry": "MD_0084",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0089",
+      "named_by": [
+        {
+          "entry": "MD_0083",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0090",
+      "named_by": [
+        {
+          "entry": "MD_0094",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0095",
+      "named_by": [
+        {
+          "entry": "MD_0094",
+          "field": "<body>"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0096",
+      "named_by": [
+        {
+          "entry": "MD_0102",
+          "field": "between.special_case_of"
+        }
+      ]
+    },
+    {
+      "held": "unreleased, held in the private ledger",
+      "id": "MD_0100",
+      "named_by": [
+        {
+          "entry": "MD_0103",
+          "field": "between.special_case_of"
+        }
+      ]
+    }
+  ]
 }

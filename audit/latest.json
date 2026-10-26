@@ -1,6 +1,2167 @@
 {
-  "counterexamples": {},
+  "counterexamples": {
+    "MD_0012": [
+      {
+        "exact": false,
+        "file": "counterexamples/MD_0012_sign_of_derivative_term.py",
+        "verified": true
+      }
+    ],
+    "MD_0015": [
+      {
+        "exact": false,
+        "file": "counterexamples/MD_0015_shape_varying_duct.py",
+        "verified": true
+      },
+      {
+        "exact": false,
+        "file": "counterexamples/MD_0015_single_length_high_frequency.py",
+        "verified": true
+      }
+    ],
+    "MD_0020": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0020_expanding_step_map.py",
+        "verified": true
+      }
+    ],
+    "MD_0021": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0021_fat_cantor_decision_set.py",
+        "verified": true
+      }
+    ],
+    "MD_0022": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0022_dense_output_kink.py",
+        "verified": true
+      }
+    ],
+    "MD_0023": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0023_resolvent_squared_scalar.py",
+        "verified": true
+      }
+    ],
+    "MD_0025": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0025_hermite_inflection.py",
+        "verified": true
+      }
+    ],
+    "MD_0026": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0026_resolvent_cubed_exact.py",
+        "verified": true
+      }
+    ],
+    "MD_0027": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0027_oscillating_gradient_estimate.py",
+        "verified": true
+      }
+    ],
+    "MD_0029": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0029_g_steep_outside_tube.py",
+        "verified": true
+      }
+    ],
+    "MD_0034": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0034_dense_weight_overshoot.py",
+        "verified": true
+      }
+    ],
+    "MD_0049": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0049_alternating_velocity.py",
+        "verified": true
+      }
+    ],
+    "MD_0052": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0052_jordan_residual.py",
+        "verified": true
+      }
+    ],
+    "MD_0071": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0071_input_weighted_two_state.py",
+        "verified": true
+      },
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0071_output_weighted_two_state.py",
+        "verified": true
+      }
+    ],
+    "MD_0077": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0077_detached_solid.py",
+        "verified": true
+      }
+    ],
+    "MD_0083": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0083_phase_drift_family.py",
+        "verified": true
+      },
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0083_pitchfork_of_cycles.py",
+        "verified": true
+      }
+    ],
+    "MD_0084": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0084_inflection_at_equality.py",
+        "verified": true
+      }
+    ],
+    "MD_0094": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0094_negative_frequency.py",
+        "verified": true
+      }
+    ],
+    "MD_0097": [
+      {
+        "exact": true,
+        "file": "counterexamples/MD_0097_one_node_even_window.py",
+        "verified": true
+      }
+    ]
+  },
   "declarations": {
+    "MathDept.MD_0033.ell_comb": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0033",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (s : \u2115) (yn : V) (kn : Fin s \u2192 V),\n  (\u2200 (i : Fin s), \u2113 (kn i) = 0) \u2192 \u2200 (c : \u211d) (w : Fin s \u2192 \u211d), \u2113 (yn + c \u2022 \u2211 i, w i \u2022 kn i) = \u2113 yn"
+    },
+    "MathDept.MD_0033.ell_stage": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0033",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (f : V \u2192 V) (s : \u2115)\n  (a : Fin s \u2192 Fin s \u2192 \u211d) (b : Fin s \u2192 \u211d) (h : \u2115 \u2192 \u211d) (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V),\n  (\u2200 (v : V), \u2113 (f v) = 0) \u2192\n    (\u2200 (n : \u2115) (i : Fin s),\n        k n i = f (y n + h n \u2022 \u2211 j, a i j \u2022 k n j) \u2228\n          1 \u2264 n \u2227 \u2191i = 0 \u2227 (k n i = f (y (n - 1) + h (n - 1) \u2022 \u2211 j, b j \u2022 k (n - 1) j) \u2228 k n i = f (y n))) \u2192\n      \u2200 (n : \u2115) (i : Fin s), \u2113 (k n i) = 0"
+    },
+    "MathDept.MD_0033.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0033",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (f : V \u2192 V) (s : \u2115),\n  1 \u2264 s \u2192\n    \u2200 (a : Fin s \u2192 Fin s \u2192 \u211d) (b : Fin s \u2192 \u211d) (\u03b2 : Fin s \u2192 \u211d \u2192 \u211d) (h : \u2115 \u2192 \u211d) (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V)\n      (P : \u2115 \u2192 V \u2192 V),\n      (\u2200 (v : V), \u2113 (f v) = 0) \u2192\n        (\u2200 (n : \u2115) (i : Fin s),\n            k n i = f (y n + h n \u2022 \u2211 j, a i j \u2022 k n j) \u2228\n              1 \u2264 n \u2227 \u2191i = 0 \u2227 (k n i = f (y (n - 1) + h (n - 1) \u2022 \u2211 j, b j \u2022 k (n - 1) j) \u2228 k n i = f (y n))) \u2192\n          (\u2200 (n : \u2115) (v : V), \u2113 (P n v) = \u2113 v) \u2192\n            (\u2200 (n : \u2115), y (n + 1) = P n (y n + h n \u2022 \u2211 i, b i \u2022 k n i)) \u2192\n              \u2200 (n : \u2115),\n                \u2200 \u03b8 \u2208 Set.Icc 0 1,\n                  \u2113 (y n + h n \u2022 \u2211 i, \u03b2 i \u03b8 \u2022 k n i) = \u2113 (y 0) \u2227\n                    \u2113 (y n + h n \u2022 \u2211 i, b i \u2022 k n i) = \u2113 (y 0) \u2227 \u2113 (y (n + 1)) = \u2113 (y 0)"
+    },
+    "MathDept.MD_0035.D": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "(N : \u2115) \u2192 \u211d \u2192 (Fin N \u2192 \u2102) \u2192 Fin N \u2192 \u2102"
+    },
+    "MathDept.MD_0035.hat": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "(N : \u2115) \u2192 (Fin N \u2192 \u2102) \u2192 Fin N \u2192 \u2102"
+    },
+    "MathDept.MD_0035.kappa": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "(N : \u2115) \u2192 \u211d \u2192 Fin N \u2192 \u211d"
+    },
+    "MathDept.MD_0035.kappa_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "\u2200 (N : \u2115) (L : \u211d) (m : Fin N), \u2191m = 0 \u2192 2 \u2264 N \u2192 MathDept.MD_0035.kappa N L m = 0"
+    },
+    "MathDept.MD_0035.omega": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "\u2115 \u2192 \u2102"
+    },
+    "MathDept.MD_0035.omega_isPrimitiveRoot": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "\u2200 (n : \u2115), n \u2260 0 \u2192 IsPrimitiveRoot (MathDept.MD_0035.omega n) n"
+    },
+    "MathDept.MD_0035.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "\u2200 (N : \u2115), 2 \u2264 N \u2192 Even N \u2192 \u2200 (L : \u211d), 0 < L \u2192 \u2200 (g : Fin N \u2192 \u2102), \u2211 j, MathDept.MD_0035.D N L g j = 0"
+    },
+    "MathDept.MD_0035.sum_omega_zpow": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0035",
+      "type": "\u2200 (n : \u2115), n \u2260 0 \u2192 \u2200 (q : \u2124), \u2211 j, MathDept.MD_0035.omega n ^ (\u2191\u2191j * q) = if \u2191n \u2223 q then \u2191n else 0"
+    },
+    "MathDept.MD_0036.ell_stage": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0036",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (f : V \u2192 V) (s : \u2115)\n  (a : Fin s \u2192 Fin s \u2192 \u211d) (b : Fin s \u2192 \u211d) (h : \u2115 \u2192 \u211d) (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V),\n  (\u2200 (v : V), \u2113 (f v) = 0) \u2192\n    (\u2200 (n : \u2115) (i : Fin s),\n        k n i = f (y n + h n \u2022 \u2211 j, a i j \u2022 k n j) \u2228\n          1 \u2264 n \u2227 \u2191i = 0 \u2227 (k n i = f (y (n - 1) + h (n - 1) \u2022 \u2211 j, b j \u2022 k (n - 1) j) \u2228 k n i = f (y n))) \u2192\n      \u2200 (n : \u2115) (i : Fin s), \u2113 (k n i) = 0"
+    },
+    "MathDept.MD_0036.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0036",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (f : V \u2192 V) (s : \u2115),\n  1 \u2264 s \u2192\n    \u2200 (a : Fin s \u2192 Fin s \u2192 \u211d) (b bhat : Fin s \u2192 \u211d) (h : \u2115 \u2192 \u211d) (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V) (P : \u2115 \u2192 V \u2192 V),\n      (\u2200 (v : V), \u2113 (f v) = 0) \u2192\n        (\u2200 (n : \u2115) (i : Fin s),\n            k n i = f (y n + h n \u2022 \u2211 j, a i j \u2022 k n j) \u2228\n              1 \u2264 n \u2227 \u2191i = 0 \u2227 (k n i = f (y (n - 1) + h (n - 1) \u2022 \u2211 j, b j \u2022 k (n - 1) j) \u2228 k n i = f (y n))) \u2192\n          (\u2200 (n : \u2115) (v : V), \u2113 (P n v) = \u2113 v) \u2192\n            (\u2200 (n : \u2115), y (n + 1) = P n (y n + h n \u2022 \u2211 i, b i \u2022 k n i)) \u2192\n              \u2200 (n : \u2115), \u2113 (h n \u2022 \u2211 i, (b i - bhat i) \u2022 k n i) = 0"
+    },
+    "MathDept.MD_0038.abs_ell_comb": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0038",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (\u03b4 : \u211d) (s : \u2115) (kn : Fin s \u2192 V),\n  (\u2200 (i : Fin s), |\u2113 (kn i)| \u2264 \u03b4) \u2192\n    \u2200 (c : \u211d), 0 \u2264 c \u2192 \u2200 (w : Fin s \u2192 \u211d), |\u2113 (c \u2022 \u2211 i, w i \u2022 kn i)| \u2264 \u03b4 * (c * \u2211 i, |w i|)"
+    },
+    "MathDept.MD_0038.abs_ell_stage": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0038",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (f : V \u2192 V) (\u03b4 : \u211d) (s : \u2115)\n  (a : Fin s \u2192 Fin s \u2192 \u211d) (b : Fin s \u2192 \u211d) (h : \u2115 \u2192 \u211d) (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V),\n  (\u2200 (v : V), |\u2113 (f v)| \u2264 \u03b4) \u2192\n    (\u2200 (n : \u2115) (i : Fin s),\n        k n i = f (y n + h n \u2022 \u2211 j, a i j \u2022 k n j) \u2228\n          1 \u2264 n \u2227 \u2191i = 0 \u2227 (k n i = f (y (n - 1) + h (n - 1) \u2022 \u2211 j, b j \u2022 k (n - 1) j) \u2228 k n i = f (y n))) \u2192\n      \u2200 (n : \u2115) (i : Fin s), |\u2113 (k n i)| \u2264 \u03b4"
+    },
+    "MathDept.MD_0038.abs_ell_y": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0038",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (\u03b4 : \u211d) (s : \u2115) (b : Fin s \u2192 \u211d)\n  (h : \u2115 \u2192 \u211d),\n  (\u2200 (n : \u2115), 0 \u2264 h n) \u2192\n    \u2200 (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V) (P : \u2115 \u2192 V \u2192 V),\n      (\u2200 (n : \u2115) (i : Fin s), |\u2113 (k n i)| \u2264 \u03b4) \u2192\n        (\u2200 (n : \u2115) (v : V), \u2113 (P n v) = \u2113 v) \u2192\n          (\u2200 (n : \u2115), y (n + 1) = P n (y n + h n \u2022 \u2211 i, b i \u2022 k n i)) \u2192\n            \u2200 (n : \u2115), |\u2113 (y n) - \u2113 (y 0)| \u2264 \u03b4 * ((\u2211 m \u2208 Finset.range n, h m) * \u2211 i, |b i|)"
+    },
+    "MathDept.MD_0038.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0038",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (f : V \u2192 V) (\u03b4 : \u211d),\n  0 \u2264 \u03b4 \u2192\n    (\u2200 (v : V), |\u2113 (f v)| \u2264 \u03b4) \u2192\n      \u2200 (s : \u2115),\n        1 \u2264 s \u2192\n          \u2200 (a : Fin s \u2192 Fin s \u2192 \u211d) (b : Fin s \u2192 \u211d) (\u03b2 : Fin s \u2192 \u211d \u2192 \u211d) (h : \u2115 \u2192 \u211d),\n            (\u2200 (n : \u2115), 0 \u2264 h n) \u2192\n              \u2200 (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V) (P : \u2115 \u2192 V \u2192 V),\n                (\u2200 (n : \u2115) (i : Fin s),\n                    k n i = f (y n + h n \u2022 \u2211 j, a i j \u2022 k n j) \u2228\n                      1 \u2264 n \u2227 \u2191i = 0 \u2227 (k n i = f (y (n - 1) + h (n - 1) \u2022 \u2211 j, b j \u2022 k (n - 1) j) \u2228 k n i = f (y n))) \u2192\n                  (\u2200 (n : \u2115) (v : V), \u2113 (P n v) = \u2113 v) \u2192\n                    (\u2200 (n : \u2115), y (n + 1) = P n (y n + h n \u2022 \u2211 i, b i \u2022 k n i)) \u2192\n                      \u2200 (n : \u2115),\n                        \u2200 \u03b8 \u2208 Set.Icc 0 1,\n                          |\u2113 (y n + h n \u2022 \u2211 i, \u03b2 i \u03b8 \u2022 k n i) - \u2113 (y 0)| \u2264\n                            \u03b4 * ((\u2211 m \u2208 Finset.range n, h m) * \u2211 i, |b i| + h n * \u2211 i, |\u03b2 i \u03b8|)"
+    },
+    "MathDept.MD_0038.statement_elapsed": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0038",
+      "type": "\u2200 {V : Type u_1} [inst : AddCommGroup V] [inst_1 : _root_.Module \u211d V] (\u2113 : V \u2192\u2097[\u211d] \u211d) (f : V \u2192 V) (\u03b4 : \u211d),\n  0 \u2264 \u03b4 \u2192\n    (\u2200 (v : V), |\u2113 (f v)| \u2264 \u03b4) \u2192\n      \u2200 (s : \u2115),\n        1 \u2264 s \u2192\n          \u2200 (a : Fin s \u2192 Fin s \u2192 \u211d) (b : Fin s \u2192 \u211d) (\u03b2 : Fin s \u2192 \u211d \u2192 \u211d) (h : \u2115 \u2192 \u211d),\n            (\u2200 (n : \u2115), 0 \u2264 h n) \u2192\n              \u2200 (y : \u2115 \u2192 V) (k : \u2115 \u2192 Fin s \u2192 V) (P : \u2115 \u2192 V \u2192 V),\n                (\u2200 (n : \u2115) (i : Fin s),\n                    k n i = f (y n + h n \u2022 \u2211 j, a i j \u2022 k n j) \u2228\n                      1 \u2264 n \u2227 \u2191i = 0 \u2227 (k n i = f (y (n - 1) + h (n - 1) \u2022 \u2211 j, b j \u2022 k (n - 1) j) \u2228 k n i = f (y n))) \u2192\n                  (\u2200 (n : \u2115) (v : V), \u2113 (P n v) = \u2113 v) \u2192\n                    (\u2200 (n : \u2115), y (n + 1) = P n (y n + h n \u2022 \u2211 i, b i \u2022 k n i)) \u2192\n                      (\u2200 (i : Fin s), \u03b2 i 1 = b i) \u2192\n                        \u2200 (B : \u211d),\n                          (\u2200 \u03b8 \u2208 Set.Icc 0 1, \u2211 i, |\u03b2 i \u03b8| \u2264 B) \u2192\n                            \u2200 (t : \u2115 \u2192 \u211d),\n                              (\u2200 (m : \u2115), t (m + 1) = t m + h m) \u2192\n                                \u2200 (n : \u2115),\n                                  \u2200 \u03b8 \u2208 Set.Icc 0 1,\n                                    |\u2113 (y n + h n \u2022 \u2211 i, \u03b2 i \u03b8 \u2022 k n i) - \u2113 (y 0)| \u2264 \u03b4 * (t (n + 1) - t 0) * B"
+    },
+    "MathDept.MD_0039.D": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "(N : \u2115) \u2192 \u211d \u2192 (Fin N \u2192 \u2102) \u2192 Fin N \u2192 \u2102"
+    },
+    "MathDept.MD_0039.E": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "(N : \u2115) \u2192 (Fin N \u2192 \u2102) \u2192 Fin (MathDept.MD_0039.M N) \u2192 \u2102"
+    },
+    "MathDept.MD_0039.E_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (g : Fin N \u2192 \u2102) (p : Fin (MathDept.MD_0039.M N)),\n        MathDept.MD_0039.E N g p =\n          \u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2),\n            MathDept.MD_0039.wt N m * MathDept.MD_0039.hat N g m / \u2191N *\n              MathDept.MD_0039.omega (MathDept.MD_0039.M N) ^ (\u2191\u2191p * m)"
+    },
+    "MathDept.MD_0039.M": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2115 \u2192 \u2115"
+    },
+    "MathDept.MD_0039.Pi": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "(N : \u2115) \u2192 (Fin N \u2192 \u2102) \u2192 (Fin N \u2192 \u2102) \u2192 Fin N \u2192 \u2102"
+    },
+    "MathDept.MD_0039.c": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "(N : \u2115) \u2192 (Fin N \u2192 \u2102) \u2192 (Fin N \u2192 \u2102) \u2192 \u2124 \u2192 \u2102"
+    },
+    "MathDept.MD_0039.exists_rep": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (L : \u211d),\n        \u2200 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2),\n          \u2203 k, \u2191N \u2223 \u2191\u2191k - m \u2227 MathDept.MD_0039.kappa N L k = MathDept.MD_0039.kappaS N L m"
+    },
+    "MathDept.MD_0039.hat": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "(N : \u2115) \u2192 (Fin N \u2192 \u2102) \u2192 \u2124 \u2192 \u2102"
+    },
+    "MathDept.MD_0039.hat_D": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (L : \u211d) (g : Fin N \u2192 \u2102),\n        \u2200 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2),\n          MathDept.MD_0039.hat N (MathDept.MD_0039.D N L g) m =\n            Complex.I * \u2191(MathDept.MD_0039.kappaS N L m) * MathDept.MD_0039.hat N g m"
+    },
+    "MathDept.MD_0039.hat_neg_half": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115), 2 \u2264 N \u2192 Even N \u2192 \u2200 (g : Fin N \u2192 \u2102), MathDept.MD_0039.hat N g (-\u2191(N / 2)) = MathDept.MD_0039.hat N g \u2191(N / 2)"
+    },
+    "MathDept.MD_0039.hat_periodic": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115), N \u2260 0 \u2192 \u2200 (g : Fin N \u2192 \u2102) (m t : \u2124), MathDept.MD_0039.hat N g (m + \u2191N * t) = MathDept.MD_0039.hat N g m"
+    },
+    "MathDept.MD_0039.kappa": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "(N : \u2115) \u2192 \u211d \u2192 Fin N \u2192 \u211d"
+    },
+    "MathDept.MD_0039.kappaS": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2115 \u2192 \u211d \u2192 \u2124 \u2192 \u211d"
+    },
+    "MathDept.MD_0039.kappaS_neg": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115) (L : \u211d) (m : \u2124), MathDept.MD_0039.kappaS N L (-m) = -MathDept.MD_0039.kappaS N L m"
+    },
+    "MathDept.MD_0039.omega": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2115 \u2192 \u2102"
+    },
+    "MathDept.MD_0039.omega_isPrimitiveRoot": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (n : \u2115), n \u2260 0 \u2192 IsPrimitiveRoot (MathDept.MD_0039.omega n) n"
+    },
+    "MathDept.MD_0039.omega_ne_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (n : \u2115), MathDept.MD_0039.omega n \u2260 0"
+    },
+    "MathDept.MD_0039.omega_zpow_mul_self": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (n : \u2115), n \u2260 0 \u2192 \u2200 (k : \u2124), MathDept.MD_0039.omega n ^ (\u2191n * k) = 1"
+    },
+    "MathDept.MD_0039.pair_cancel": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115) (F G : \u2124 \u2192 \u2102),\n  (\u2200 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), F m + G (-m) = 0) \u2192\n    \u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), F m + \u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), G m = 0"
+    },
+    "MathDept.MD_0039.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (L : \u211d),\n        0 < L \u2192\n          \u2200 (a b : Fin N \u2192 \u2102),\n            \u2211 j,\n                (MathDept.MD_0039.Pi N a (MathDept.MD_0039.D N L b) j +\n                  MathDept.MD_0039.Pi N b (MathDept.MD_0039.D N L a) j) =\n              0"
+    },
+    "MathDept.MD_0039.sum_Pi": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115), 2 \u2264 N \u2192 \u2200 (x y : Fin N \u2192 \u2102), \u2211 j, MathDept.MD_0039.Pi N x y j = \u2191N * MathDept.MD_0039.c N x y 0"
+    },
+    "MathDept.MD_0039.sum_neg_reindex": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115) (f : \u2124 \u2192 \u2102), \u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), f m = \u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), f (-m)"
+    },
+    "MathDept.MD_0039.sum_omega_zpow": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (n : \u2115), n \u2260 0 \u2192 \u2200 (q : \u2124), \u2211 j, MathDept.MD_0039.omega n ^ (\u2191\u2191j * q) = if \u2191n \u2223 q then \u2191n else 0"
+    },
+    "MathDept.MD_0039.sum_prod_modes": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (A B : \u2124 \u2192 \u2102),\n        \u2211 p,\n            (\u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), A m * MathDept.MD_0039.omega (MathDept.MD_0039.M N) ^ (\u2191\u2191p * m)) *\n              \u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), B m * MathDept.MD_0039.omega (MathDept.MD_0039.M N) ^ (\u2191\u2191p * m) =\n          \u2191(MathDept.MD_0039.M N) * \u2211 m \u2208 Finset.Icc (-\u2191(N / 2)) \u2191(N / 2), A m * B (-m)"
+    },
+    "MathDept.MD_0039.wt": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0039",
+      "type": "\u2115 \u2192 \u2124 \u2192 \u2102"
+    },
+    "MathDept.MD_0041.dvd_sub_iff": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 {N : \u2115} (a b : Fin N), \u2191N \u2223 \u2191\u2191a - \u2191\u2191b \u2194 a = b"
+    },
+    "MathDept.MD_0041.kappa_half": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 {N : \u2115} {L : \u211d} (m : Fin N), \u2191m = N / 2 \u2192 MathDept.MD_0035.kappa N L m = 0"
+    },
+    "MathDept.MD_0041.omega_half": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 MathDept.MD_0035.omega N ^ (N / 2) = -1"
+    },
+    "MathDept.MD_0041.omega_mul": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 (N : \u2115) (a b c : \u2124),\n  a + b = c \u2192 MathDept.MD_0035.omega N ^ a * MathDept.MD_0035.omega N ^ b = MathDept.MD_0035.omega N ^ c"
+    },
+    "MathDept.MD_0041.omega_ne_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 (N : \u2115), MathDept.MD_0035.omega N \u2260 0"
+    },
+    "MathDept.MD_0041.omega_sign": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 \u2200 (j : \u2115), MathDept.MD_0035.omega N ^ (\u2191j * \u2191(N / 2)) = (-1) ^ j"
+    },
+    "MathDept.MD_0041.pair": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 (N : \u2115) (L : \u211d) (w g : Fin N \u2192 \u2102),\n  \u2211 j, w j * MathDept.MD_0035.D N L g j =\n    1 / \u2191N *\n      \u2211 m,\n        Complex.I * \u2191(MathDept.MD_0035.kappa N L m) * MathDept.MD_0035.hat N g m *\n          \u2211 j, w j * MathDept.MD_0035.omega N ^ (\u2191\u2191j * \u2191\u2191m)"
+    },
+    "MathDept.MD_0041.sign_sum": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 \u2200 (L : \u211d) (g : Fin N \u2192 \u2102), \u2211 j, (-1) ^ \u2191j * MathDept.MD_0035.D N L g j = 0"
+    },
+    "MathDept.MD_0041.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0041",
+      "type": "\u2200 (N : \u2115), 2 \u2264 N \u2192 Even N \u2192 \u2200 (L : \u211d), 0 < L \u2192 \u2200 (g : Fin N \u2192 \u2102), \u2211 j, (-1) ^ \u2191j * MathDept.MD_0035.D N L g j = 0"
+    },
+    "MathDept.MD_0042.W_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115},\n  2 \u2264 N \u2192\n    \u2200 {L : \u211d},\n      L \u2260 0 \u2192\n        \u2200 (w : Fin N \u2192 \u2102),\n          (\u2200 (g : Fin N \u2192 \u2102), \u2211 j, w j * MathDept.MD_0035.D N L g j = 0) \u2192\n            \u2200 (m : Fin N), \u2191m \u2260 0 \u2192 \u2191m \u2260 N / 2 \u2192 \u2211 l, w l * MathDept.MD_0035.omega N ^ (\u2191\u2191l * \u2191\u2191m) = 0"
+    },
+    "MathDept.MD_0042.dvd_sub_iff": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115} (a b : Fin N), \u2191N \u2223 \u2191\u2191a - \u2191\u2191b \u2194 a = b"
+    },
+    "MathDept.MD_0042.kappa_half": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115} {L : \u211d} (m : Fin N), \u2191m = N / 2 \u2192 MathDept.MD_0035.kappa N L m = 0"
+    },
+    "MathDept.MD_0042.kappa_ne_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115} {L : \u211d}, L \u2260 0 \u2192 \u2200 (m : Fin N), \u2191m \u2260 0 \u2192 \u2191m \u2260 N / 2 \u2192 MathDept.MD_0035.kappa N L m \u2260 0"
+    },
+    "MathDept.MD_0042.m0": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "{N : \u2115} \u2192 2 \u2264 N \u2192 Fin N"
+    },
+    "MathDept.MD_0042.m0.congr_simp": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115} (hN : 2 \u2264 N), MathDept.MD_0042.m0 hN = MathDept.MD_0042.m0 hN"
+    },
+    "MathDept.MD_0042.mh": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "{N : \u2115} \u2192 2 \u2264 N \u2192 Fin N"
+    },
+    "MathDept.MD_0042.mh.congr_simp": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115} (hN : 2 \u2264 N), MathDept.MD_0042.mh hN = MathDept.MD_0042.mh hN"
+    },
+    "MathDept.MD_0042.omega_half": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 MathDept.MD_0035.omega N ^ (N / 2) = -1"
+    },
+    "MathDept.MD_0042.omega_mul": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 (N : \u2115) (a b c : \u2124),\n  a + b = c \u2192 MathDept.MD_0035.omega N ^ a * MathDept.MD_0035.omega N ^ b = MathDept.MD_0035.omega N ^ c"
+    },
+    "MathDept.MD_0042.omega_ne_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 (N : \u2115), MathDept.MD_0035.omega N \u2260 0"
+    },
+    "MathDept.MD_0042.omega_sign": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 \u2200 (j : \u2115), MathDept.MD_0035.omega N ^ (\u2191j * \u2191(N / 2)) = (-1) ^ j"
+    },
+    "MathDept.MD_0042.orth": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115}, N \u2260 0 \u2192 \u2200 (a b : Fin N), \u2211 m, MathDept.MD_0035.omega N ^ (\u2191\u2191m * (\u2191\u2191a - \u2191\u2191b)) = if a = b then \u2191N else 0"
+    },
+    "MathDept.MD_0042.pair": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 (N : \u2115) (L : \u211d) (w g : Fin N \u2192 \u2102),\n  \u2211 j, w j * MathDept.MD_0035.D N L g j =\n    1 / \u2191N *\n      \u2211 m,\n        Complex.I * \u2191(MathDept.MD_0035.kappa N L m) * MathDept.MD_0035.hat N g m *\n          \u2211 j, w j * MathDept.MD_0035.omega N ^ (\u2191\u2191j * \u2191\u2191m)"
+    },
+    "MathDept.MD_0042.reconW": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115},\n  N \u2260 0 \u2192\n    \u2200 (w : Fin N \u2192 \u2102) (j : Fin N),\n      \u2191N * w j = \u2211 m, (\u2211 l, w l * MathDept.MD_0035.omega N ^ (\u2191\u2191l * \u2191\u2191m)) * MathDept.MD_0035.omega N ^ (-(\u2191\u2191j * \u2191\u2191m))"
+    },
+    "MathDept.MD_0042.sign_sum": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 \u2200 (L : \u211d) (g : Fin N \u2192 \u2102), \u2211 j, (-1) ^ \u2191j * MathDept.MD_0035.D N L g j = 0"
+    },
+    "MathDept.MD_0042.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (L : \u211d),\n        0 < L \u2192\n          {w | \u2200 (g : Fin N \u2192 \u2102), \u2211 j, w j * MathDept.MD_0035.D N L g j = 0} =\n            \u2191(Submodule.span \u2102 {fun x => 1, fun j => (-1) ^ \u2191j})"
+    },
+    "MathDept.MD_0042.sum_two": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0042",
+      "type": "\u2200 {N : \u2115} (hN : 2 \u2264 N) (F : Fin N \u2192 \u2102),\n  (\u2200 (m : Fin N), \u2191m \u2260 0 \u2192 \u2191m \u2260 N / 2 \u2192 F m = 0) \u2192 \u2211 m, F m = F (MathDept.MD_0042.m0 hN) + F (MathDept.MD_0042.mh hN)"
+    },
+    "MathDept.MD_0043.comp_eq_of_conserved": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0043",
+      "type": "\u2200 {d : \u2115} {U : Set (EuclideanSpace \u211d (Fin d))},\n  IsOpen U \u2192\n    \u2200 {\u03a6 : EuclideanSpace \u211d (Fin d) \u2192 EuclideanSpace \u211d (Fin d)} {xs : EuclideanSpace \u211d (Fin d)},\n      xs \u2208 U \u2192\n        \u03a6 xs = xs \u2192\n          \u2200 {\u03a6' : EuclideanSpace \u211d (Fin d) \u2192L[\u211d] EuclideanSpace \u211d (Fin d)},\n            HasFDerivAt \u03a6 \u03a6' xs \u2192\n              \u2200 {G : EuclideanSpace \u211d (Fin d) \u2192 \u211d} {G' : EuclideanSpace \u211d (Fin d) \u2192L[\u211d] \u211d},\n                HasFDerivAt G G' xs \u2192 (\u2200 x \u2208 U, G (\u03a6 x) = G x) \u2192 G' \u2218SL \u03a6' = G'"
+    },
+    "MathDept.MD_0043.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0043",
+      "type": "\u2200 {d : \u2115} {U : Set (EuclideanSpace \u211d (Fin d))},\n  IsOpen U \u2192\n    \u2200 {\u03a6 : EuclideanSpace \u211d (Fin d) \u2192 EuclideanSpace \u211d (Fin d)},\n      Set.MapsTo \u03a6 U U \u2192\n        \u2200 {xs : EuclideanSpace \u211d (Fin d)},\n          xs \u2208 U \u2192\n            \u03a6 xs = xs \u2192\n              \u2200 {\u03a6' : EuclideanSpace \u211d (Fin d) \u2192L[\u211d] EuclideanSpace \u211d (Fin d)},\n                HasFDerivAt \u03a6 \u03a6' xs \u2192\n                  (\u2200 (G : EuclideanSpace \u211d (Fin d) \u2192 \u211d) (G' : EuclideanSpace \u211d (Fin d) \u2192L[\u211d] \u211d),\n                      HasFDerivAt G G' xs \u2192 (\u2200 x \u2208 U, G (\u03a6 x) = G x) \u2192 G' \u2218SL \u03a6' = G') \u2227\n                    \u2200 (r : \u2115) (G : Fin r \u2192 EuclideanSpace \u211d (Fin d) \u2192 \u211d)\n                      (G' : Fin r \u2192 EuclideanSpace \u211d (Fin d) \u2192L[\u211d] \u211d),\n                      (\u2200 (i : Fin r), HasFDerivAt (G i) (G' i) xs) \u2192\n                        (\u2200 (i : Fin r), \u2200 x \u2208 U, G i (\u03a6 x) = G i x) \u2192\n                          (LinearIndependent \u211d fun i => \u2191(G' i)) \u2192\n                            r \u2264 Module.finrank \u211d \u21a5((\u2191\u03a6').dualMap - LinearMap.id).ker"
+    },
+    "MathDept.MD_0044.W": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0044",
+      "type": "{K : Type u_1} \u2192 [inst : Field K] \u2192 {d r : \u2115} \u2192 (Fin r \u2192 Fin d \u2192 K) \u2192 Submodule K (Fin d \u2192 K)"
+    },
+    "MathDept.MD_0044.charpoly_eq_restrict_mul_mapQ": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0044",
+      "type": "\u2200 {K : Type u_1} [inst : Field K] {V : Type u_2} [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  [inst_3 : FiniteDimensional K V] (W : Submodule K V) (e : V \u2192\u2097[K] V) (he : \u2200 x \u2208 W, e x \u2208 W),\n  e.charpoly = (e.restrict he).charpoly * (W.mapQ W e he).charpoly"
+    },
+    "MathDept.MD_0044.charpoly_id": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0044",
+      "type": "\u2200 {K : Type u_1} [inst : Field K] {V : Type u_2} [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  [inst_3 : FiniteDimensional K V], LinearMap.id.charpoly = (Polynomial.X - 1) ^ Module.finrank K V"
+    },
+    "MathDept.MD_0044.charpoly_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0044",
+      "type": "\u2200 {K : Type u_1} [inst : Field K] {V : Type u_2} [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  [inst_3 : FiniteDimensional K V], LinearMap.charpoly 0 = Polynomial.X ^ Module.finrank K V"
+    },
+    "MathDept.MD_0044.finrank_quot": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0044",
+      "type": "\u2200 {K : Type u_1} [inst : Field K] {d r : \u2115} (l : Fin r \u2192 Fin d \u2192 K),\n  LinearIndependent K l \u2192 Module.finrank K ((Fin d \u2192 K) \u29f8 MathDept.MD_0044.W l) = r"
+    },
+    "MathDept.MD_0044.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0044",
+      "type": "\u2200 {d r : \u2115},\n  1 \u2264 d \u2192\n    \u2200 (M : Matrix (Fin d) (Fin d) \u2102),\n      1 \u2264 r \u2192\n        r \u2264 d \u2192\n          \u2200 (l : Fin r \u2192 Fin d \u2192 \u2102),\n            LinearIndependent \u2102 l \u2192\n              (\u2200 (i : Fin r), Matrix.vecMul (l i) M = l i) \u2192\n                (\u2200 v \u2208 MathDept.MD_0044.W l, M.mulVec v \u2208 MathDept.MD_0044.W l) \u2227\n                  \u2203 (hMW : \u2200 v \u2208 MathDept.MD_0044.W l, (Matrix.toLin' M) v \u2208 MathDept.MD_0044.W l),\n                    M.charpoly = (Polynomial.X - 1) ^ r * ((Matrix.toLin' M).restrict hMW).charpoly \u2227\n                      \u2200 (P : Matrix (Fin d) (Fin d) \u2102),\n                        P * P = P \u2192\n                          (Matrix.toLin' P).range = MathDept.MD_0044.W l \u2192\n                            (P * M * P).charpoly = Polynomial.X ^ r * ((Matrix.toLin' M).restrict hMW).charpoly"
+    },
+    "MathDept.MD_0044.statement_field": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0044",
+      "type": "\u2200 {K : Type u_1} [inst : Field K] {d r : \u2115} (M : Matrix (Fin d) (Fin d) K) (l : Fin r \u2192 Fin d \u2192 K),\n  LinearIndependent K l \u2192\n    (\u2200 (i : Fin r), Matrix.vecMul (l i) M = l i) \u2192\n      (\u2200 v \u2208 MathDept.MD_0044.W l, M.mulVec v \u2208 MathDept.MD_0044.W l) \u2227\n        \u2203 (hMW : \u2200 v \u2208 MathDept.MD_0044.W l, (Matrix.toLin' M) v \u2208 MathDept.MD_0044.W l),\n          M.charpoly = (Polynomial.X - 1) ^ r * ((Matrix.toLin' M).restrict hMW).charpoly \u2227\n            \u2200 (P : Matrix (Fin d) (Fin d) K),\n              P * P = P \u2192\n                (Matrix.toLin' P).range = MathDept.MD_0044.W l \u2192\n                  (P * M * P).charpoly = Polynomial.X ^ r * ((Matrix.toLin' M).restrict hMW).charpoly"
+    },
+    "MathDept.MD_0045.second_order": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0045",
+      "type": "\u2200 {d : \u2115} {U : Set (EuclideanSpace \u211d (Fin d))},\n  IsOpen U \u2192\n    Convex \u211d U \u2192\n      \u2200 {G : EuclideanSpace \u211d (Fin d) \u2192 \u211d},\n        ContDiffOn \u211d 2 G U \u2192\n          \u2200 {B : \u211d},\n            (\u2200 y \u2208 U, \u2016fderiv \u211d (fderiv \u211d G) y\u2016 \u2264 B) \u2192\n              \u2200 {x y : EuclideanSpace \u211d (Fin d)},\n                x \u2208 U \u2192 y \u2208 U \u2192 |(fderiv \u211d G x) (y - x) + (G x - G y)| \u2264 1 / 2 * B * \u2016y - x\u2016 ^ 2"
+    },
+    "MathDept.MD_0045.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0045",
+      "type": "\u2200 {d : \u2115} {U : Set (EuclideanSpace \u211d (Fin d))},\n  IsOpen U \u2192\n    Convex \u211d U \u2192\n      \u2200 {\u03a6 : EuclideanSpace \u211d (Fin d) \u2192 EuclideanSpace \u211d (Fin d)},\n        Set.MapsTo \u03a6 U U \u2192\n          \u2200 {G : EuclideanSpace \u211d (Fin d) \u2192 \u211d},\n            (\u2200 x \u2208 U, G (\u03a6 x) = G x) \u2192\n              (\u2200 (l : EuclideanSpace \u211d (Fin d)), (\u2200 x \u2208 U, G x = inner \u211d l x) \u2192 \u2200 x \u2208 U, inner \u211d l (\u03a6 x - x) = 0) \u2227\n                (ContDiffOn \u211d 2 G U \u2192\n                  \u2200 (B : \u211d),\n                    (\u2200 y \u2208 U, \u2016fderiv \u211d (fderiv \u211d G) y\u2016 \u2264 B) \u2192\n                      \u2200 x \u2208 U, |(fderiv \u211d G x) (\u03a6 x - x)| \u2264 1 / 2 * B * \u2016\u03a6 x - x\u2016 ^ 2)"
+    },
+    "MathDept.MD_0046.Dmat": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "(N : \u2115) \u2192 \u211d \u2192 Matrix (Fin N) (Fin N) \u2102"
+    },
+    "MathDept.MD_0046.Dmat_conjTranspose": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (L : \u211d), (MathDept.MD_0046.Dmat N L).conjTranspose = -MathDept.MD_0046.Dmat N L"
+    },
+    "MathDept.MD_0046.Dmat_mulVec": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (L : \u211d) (g : Fin N \u2192 \u2102), (MathDept.MD_0046.Dmat N L).mulVec g = MathDept.MD_0035.D N L g"
+    },
+    "MathDept.MD_0046.K": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "(N : \u2115) \u2192 \u211d \u2192 Matrix (Fin N) (Fin N) \u2102"
+    },
+    "MathDept.MD_0046.K_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (L : \u211d), MathDept.MD_0046.K N L = (MathDept.MD_0046.Dmat N L).conjTranspose * MathDept.MD_0046.Dmat N L"
+    },
+    "MathDept.MD_0046.K_isHermitian": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (L : \u211d), (MathDept.MD_0046.K N L).IsHermitian"
+    },
+    "MathDept.MD_0046.dvd_sub_iff": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} (a b : Fin N), \u2191N \u2223 \u2191\u2191a - \u2191\u2191b \u2194 a = b"
+    },
+    "MathDept.MD_0046.hat_zero_of_D_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115},\n  2 \u2264 N \u2192\n    \u2200 {L : \u211d},\n      L \u2260 0 \u2192\n        \u2200 (x : Fin N \u2192 \u2102),\n          (\u2200 (j : Fin N), MathDept.MD_0035.D N L x j = 0) \u2192\n            \u2200 (m : Fin N), \u2191m \u2260 0 \u2192 \u2191m \u2260 N / 2 \u2192 MathDept.MD_0035.hat N x m = 0"
+    },
+    "MathDept.MD_0046.kappa_half": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} {L : \u211d} (m : Fin N), \u2191m = N / 2 \u2192 MathDept.MD_0035.kappa N L m = 0"
+    },
+    "MathDept.MD_0046.kappa_ne_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} {L : \u211d}, L \u2260 0 \u2192 \u2200 (m : Fin N), \u2191m \u2260 0 \u2192 \u2191m \u2260 N / 2 \u2192 MathDept.MD_0035.kappa N L m \u2260 0"
+    },
+    "MathDept.MD_0046.ker_D": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} (hN : 2 \u2264 N),\n  Even N \u2192\n    \u2200 {L : \u211d},\n      L \u2260 0 \u2192\n        \u2200 (x : Fin N \u2192 \u2102),\n          (\u2200 (j : Fin N), MathDept.MD_0035.D N L x j = 0) \u2192\n            \u2200 (j : Fin N),\n              \u2191N * x j =\n                MathDept.MD_0035.hat N x (MathDept.MD_0046.m0 hN) +\n                  MathDept.MD_0035.hat N x (MathDept.MD_0046.mh hN) * (-1) ^ \u2191j"
+    },
+    "MathDept.MD_0046.ker_D_two": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115},\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 {L : \u211d},\n        L \u2260 0 \u2192\n          \u2200 (x : Fin N \u2192 \u2102),\n            (\u2200 (j : Fin N), MathDept.MD_0035.D N L x j = 0) \u2192\n              \u2200 (j k : Fin N), Odd (\u2191\u2191j - \u2191\u2191k) \u2192 x j = 0 \u2192 x k = 0 \u2192 x = 0"
+    },
+    "MathDept.MD_0046.m0": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "{N : \u2115} \u2192 2 \u2264 N \u2192 Fin N"
+    },
+    "MathDept.MD_0046.m0.congr_simp": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} (hN : 2 \u2264 N), MathDept.MD_0046.m0 hN = MathDept.MD_0046.m0 hN"
+    },
+    "MathDept.MD_0046.mh": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "{N : \u2115} \u2192 2 \u2264 N \u2192 Fin N"
+    },
+    "MathDept.MD_0046.mh.congr_simp": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} (hN : 2 \u2264 N), MathDept.MD_0046.mh hN = MathDept.MD_0046.mh hN"
+    },
+    "MathDept.MD_0046.neg_one_pow_odd": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} (j k : Fin N), Odd (\u2191\u2191j - \u2191\u2191k) \u2192 (-1) ^ \u2191j = -(-1) ^ \u2191k"
+    },
+    "MathDept.MD_0046.omega_half": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 MathDept.MD_0035.omega N ^ (N / 2) = -1"
+    },
+    "MathDept.MD_0046.omega_mul": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (a b c : \u2124),\n  a + b = c \u2192 MathDept.MD_0035.omega N ^ a * MathDept.MD_0035.omega N ^ b = MathDept.MD_0035.omega N ^ c"
+    },
+    "MathDept.MD_0046.omega_ne_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115), MathDept.MD_0035.omega N \u2260 0"
+    },
+    "MathDept.MD_0046.omega_sign": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115}, 2 \u2264 N \u2192 Even N \u2192 \u2200 (j : \u2115), MathDept.MD_0035.omega N ^ (\u2191j * \u2191(N / 2)) = (-1) ^ j"
+    },
+    "MathDept.MD_0046.orth": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115}, N \u2260 0 \u2192 \u2200 (a b : Fin N), \u2211 m, MathDept.MD_0035.omega N ^ (\u2191\u2191m * (\u2191\u2191a - \u2191\u2191b)) = if a = b then \u2191N else 0"
+    },
+    "MathDept.MD_0046.pair": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (L : \u211d) (w g : Fin N \u2192 \u2102),\n  \u2211 j, w j * MathDept.MD_0035.D N L g j =\n    1 / \u2191N *\n      \u2211 m,\n        Complex.I * \u2191(MathDept.MD_0035.kappa N L m) * MathDept.MD_0035.hat N g m *\n          \u2211 j, w j * MathDept.MD_0035.omega N ^ (\u2191\u2191j * \u2191\u2191m)"
+    },
+    "MathDept.MD_0046.quad_form": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (L : \u211d) (h : Fin N \u2192 \u211d) (\u03b1 : \u211d) (x : Fin N \u2192 \u2102),\n  star x \u2b1d\u1d65 (\u2191\u03b1 \u2022 MathDept.MD_0046.K N L + Matrix.diagonal fun j => \u2191(h j)).mulVec x =\n    \u2191(\u03b1 * \u2211 j, \u2016MathDept.MD_0035.D N L x j\u2016 ^ 2 + \u2211 j, h j * \u2016x j\u2016 ^ 2)"
+    },
+    "MathDept.MD_0046.recon": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115},\n  N \u2260 0 \u2192\n    \u2200 (g : Fin N \u2192 \u2102) (j : Fin N), \u2191N * g j = \u2211 m, MathDept.MD_0035.hat N g m * MathDept.MD_0035.omega N ^ (\u2191\u2191j * \u2191\u2191m)"
+    },
+    "MathDept.MD_0046.star_omega_zpow": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115) (q : \u2124), star (MathDept.MD_0035.omega N ^ q) = MathDept.MD_0035.omega N ^ (-q)"
+    },
+    "MathDept.MD_0046.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (L : \u211d),\n        0 < L \u2192\n          \u2200 (h : Fin N \u2192 \u211d),\n            (\u2200 (j : Fin N), 0 \u2264 h j) \u2192\n              (\u2203 j k, Odd (\u2191\u2191j - \u2191\u2191k) \u2227 0 < h j \u2227 0 < h k) \u2192\n                \u2200 (\u03b1 : \u211d), 0 < \u03b1 \u2192 (\u2191\u03b1 \u2022 MathDept.MD_0046.K N L + Matrix.diagonal fun j => \u2191(h j)).PosDef"
+    },
+    "MathDept.MD_0046.statement_principal": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 (N : \u2115),\n  2 \u2264 N \u2192\n    Even N \u2192\n      \u2200 (L : \u211d),\n        0 < L \u2192\n          \u2200 (S : Set (Fin N)),\n            (\u2203 j k, j \u2209 S \u2227 k \u2209 S \u2227 Odd (\u2191\u2191j - \u2191\u2191k)) \u2192\n              ((MathDept.MD_0046.K N L).submatrix Subtype.val Subtype.val).PosDef"
+    },
+    "MathDept.MD_0046.sum_two": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0046",
+      "type": "\u2200 {N : \u2115} (hN : 2 \u2264 N) (F : Fin N \u2192 \u2102),\n  (\u2200 (m : Fin N), \u2191m \u2260 0 \u2192 \u2191m \u2260 N / 2 \u2192 F m = 0) \u2192 \u2211 m, F m = F (MathDept.MD_0046.m0 hN) + F (MathDept.MD_0046.mh hN)"
+    },
+    "MathDept.MD_0051.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0051",
+      "type": "\u2200 {d : \u2115},\n  1 \u2264 d \u2192\n    \u2200 (M : Matrix (Fin d) (Fin d) \u2102) (\u03b8 : \u2102) (u : EuclideanSpace \u2102 (Fin d)),\n      \u2016u\u2016 = 1 \u2192\n        \u2200 (\u03b5 : \u211d),\n          0 \u2264 \u03b5 \u2192\n            \u2016(Matrix.toEuclideanCLM M) u - \u03b8 \u2022 u\u2016 \u2264 \u03b5 \u2192\n              (\u2203 v, \u2016v\u2016 = 1 \u2227 \u2016(Matrix.toEuclideanCLM (\u03b8 \u2022 1 - M)) v\u2016 \u2264 \u03b5) \u2227\n                \u2a05 v, \u2016(Matrix.toEuclideanCLM (\u03b8 \u2022 1 - M)) \u2191v\u2016 \u2264 \u03b5 \u2227\n                  have r := (Matrix.toEuclideanCLM M) u - \u03b8 \u2022 u;\n                  have E := -Matrix.vecMulVec r.ofLp (star u.ofLp);\n                  \u2016E\u2016 \u2264 \u03b5 \u2227 (Matrix.toEuclideanCLM (M + E)) u = \u03b8 \u2022 u"
+    },
+    "MathDept.MD_0051.toEuclideanCLM_vecMulVec": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0051",
+      "type": "\u2200 {d : \u2115} (r u x : EuclideanSpace \u2102 (Fin d)),\n  (Matrix.toEuclideanCLM (Matrix.vecMulVec r.ofLp (star u.ofLp))) x = inner \u2102 u x \u2022 r"
+    },
+    "MathDept.MD_0070.ac_congr": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {f g : \u211d \u2192 \u211d} {a b : \u211d},\n  AbsolutelyContinuousOnInterval f a b \u2192 Set.EqOn f g (Set.uIcc a b) \u2192 AbsolutelyContinuousOnInterval g a b"
+    },
+    "MathDept.MD_0070.ac_energy": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (\u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) {a b : \u211d},\n  (\u2200 (j : \u03b9), AbsolutelyContinuousOnInterval (\u03b6 j) a b) \u2192 AbsolutelyContinuousOnInterval (MathDept.MD_0070.energy \u03b6) a b"
+    },
+    "MathDept.MD_0070.energy": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "{\u03b9 : Type u_1} \u2192 [Fintype \u03b9] \u2192 (\u03b9 \u2192 \u211d \u2192 \u211d) \u2192 \u211d \u2192 \u211d"
+    },
+    "MathDept.MD_0070.energy_nonneg": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (\u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (t : \u211d), 0 \u2264 MathDept.MD_0070.energy \u03b6 t"
+    },
+    "MathDept.MD_0070.hasDerivAt_energy": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (\u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (\u03b6' : \u03b9 \u2192 \u211d) (t : \u211d),\n  (\u2200 (j : \u03b9), HasDerivAt (\u03b6 j) (\u03b6' j) t) \u2192 HasDerivAt (MathDept.MD_0070.energy \u03b6) (\u2211 j, \u03b6 j t * \u03b6' j) t"
+    },
+    "MathDept.MD_0070.integral_Y": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (p r \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (u : \u211d \u2192 \u211d) {T : \u211d},\n  0 \u2264 T \u2192\n    (\u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 \u2200 (j : \u03b9), 0 \u2264 p j t) \u2192\n      (\u2200 (j : \u03b9), AbsolutelyContinuousOnInterval (\u03b6 j) 0 T) \u2192\n        (\u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 \u2200 (j : \u03b9), HasDerivAt (\u03b6 j) (-p j t * \u03b6 j t + \u221a(r j t) * u t) t) \u2192\n          -(1 / 2) * \u2211 j, \u03b6 j 0 ^ 2 \u2264 \u222b (t : \u211d) in 0..T, u t * \u2211 j, \u221a(r j t) * \u03b6 j t"
+    },
+    "MathDept.MD_0070.integral_Y_integral_form": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (p r \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (u : \u211d \u2192 \u211d) {T : \u211d},\n  0 \u2264 T \u2192\n    (\u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 \u2200 (j : \u03b9), 0 \u2264 p j t) \u2192\n      (\u2200 (j : \u03b9), IntervalIntegrable (fun s => -p j s * \u03b6 j s + \u221a(r j s) * u s) MeasureTheory.volume 0 T) \u2192\n        (\u2200 (j : \u03b9), \u2200 t \u2208 Set.Icc 0 T, \u03b6 j t = \u03b6 j 0 + \u222b (s : \u211d) in 0..t, -p j s * \u03b6 j s + \u221a(r j s) * u s) \u2192\n          -(1 / 2) * \u2211 j, \u03b6 j 0 ^ 2 \u2264 \u222b (t : \u211d) in 0..T, u t * \u2211 j, \u221a(r j t) * \u03b6 j t"
+    },
+    "MathDept.MD_0070.integral_Z": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (c \u03be \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (a u : \u211d \u2192 \u211d) {T : \u211d},\n  0 \u2264 T \u2192\n    (\u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 0 \u2264 a t \u2227 \u2200 (k : \u03b9), 0 \u2264 c k t \u2227 0 \u2264 \u03be k t) \u2192\n      (\u2200 (k : \u03b9), AbsolutelyContinuousOnInterval (\u03b6 k) 0 T) \u2192\n        (\u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 \u2200 (k : \u03b9), HasDerivAt (\u03b6 k) (-\u03be k t * \u03b6 k t + \u221a(c k t * \u03be k t) * u t) t) \u2192\n          -(1 / 2) * \u2211 k, \u03b6 k 0 ^ 2 \u2264\n            \u222b (t : \u211d) in 0..T, u t * (a t * u t + \u2211 k, (c k t * u t - \u221a(c k t * \u03be k t) * \u03b6 k t))"
+    },
+    "MathDept.MD_0070.of_integral_form": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 (z f : \u211d \u2192 \u211d) {T : \u211d},\n  0 \u2264 T \u2192\n    IntervalIntegrable f MeasureTheory.volume 0 T \u2192\n      (\u2200 t \u2208 Set.Icc 0 T, z t = z 0 + \u222b (s : \u211d) in 0..t, f s) \u2192\n        AbsolutelyContinuousOnInterval z 0 T \u2227 \u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 HasDerivAt z (f t) t"
+    },
+    "MathDept.MD_0070.pointwise_Y": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (p r \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (u : \u211d \u2192 \u211d) (t : \u211d),\n  (\u2200 (j : \u03b9), HasDerivAt (\u03b6 j) (-p j t * \u03b6 j t + \u221a(r j t) * u t) t) \u2192\n    HasDerivAt (MathDept.MD_0070.energy \u03b6) (u t * \u2211 j, \u221a(r j t) * \u03b6 j t - \u2211 j, p j t * \u03b6 j t ^ 2) t"
+    },
+    "MathDept.MD_0070.pointwise_Z": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (c \u03be \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (a u : \u211d \u2192 \u211d) (t : \u211d),\n  (\u2200 (k : \u03b9), 0 \u2264 c k t) \u2192\n    (\u2200 (k : \u03b9), 0 \u2264 \u03be k t) \u2192\n      (\u2200 (k : \u03b9), HasDerivAt (\u03b6 k) (-\u03be k t * \u03b6 k t + \u221a(c k t * \u03be k t) * u t) t) \u2192\n        HasDerivAt (MathDept.MD_0070.energy \u03b6)\n          (u t * (a t * u t + \u2211 k, (c k t * u t - \u221a(c k t * \u03be k t) * \u03b6 k t)) - a t * u t ^ 2 -\n            \u2211 k, (\u221a(c k t) * u t - \u221a(\u03be k t) * \u03b6 k t) ^ 2)\n          t"
+    },
+    "MathDept.MD_0070.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "(\u2200 (\u03b9 : Type w) [inst : Fintype \u03b9] (p r \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (u : \u211d \u2192 \u211d) (t : \u211d),\n    (\u2200 (j : \u03b9), HasDerivAt (\u03b6 j) (-p j t * \u03b6 j t + \u221a(r j t) * u t) t) \u2192\n      HasDerivAt (MathDept.MD_0070.energy \u03b6) (u t * \u2211 j, \u221a(r j t) * \u03b6 j t - \u2211 j, p j t * \u03b6 j t ^ 2) t) \u2227\n  (\u2200 (\u03b9 : Type w) [inst : Fintype \u03b9] (p r \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (u : \u211d \u2192 \u211d) (T : \u211d),\n      0 \u2264 T \u2192\n        (\u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 \u2200 (j : \u03b9), 0 \u2264 p j t) \u2192\n          (\u2200 (j : \u03b9), AbsolutelyContinuousOnInterval (\u03b6 j) 0 T) \u2192\n            (\u2200\u1d50 (t : \u211d), t \u2208 Set.Icc 0 T \u2192 \u2200 (j : \u03b9), HasDerivAt (\u03b6 j) (-p j t * \u03b6 j t + \u221a(r j t) * u t) t) \u2192\n              -(1 / 2) * \u2211 j, \u03b6 j 0 ^ 2 \u2264 \u222b (t : \u211d) in 0..T, u t * \u2211 j, \u221a(r j t) * \u03b6 j t) \u2227\n    (\u2200 (\u03b9 : Type w) [inst : Fintype \u03b9] (c \u03be \u03b6 : \u03b9 \u2192 \u211d \u2192 \u211d) (a u : \u211d \u2192 \u211d) (t : \u211d),\n        0 \u2264 a t \u2192\n          (\u2200 (k : \u03b9), 0 \u2264 c k t) \u2192\n            (\u2200 (k : \u03b9), 0 \u2264 \u03be k t) \u2192\n              (\u2200 (k : \u03b9), HasDerivAt (\u03b6 k) (-\u03be k t * \u03b6 k t + \u221a(c k t * \u03be k t) * u t) t) \u2192\n                HasDerivAt (MathDept.MD_0070.energy \u03b6)\n                    (u t * (a t * u t + \u2211 k, (c k t * u t - \u221a(c k t * \u03be k t) * \u03b6 k t)) -\n                      (a t * u t ^ 2 + \u2211 k, (\u221a(c k t) * u t - \u221a(\u03be k t) * \u03b6 k t) ^ 2))\n                    t \u2227\n                  0 \u2264 a t * u t ^ 2 + \u2211 k, (\u221a(c k t) * u t - \u221a(\u03be k t) * \u03b6 k t) ^ 2) \u2227\n      (\u2200 (\u03b9 : Type w) [inst : Fintype \u03b9] (p r : \u03b9 \u2192 \u211d),\n          (\u2200 (j : \u03b9), 0 \u2264 r j) \u2192\n            \u2200 (s U : \u2102) (Z : \u03b9 \u2192 \u2102),\n              (\u2200 (j : \u03b9), s + \u2191(p j) \u2260 0) \u2192\n                (\u2200 (j : \u03b9), s * Z j = -\u2191(p j) * Z j + \u2191\u221a(r j) * U) \u2192\n                  \u2211 j, \u2191\u221a(r j) * Z j = (\u2211 j, \u2191(r j) / (s + \u2191(p j))) * U) \u2227\n        \u2200 (\u03b9 : Type w) [inst : Fintype \u03b9] (c \u03be : \u03b9 \u2192 \u211d) (a : \u211d),\n          (\u2200 (k : \u03b9), 0 \u2264 c k) \u2192\n            (\u2200 (k : \u03b9), 0 \u2264 \u03be k) \u2192\n              \u2200 (s U : \u2102) (Z : \u03b9 \u2192 \u2102),\n                (\u2200 (k : \u03b9), s + \u2191(\u03be k) \u2260 0) \u2192\n                  (\u2200 (k : \u03b9), s * Z k = -\u2191(\u03be k) * Z k + \u2191\u221a(c k * \u03be k) * U) \u2192\n                    \u2191a * U + \u2211 k, (\u2191(c k) * U - \u2191\u221a(c k * \u03be k) * Z k) = (\u2191a + \u2211 k, \u2191(c k) * s / (s + \u2191(\u03be k))) * U"
+    },
+    "MathDept.MD_0070.transfer_Y": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (p r : \u03b9 \u2192 \u211d),\n  (\u2200 (j : \u03b9), 0 \u2264 r j) \u2192\n    \u2200 (s U : \u2102) (Z : \u03b9 \u2192 \u2102),\n      (\u2200 (j : \u03b9), s + \u2191(p j) \u2260 0) \u2192\n        (\u2200 (j : \u03b9), s * Z j = -\u2191(p j) * Z j + \u2191\u221a(r j) * U) \u2192 \u2211 j, \u2191\u221a(r j) * Z j = (\u2211 j, \u2191(r j) / (s + \u2191(p j))) * U"
+    },
+    "MathDept.MD_0070.transfer_Z": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0070",
+      "type": "\u2200 {\u03b9 : Type u_1} [inst : Fintype \u03b9] (c \u03be : \u03b9 \u2192 \u211d) (a : \u211d),\n  (\u2200 (k : \u03b9), 0 \u2264 c k) \u2192\n    (\u2200 (k : \u03b9), 0 \u2264 \u03be k) \u2192\n      \u2200 (s U : \u2102) (Z : \u03b9 \u2192 \u2102),\n        (\u2200 (k : \u03b9), s + \u2191(\u03be k) \u2260 0) \u2192\n          (\u2200 (k : \u03b9), s * Z k = -\u2191(\u03be k) * Z k + \u2191\u221a(c k * \u03be k) * U) \u2192\n            \u2191a * U + \u2211 k, (\u2191(c k) * U - \u2191\u221a(c k * \u03be k) * Z k) = (\u2191a + \u2211 k, \u2191(c k) * s / (s + \u2191(\u03be k))) * U"
+    },
+    "MathDept.MD_0073.adjugate_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (A : Matrix (Fin N) (Fin N) \u2102) (lam : \u2102),\n  Polynomial.rootMultiplicity lam A.charpoly = 1 \u2192\n    \u2200 (v w : Fin N \u2192 \u2102),\n      A.mulVec v = lam \u2022 v \u2192\n        Matrix.vecMul (star w) A = lam \u2022 star w \u2192\n          star w \u2b1d\u1d65 v \u2260 0 \u2192 \u2203 c, \u2200 (i j : Fin N), (lam \u2022 1 - A).adjugate i j = c * v i * star w j"
+    },
+    "MathDept.MD_0073.charpoly_eval_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (A : Matrix (Fin N) (Fin N) \u2102) (z : \u2102), Polynomial.eval z A.charpoly = (-A + z \u2022 1).det"
+    },
+    "MathDept.MD_0073.deriv_core": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (A B : Matrix (Fin N) (Fin N) \u2102) (lam : \u2102) (v w : Fin N \u2192 \u2102),\n  A.mulVec v = lam \u2022 v \u2192\n    Matrix.vecMul (star w) A = lam \u2022 star w \u2192\n      star w \u2b1d\u1d65 v \u2260 0 \u2192\n        Polynomial.rootMultiplicity lam A.charpoly = 1 \u2192\n          \u2203 r > 0,\n            \u2203 \u03b4 > 0,\n              \u2203 f,\n                f 0 = lam \u2227\n                  (\u2200 (\u03b5 : \u2102),\n                      \u2016\u03b5\u2016 < \u03b4 \u2192\n                        (\u2203 x, x \u2260 0 \u2227 (A + \u03b5 \u2022 B).mulVec x = f \u03b5 \u2022 x) \u2227\n                          \u2016f \u03b5 - lam\u2016 < r \u2227\n                            \u2200 (\u03bc : \u2102), \u2016\u03bc - lam\u2016 < r \u2192 (\u2203 x, x \u2260 0 \u2227 (A + \u03b5 \u2022 B).mulVec x = \u03bc \u2022 x) \u2192 \u03bc = f \u03b5) \u2227\n                    HasDerivAt f (MathDept.MD_0073.share B v w) 0"
+    },
+    "MathDept.MD_0073.eigen_iff_det": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (M : Matrix (Fin N) (Fin N) \u2102) (\u03bc : \u2102), (\u2203 x, x \u2260 0 \u2227 M.mulVec x = \u03bc \u2022 x) \u2194 (\u03bc \u2022 1 - M).det = 0"
+    },
+    "MathDept.MD_0073.eq_smul_of_simple": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (A : Matrix (Fin N) (Fin N) \u2102) (lam : \u2102),\n  Polynomial.rootMultiplicity lam A.charpoly = 1 \u2192\n    \u2200 (v : Fin N \u2192 \u2102), v \u2260 0 \u2192 A.mulVec v = lam \u2022 v \u2192 \u2200 (x : Fin N \u2192 \u2102), A.mulVec x = lam \u2022 x \u2192 \u2203 c, x = c \u2022 v"
+    },
+    "MathDept.MD_0073.hasDerivAt_det_add": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {n : Type u_1} [inst : Fintype n] [inst_1 : DecidableEq n] (M B : Matrix n n \u2102) (t\u2080 : \u2102),\n  HasDerivAt (fun t => (M + t \u2022 B).det) ((M + t\u2080 \u2022 B).adjugate * B).trace t\u2080"
+    },
+    "MathDept.MD_0073.hasDerivAt_det_add_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {n : Type u_1} [inst : Fintype n] [inst_1 : DecidableEq n] (M B : Matrix n n \u2102),\n  HasDerivAt (fun t => (M + t \u2022 B).det) (M.adjugate * B).trace 0"
+    },
+    "MathDept.MD_0073.share": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "{N : \u2115} \u2192 Matrix (Fin N) (Fin N) \u2102 \u2192 (Fin N \u2192 \u2102) \u2192 (Fin N \u2192 \u2102) \u2192 \u2102"
+    },
+    "MathDept.MD_0073.smulRight_one_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 (c : \u2102), ContinuousLinearMap.toSpanSingleton \u2102 c = c \u2022 ContinuousLinearMap.id \u2102 \u2102"
+    },
+    "MathDept.MD_0073.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "(\u2200 (N E : \u2115) (P : Fin E \u2192 Matrix (Fin N) (Fin N) \u2102) (A : Matrix (Fin N) (Fin N) \u2102),\n    A = \u2211 e, P e \u2192\n      \u2200 (lam : \u2102) (v w : Fin N \u2192 \u2102),\n        A.mulVec v = lam \u2022 v \u2192\n          Matrix.vecMul (star w) A = lam \u2022 star w \u2192 star w \u2b1d\u1d65 v \u2260 0 \u2192 \u2211 e, MathDept.MD_0073.share (P e) v w = lam) \u2227\n  \u2200 (N E : \u2115) (P : Fin E \u2192 Matrix (Fin N) (Fin N) \u2102) (A : Matrix (Fin N) (Fin N) \u2102),\n    A = \u2211 e, P e \u2192\n      \u2200 (lam : \u2102) (v w : Fin N \u2192 \u2102),\n        A.mulVec v = lam \u2022 v \u2192\n          Matrix.vecMul (star w) A = lam \u2022 star w \u2192\n            star w \u2b1d\u1d65 v \u2260 0 \u2192\n              Polynomial.rootMultiplicity lam A.charpoly = 1 \u2192\n                \u2200 (e : Fin E),\n                  \u2203 r > 0,\n                    \u2203 \u03b4 > 0,\n                      \u2203 f,\n                        f 0 = lam \u2227\n                          (\u2200 (\u03b5 : \u2102),\n                              \u2016\u03b5\u2016 < \u03b4 \u2192\n                                (\u2203 x, x \u2260 0 \u2227 (A + \u03b5 \u2022 P e).mulVec x = f \u03b5 \u2022 x) \u2227\n                                  \u2016f \u03b5 - lam\u2016 < r \u2227\n                                    \u2200 (\u03bc : \u2102),\n                                      \u2016\u03bc - lam\u2016 < r \u2192 (\u2203 x, x \u2260 0 \u2227 (A + \u03b5 \u2022 P e).mulVec x = \u03bc \u2022 x) \u2192 \u03bc = f \u03b5) \u2227\n                            HasDerivAt f (MathDept.MD_0073.share (P e) v w) 0"
+    },
+    "MathDept.MD_0073.statement_deriv": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 (N E : \u2115) (P : Fin E \u2192 Matrix (Fin N) (Fin N) \u2102) (A : Matrix (Fin N) (Fin N) \u2102),\n  A = \u2211 e, P e \u2192\n    \u2200 (lam : \u2102) (v w : Fin N \u2192 \u2102),\n      A.mulVec v = lam \u2022 v \u2192\n        Matrix.vecMul (star w) A = lam \u2022 star w \u2192\n          star w \u2b1d\u1d65 v \u2260 0 \u2192\n            Polynomial.rootMultiplicity lam A.charpoly = 1 \u2192\n              \u2200 (e : Fin E),\n                \u2203 r > 0,\n                  \u2203 \u03b4 > 0,\n                    \u2203 f,\n                      f 0 = lam \u2227\n                        (\u2200 (\u03b5 : \u2102),\n                            \u2016\u03b5\u2016 < \u03b4 \u2192\n                              (\u2203 x, x \u2260 0 \u2227 (A + \u03b5 \u2022 P e).mulVec x = f \u03b5 \u2022 x) \u2227\n                                \u2016f \u03b5 - lam\u2016 < r \u2227\n                                  \u2200 (\u03bc : \u2102), \u2016\u03bc - lam\u2016 < r \u2192 (\u2203 x, x \u2260 0 \u2227 (A + \u03b5 \u2022 P e).mulVec x = \u03bc \u2022 x) \u2192 \u03bc = f \u03b5) \u2227\n                          HasDerivAt f (MathDept.MD_0073.share (P e) v w) 0"
+    },
+    "MathDept.MD_0073.statement_sum": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 (N E : \u2115) (P : Fin E \u2192 Matrix (Fin N) (Fin N) \u2102) (A : Matrix (Fin N) (Fin N) \u2102),\n  A = \u2211 e, P e \u2192\n    \u2200 (lam : \u2102) (v w : Fin N \u2192 \u2102),\n      A.mulVec v = lam \u2022 v \u2192\n        Matrix.vecMul (star w) A = lam \u2022 star w \u2192 star w \u2b1d\u1d65 v \u2260 0 \u2192 \u2211 e, MathDept.MD_0073.share (P e) v w = lam"
+    },
+    "MathDept.MD_0073.sub_mulVec_eq_zero_iff": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (M : Matrix (Fin N) (Fin N) \u2102) (\u03bc : \u2102) (x : Fin N \u2192 \u2102), (\u03bc \u2022 1 - M).mulVec x = 0 \u2194 M.mulVec x = \u03bc \u2022 x"
+    },
+    "MathDept.MD_0073.trace_adjugate_mul": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {n : Type u_1} [inst : Fintype n] [inst_1 : DecidableEq n] (M B : Matrix n n \u2102),\n  (M.adjugate * B).trace = \u2211 \u03c3, \u2191\u2191(Equiv.Perm.sign \u03c3) * \u2211 i, (\u220f j \u2208 Finset.univ.erase i, M (\u03c3 j) j) * B (\u03c3 i) i"
+    },
+    "MathDept.MD_0073.trace_adjugate_ne_zero": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (A : Matrix (Fin N) (Fin N) \u2102) (lam : \u2102),\n  Polynomial.rootMultiplicity lam A.charpoly = 1 \u2192 ((lam \u2022 1 - A).adjugate * 1).trace \u2260 0"
+    },
+    "MathDept.MD_0073.trace_rank_one": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (K B : Matrix (Fin N) (Fin N) \u2102) (c : \u2102) (v w : Fin N \u2192 \u2102),\n  (\u2200 (i j : Fin N), K i j = c * v i * star w j) \u2192 (K * B).trace = c * star w \u2b1d\u1d65 B.mulVec v"
+    },
+    "MathDept.MD_0073.vecMul_sub_eq_zero_iff": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0073",
+      "type": "\u2200 {N : \u2115} (M : Matrix (Fin N) (Fin N) \u2102) (\u03bc : \u2102) (x : Fin N \u2192 \u2102),\n  Matrix.vecMul x (\u03bc \u2022 1 - M) = 0 \u2194 M.transpose.mulVec x = \u03bc \u2022 x"
+    },
+    "MathDept.MD_0101.F\u2082": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "Bool \u00d7 Bool \u2192 Bool \u00d7 Bool \u2192 Bool \u00d7 Bool"
+    },
+    "MathDept.MD_0101.assocCond": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "{\u03b1 : Type} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 (\u03b1 \u2192 Bool) \u2192 \u03b1 \u2192 \u2115 \u2192 \u2115 \u2192 \u2115 \u2192 Prop"
+    },
+    "MathDept.MD_0101.eq_tbl": {
+      "axioms": [
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool),\n  F =\n    MathDept.MD_0101.tbl (F false (false, false)) (F false (false, true)) (F false (true, false)) (F false (true, true))\n      (F true (false, false)) (F true (false, true)) (F true (true, false)) (F true (true, true))"
+    },
+    "MathDept.MD_0101.evokes": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "{\u03b1 : Type} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 (\u03b1 \u2192 Bool) \u2192 Bool \u00d7 Bool \u2192 \u2115 \u2192 \u03b1 \u2192 Prop"
+    },
+    "MathDept.MD_0101.evokes_F\u2082": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (u : Bool \u00d7 Bool) (n : \u2115) (x : Bool \u00d7 Bool),\n  MathDept.MD_0101.evokes MathDept.MD_0101.F\u2082 Prod.snd u (n + 1) x \u2194 (MathDept.MD_0101.F\u2082 x u).2 = true"
+    },
+    "MathDept.MD_0101.evokes_add_two": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (u : Bool \u00d7 Bool) (n : \u2115),\n  2 \u2264 n \u2192 \u2200 (x : Bool), MathDept.MD_0101.evokes F id u (n + 2) x \u2194 MathDept.MD_0101.evokes F id u n x"
+    },
+    "MathDept.MD_0101.evokes_add_two_mul": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (u : Bool \u00d7 Bool) (n k : \u2115),\n  2 \u2264 n \u2192 \u2200 (x : Bool), MathDept.MD_0101.evokes F id u (n + 2 * k) x \u2194 MathDept.MD_0101.evokes F id u n x"
+    },
+    "MathDept.MD_0101.instDecidablePassesBoolId": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "(F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) \u2192 (W G : \u2115) \u2192 Decidable (MathDept.MD_0101.passes F id W G)"
+    },
+    "MathDept.MD_0101.iter_add_two": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (g : Bool \u2192 Bool) (n : \u2115), 1 \u2264 n \u2192 g^[n + 2] = g^[n]"
+    },
+    "MathDept.MD_0101.iter_add_two_mul": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (g : Bool \u2192 Bool) (n k : \u2115), 1 \u2264 n \u2192 g^[n + 2 * k] = g^[n]"
+    },
+    "MathDept.MD_0101.iter_idem": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 {\u03b2 : Type} (g : \u03b2 \u2192 \u03b2), (\u2200 (y : \u03b2), g (g y) = g y) \u2192 \u2200 (n : \u2115) (x : \u03b2), g^[n + 1] x = g x"
+    },
+    "MathDept.MD_0101.iter_three": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (g : Bool \u2192 Bool), g^[3] = g"
+    },
+    "MathDept.MD_0101.not_passes_residue": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (W G : \u2115), W = 1 \u2228 W = 3 \u2192 G = 1 \u2228 G = 2 \u2192 \u00acMathDept.MD_0101.passes F id W G"
+    },
+    "MathDept.MD_0101.part_a1": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (W G : \u2115), Odd W \u2192 1 \u2264 G \u2192 \u00acMathDept.MD_0101.passes F id W G"
+    },
+    "MathDept.MD_0101.part_a2": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (W G : \u2115),\n  1 \u2264 W \u2192 1 \u2264 G \u2192 \u00ac(MathDept.MD_0101.passes F id W G \u2227 MathDept.MD_0101.passes F id (W + 1) G)"
+    },
+    "MathDept.MD_0101.part_b": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (W G : \u2115), 1 \u2264 W \u2192 1 \u2264 G \u2192 MathDept.MD_0101.passes MathDept.MD_0101.F\u2082 Prod.snd W G"
+    },
+    "MathDept.MD_0101.passes": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "{\u03b1 : Type} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 (\u03b1 \u2192 Bool) \u2192 \u2115 \u2192 \u2115 \u2192 Prop"
+    },
+    "MathDept.MD_0101.passes_G_reduce": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (W n k : \u2115),\n  1 \u2264 n \u2192 (MathDept.MD_0101.passes F id W (n + 2 * k) \u2194 MathDept.MD_0101.passes F id W n)"
+    },
+    "MathDept.MD_0101.passes_W_reduce": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (n k G : \u2115),\n  2 \u2264 n \u2192 (MathDept.MD_0101.passes F id (n + 2 * k) G \u2194 MathDept.MD_0101.passes F id n G)"
+    },
+    "MathDept.MD_0101.residue_1_1": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (a b c d e f g h : Bool), \u00acMathDept.MD_0101.passes (MathDept.MD_0101.tbl a b c d e f g h) id 1 1"
+    },
+    "MathDept.MD_0101.residue_1_2": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (a b c d e f g h : Bool), \u00acMathDept.MD_0101.passes (MathDept.MD_0101.tbl a b c d e f g h) id 1 2"
+    },
+    "MathDept.MD_0101.residue_3_1": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (a b c d e f g h : Bool), \u00acMathDept.MD_0101.passes (MathDept.MD_0101.tbl a b c d e f g h) id 3 1"
+    },
+    "MathDept.MD_0101.residue_3_2": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (a b c d e f g h : Bool), \u00acMathDept.MD_0101.passes (MathDept.MD_0101.tbl a b c d e f g h) id 3 2"
+    },
+    "MathDept.MD_0101.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "(\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (W G : \u2115), Odd W \u2192 1 \u2264 G \u2192 \u00acMathDept.MD_0101.passes F id W G) \u2227\n  (\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (W G : \u2115),\n      1 \u2264 W \u2192 1 \u2264 G \u2192 \u00ac(MathDept.MD_0101.passes F id W G \u2227 MathDept.MD_0101.passes F id (W + 1) G)) \u2227\n    \u2200 (W G : \u2115), 1 \u2264 W \u2192 1 \u2264 G \u2192 MathDept.MD_0101.passes MathDept.MD_0101.F\u2082 Prod.snd W G"
+    },
+    "MathDept.MD_0101.step": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "{\u03b1 : Type} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 Bool \u00d7 Bool \u2192 \u03b1 \u2192 \u03b1"
+    },
+    "MathDept.MD_0101.step_idem": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (u y : Bool \u00d7 Bool),\n  MathDept.MD_0101.step MathDept.MD_0101.F\u2082 u (MathDept.MD_0101.step MathDept.MD_0101.F\u2082 u y) =\n    MathDept.MD_0101.step MathDept.MD_0101.F\u2082 u y"
+    },
+    "MathDept.MD_0101.tbl": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "Bool \u2192 Bool \u2192 Bool \u2192 Bool \u2192 Bool \u2192 Bool \u2192 Bool \u2192 Bool \u2192 Bool \u2192 Bool \u00d7 Bool \u2192 Bool"
+    },
+    "MathDept.MD_0101.window": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0101",
+      "type": "{\u03b1 : Type} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 Bool \u00d7 Bool \u2192 \u2115 \u2192 \u03b1 \u2192 \u03b1"
+    },
+    "MathDept.MD_0101.window_F\u2082": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (u : Bool \u00d7 Bool) (n : \u2115) (x : Bool \u00d7 Bool),\n  MathDept.MD_0101.window MathDept.MD_0101.F\u2082 u (n + 1) x = MathDept.MD_0101.F\u2082 x u"
+    },
+    "MathDept.MD_0101.window_add_two_mul": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0101",
+      "type": "\u2200 (F : Bool \u2192 Bool \u00d7 Bool \u2192 Bool) (u : Bool \u00d7 Bool) (n k : \u2115),\n  1 \u2264 n \u2192 \u2200 (x : Bool), MathDept.MD_0101.window F u (n + 2 * k) x = MathDept.MD_0101.window F u n x"
+    },
+    "MathDept.MD_0102.associativeConditioning": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0102",
+      "type": "{\u03b1 : Type u_1} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 (\u03b1 \u2192 Bool) \u2192 \u03b1 \u2192 \u2115 \u2192 \u2115 \u2192 \u2115 \u2192 Prop"
+    },
+    "MathDept.MD_0102.associativeConditioning_fails": {
+      "axioms": [
+        "propext"
+      ],
+      "module": "MathDept.Results.MD_0102",
+      "type": "\u2200 {\u03b1 : Type u_1} (F : \u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) (\u03c1 : \u03b1 \u2192 Bool) (xs : \u03b1) (m : \u2115),\n  F xs (false, false) = xs \u2192\n    (\u2200 (x : \u03b1), (MathDept.MD_0102.step F (false, false))^[m] x = xs) \u2192\n      \u2200 (T1 T3 T2 : \u2115), m \u2264 T2 \u2192 \u00acMathDept.MD_0102.associativeConditioning F \u03c1 xs T1 T2 T3"
+    },
+    "MathDept.MD_0102.evokes": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0102",
+      "type": "{T : \u2115} \u2192 (Fin T \u2192 Bool) \u2192 Prop"
+    },
+    "MathDept.MD_0102.gapEnd": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0102",
+      "type": "{\u03b1 : Type u_1} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 Bool \u00d7 Bool \u2192 \u2115 \u2192 \u2115 \u2192 \u03b1 \u2192 \u03b1"
+    },
+    "MathDept.MD_0102.gapEnd_eq": {
+      "axioms": [
+        "propext"
+      ],
+      "module": "MathDept.Results.MD_0102",
+      "type": "\u2200 {\u03b1 : Type u_1} (F : \u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) (xs : \u03b1) (m : \u2115),\n  F xs (false, false) = xs \u2192\n    (\u2200 (x : \u03b1), (MathDept.MD_0102.step F (false, false))^[m] x = xs) \u2192\n      \u2200 (v : Bool \u00d7 Bool) (T1 T2 : \u2115), m \u2264 T2 \u2192 MathDept.MD_0102.gapEnd F v T1 T2 xs = xs"
+    },
+    "MathDept.MD_0102.pretestReadout": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0102",
+      "type": "{\u03b1 : Type u_1} \u2192 {\u03b2 : Type u_2} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 (\u03b1 \u2192 \u03b2) \u2192 \u03b1 \u2192 (T3 : \u2115) \u2192 Fin T3 \u2192 \u03b2"
+    },
+    "MathDept.MD_0102.readout_eq": {
+      "axioms": [
+        "propext"
+      ],
+      "module": "MathDept.Results.MD_0102",
+      "type": "\u2200 {\u03b1 : Type u_1} {\u03b2 : Type u_2} (F : \u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) (\u03c1 : \u03b1 \u2192 \u03b2) (xs : \u03b1) (m : \u2115),\n  F xs (false, false) = xs \u2192\n    (\u2200 (x : \u03b1), (MathDept.MD_0102.step F (false, false))^[m] x = xs) \u2192\n      \u2200 (v : Bool \u00d7 Bool) (T1 T3 T2 : \u2115),\n        m \u2264 T2 \u2192 MathDept.MD_0102.testReadout F \u03c1 xs v T1 T2 T3 = MathDept.MD_0102.pretestReadout F \u03c1 xs T3"
+    },
+    "MathDept.MD_0102.statement": {
+      "axioms": [
+        "propext"
+      ],
+      "module": "MathDept.Results.MD_0102",
+      "type": "\u2200 {\u03b1 : Type u_1} (F : \u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) (\u03c1 : \u03b1 \u2192 Bool) (xs : \u03b1) (m : \u2115),\n  F xs (false, false) = xs \u2192\n    (\u2200 (x : \u03b1), (MathDept.MD_0102.step F (false, false))^[m] x = xs) \u2192\n      (\u2200 (v : Bool \u00d7 Bool) (T1 T3 T2 : \u2115),\n          m \u2264 T2 \u2192 MathDept.MD_0102.testReadout F \u03c1 xs v T1 T2 T3 = MathDept.MD_0102.pretestReadout F \u03c1 xs T3) \u2227\n        \u2200 (T1 T3 T2 : \u2115), m \u2264 T2 \u2192 \u00acMathDept.MD_0102.associativeConditioning F \u03c1 xs T1 T2 T3"
+    },
+    "MathDept.MD_0102.step": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0102",
+      "type": "{\u03b1 : Type u_1} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 Bool \u00d7 Bool \u2192 \u03b1 \u2192 \u03b1"
+    },
+    "MathDept.MD_0102.testReadout": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0102",
+      "type": "{\u03b1 : Type u_1} \u2192 {\u03b2 : Type u_2} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 (\u03b1 \u2192 \u03b2) \u2192 \u03b1 \u2192 Bool \u00d7 Bool \u2192 \u2115 \u2192 \u2115 \u2192 (T3 : \u2115) \u2192 Fin T3 \u2192 \u03b2"
+    },
+    "MathDept.MD_0102.window": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0102",
+      "type": "{\u03b1 : Type u_1} \u2192 {\u03b2 : Type u_2} \u2192 (\u03b1 \u2192 Bool \u00d7 Bool \u2192 \u03b1) \u2192 (\u03b1 \u2192 \u03b2) \u2192 Bool \u00d7 Bool \u2192 (T : \u2115) \u2192 \u03b1 \u2192 Fin T \u2192 \u03b2"
+    },
+    "MathDept.MD_0103.AssociativeConditioning": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{k : \u2115} \u2192\n  (MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) \u2192\n    Fin k \u2192 MathDept.MD_0103.State k \u2192 \u2115 \u2192 \u2115 \u2192 \u2115 \u2192 Prop"
+    },
+    "MathDept.MD_0103.Evokes": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{T : \u2115} \u2192 (Fin T \u2192 Bool) \u2192 Prop"
+    },
+    "MathDept.MD_0103.G": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{k : \u2115} \u2192\n  (MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) \u2192\n    MathDept.MD_0103.State k \u2192 MathDept.MD_0103.State k"
+    },
+    "MathDept.MD_0103.Input": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "Type"
+    },
+    "MathDept.MD_0103.Persistent": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{k : \u2115} \u2192\n  (MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) \u2192\n    Fin k \u2192 MathDept.MD_0103.State k \u2192 \u2115 \u2192 \u2115 \u2192 Prop"
+    },
+    "MathDept.MD_0103.State": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2115 \u2192 Type"
+    },
+    "MathDept.MD_0103.exists_unique_fixedPt": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115), (\u2200 (i : Fin k), depth i \u2264 d) \u2192 \u2203! xs, MathDept.MD_0103.G F xs = xs"
+    },
+    "MathDept.MD_0103.fixedPt_eq": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        \u2200 (y : MathDept.MD_0103.State k), MathDept.MD_0103.G F y = y \u2192 y = (MathDept.MD_0103.G F)^[d + 1] fun x => false"
+    },
+    "MathDept.MD_0103.isFixed": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        MathDept.MD_0103.G F ((MathDept.MD_0103.G F)^[d + 1] fun x => false) =\n          (MathDept.MD_0103.G F)^[d + 1] fun x => false"
+    },
+    "MathDept.MD_0103.no_conditioning": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        \u2200 (r : Fin k) (xr : MathDept.MD_0103.State k),\n          MathDept.MD_0103.G F xr = xr \u2192\n            \u2200 (T1 T2 T3 : \u2115), d + 1 \u2264 T2 \u2192 \u00acMathDept.MD_0103.AssociativeConditioning F r xr T1 T2 T3"
+    },
+    "MathDept.MD_0103.not_persistent": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        \u2200 (r : Fin k) (xr : MathDept.MD_0103.State k),\n          MathDept.MD_0103.G F xr = xr \u2192 \u2200 (T1 T3 : \u2115), \u00acMathDept.MD_0103.Persistent F r xr T1 T3"
+    },
+    "MathDept.MD_0103.pretestReadout": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{k : \u2115} \u2192\n  (MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) \u2192\n    Fin k \u2192 MathDept.MD_0103.State k \u2192 (T3 : \u2115) \u2192 Fin T3 \u2192 Bool"
+    },
+    "MathDept.MD_0103.reach": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        \u2200 (x : MathDept.MD_0103.State k),\n          (MathDept.MD_0103.G F)^[d + 1] x = (MathDept.MD_0103.G F)^[d + 1] fun x => false"
+    },
+    "MathDept.MD_0103.reach_of_le": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        \u2200 (x : MathDept.MD_0103.State k) (n : \u2115),\n          d + 1 \u2264 n \u2192 (MathDept.MD_0103.G F)^[n] x = (MathDept.MD_0103.G F)^[d + 1] fun x => false"
+    },
+    "MathDept.MD_0103.readout": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{k : \u2115} \u2192\n  (MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) \u2192\n    Fin k \u2192 MathDept.MD_0103.Input \u2192 (T : \u2115) \u2192 MathDept.MD_0103.State k \u2192 Fin T \u2192 Bool"
+    },
+    "MathDept.MD_0103.readout_eq": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        \u2200 (r : Fin k) (xr : MathDept.MD_0103.State k),\n          MathDept.MD_0103.G F xr = xr \u2192\n            \u2200 (v : MathDept.MD_0103.Input) (T1 T2 T3 : \u2115),\n              d + 1 \u2264 T2 \u2192 MathDept.MD_0103.testReadout F r xr v T1 T2 T3 = MathDept.MD_0103.pretestReadout F r xr T3"
+    },
+    "MathDept.MD_0103.settle": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (i : Fin k) (x y : MathDept.MD_0103.State k) (n : \u2115),\n      depth i + 1 \u2264 n \u2192 (MathDept.MD_0103.G F)^[n] x i = (MathDept.MD_0103.G F)^[n] y i"
+    },
+    "MathDept.MD_0103.settle_eq": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (i : Fin k) (x : MathDept.MD_0103.State k) (n : \u2115),\n      depth i + 1 \u2264 n \u2192 (MathDept.MD_0103.G F)^[n] x i = (MathDept.MD_0103.G F)^[depth i + 1] x i"
+    },
+    "MathDept.MD_0103.statement": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0103",
+      "type": "\u2200 {k : \u2115} (F : MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) (depth : Fin k \u2192 \u2115),\n  (\u2200 (i : Fin k) (x y : MathDept.MD_0103.State k),\n      (\u2200 (j : Fin k), depth j < depth i \u2192 x j = y j) \u2192 MathDept.MD_0103.G F x i = MathDept.MD_0103.G F y i) \u2192\n    \u2200 (d : \u2115),\n      (\u2200 (i : Fin k), depth i \u2264 d) \u2192\n        (\u2203! xs, MathDept.MD_0103.G F xs = xs) \u2227\n          (\u2200 (x : MathDept.MD_0103.State k),\n              (MathDept.MD_0103.G F)^[d + 1] x = (MathDept.MD_0103.G F)^[d + 1] fun x => false) \u2227\n            (\u2200 (r : Fin k) (xr : MathDept.MD_0103.State k),\n                MathDept.MD_0103.G F xr = xr \u2192\n                  \u2200 (v : MathDept.MD_0103.Input) (T1 T2 T3 : \u2115),\n                    d + 1 \u2264 T2 \u2192\n                      MathDept.MD_0103.testReadout F r xr v T1 T2 T3 = MathDept.MD_0103.pretestReadout F r xr T3) \u2227\n              (\u2200 (r : Fin k) (xr : MathDept.MD_0103.State k),\n                  MathDept.MD_0103.G F xr = xr \u2192\n                    \u2200 (T1 T2 T3 : \u2115), d + 1 \u2264 T2 \u2192 \u00acMathDept.MD_0103.AssociativeConditioning F r xr T1 T2 T3) \u2227\n                \u2200 (r : Fin k) (xr : MathDept.MD_0103.State k),\n                  MathDept.MD_0103.G F xr = xr \u2192 \u2200 (T1 T3 : \u2115), \u00acMathDept.MD_0103.Persistent F r xr T1 T3"
+    },
+    "MathDept.MD_0103.testReadout": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{k : \u2115} \u2192\n  (MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) \u2192\n    Fin k \u2192 MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 \u2115 \u2192 \u2115 \u2192 (T3 : \u2115) \u2192 Fin T3 \u2192 Bool"
+    },
+    "MathDept.MD_0103.window": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0103",
+      "type": "{k : \u2115} \u2192\n  (MathDept.MD_0103.State k \u2192 MathDept.MD_0103.Input \u2192 MathDept.MD_0103.State k) \u2192\n    MathDept.MD_0103.Input \u2192 \u2115 \u2192 MathDept.MD_0103.State k \u2192 MathDept.MD_0103.State k"
+    },
+    "MathDept.MD_0104.eventually_periodic": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0104",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [Nonempty C] (M : C \u2192 C) (c0 : C),\n  \u2203 \u03c1 p, 1 \u2264 p \u2227 \u03c1 + p \u2264 Fintype.card C \u2227 \u2200 k \u2265 \u03c1, M^[k + p] c0 = M^[k] c0"
+    },
+    "MathDept.MD_0104.exists_lt_card_iterate_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0104",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [Nonempty C] (M : C \u2192 C) (c0 : C) (k : \u2115), \u2203 j < Fintype.card C, M^[j] c0 = M^[k] c0"
+    },
+    "MathDept.MD_0104.ncard_reach_le": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0104",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [Nonempty C] (M : C \u2192 C) (c0 : C),\n  (MathDept.MD_0104.reach M c0).ncard \u2264 Fintype.card C"
+    },
+    "MathDept.MD_0104.reach": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0104",
+      "type": "{C : Type u_1} \u2192 (C \u2192 C) \u2192 C \u2192 Set C"
+    },
+    "MathDept.MD_0104.reach_eq_range": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0104",
+      "type": "\u2200 {C : Type u_1} [Fintype C] [Nonempty C] (M : C \u2192 C) (c0 : C),\n  MathDept.MD_0104.reach M c0 = Set.range fun k => M^[k] c0"
+    },
+    "MathDept.MD_0104.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0104",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [Nonempty C] (M : C \u2192 C) (c0 : C),\n  (MathDept.MD_0104.reach M c0 = Set.range fun k => M^[k] c0) \u2227\n    (MathDept.MD_0104.reach M c0).ncard \u2264 Fintype.card C \u2227\n      \u2203 \u03c1 p, 1 \u2264 p \u2227 \u03c1 + p \u2264 Fintype.card C \u2227 \u2200 k \u2265 \u03c1, M^[k + p] c0 = M^[k] c0"
+    },
+    "MathDept.MD_0105.R": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "{C : Type u_1} \u2192 {U : Type u_2} \u2192 [Fintype U] \u2192 [DecidableEq C] \u2192 (U \u2192 C \u2192 C) \u2192 C \u2192 \u2115 \u2192 Finset C"
+    },
+    "MathDept.MD_0105.Words": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0105",
+      "type": "\u2115 \u2192 \u2115 \u2192 Type"
+    },
+    "MathDept.MD_0105.append": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "{n k : \u2115} \u2192 Fin n \u2192 MathDept.MD_0105.Words n k \u2192 MathDept.MD_0105.Words n k"
+    },
+    "MathDept.MD_0105.applyWord": {
+      "axioms": [],
+      "module": "MathDept.Results.MD_0105",
+      "type": "{C : Type u_1} \u2192 {U : Type u_2} \u2192 (U \u2192 C \u2192 C) \u2192 C \u2192 {k : \u2115} \u2192 (Fin k \u2192 U) \u2192 C"
+    },
+    "MathDept.MD_0105.card_R_le_choose": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "\u2200 {C : Type u_1} {U : Type u_2} [inst : Fintype U] [Nonempty U] [inst_2 : DecidableEq C] (M : U \u2192 C \u2192 C) (c0 : C),\n  (\u2200 (u v : U), M u \u2218 M v = M v \u2218 M u) \u2192\n    \u2200 (k : \u2115), (MathDept.MD_0105.R M c0 k).card \u2264 (k + Fintype.card U - 1).choose (Fintype.card U - 1)"
+    },
+    "MathDept.MD_0105.card_R_le_pow": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "\u2200 {C : Type u_1} {U : Type u_2} [inst : Fintype U] [inst_1 : DecidableEq C] (M : U \u2192 C \u2192 C) (c0 : C) (k : \u2115),\n  (MathDept.MD_0105.R M c0 k).card \u2264 Fintype.card U ^ k"
+    },
+    "MathDept.MD_0105.exists_card_R_eq_pow": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "\u2200 {U : Type u_2} [inst : Fintype U] (k : \u2115), \u2203 C' x x M' c0', (MathDept.MD_0105.R M' c0' k).card = Fintype.card U ^ k"
+    },
+    "MathDept.MD_0105.foldl_append_words": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "\u2200 {n k : \u2115} (L : List (Fin n)) (x : MathDept.MD_0105.Words n k),\n  (\u2191x).length + L.length \u2264 k \u2192 \u2191(List.foldl (fun c a => MathDept.MD_0105.append a c) x L) = \u2191x ++ L"
+    },
+    "MathDept.MD_0105.instFintypeWords": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "(n k : \u2115) \u2192 Fintype (MathDept.MD_0105.Words n k)"
+    },
+    "MathDept.MD_0105.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0105",
+      "type": "\u2200 {C : Type u_3} {U : Type u_4} [Fintype C] [inst : DecidableEq C] [inst_1 : Fintype U] [Nonempty U] (M : U \u2192 C \u2192 C)\n  (c0 : C) (k : \u2115),\n  ((\u2200 (u v : U), M u \u2218 M v = M v \u2218 M u) \u2192\n      (MathDept.MD_0105.R M c0 k).card \u2264 (k + Fintype.card U - 1).choose (Fintype.card U - 1)) \u2227\n    (MathDept.MD_0105.R M c0 k).card \u2264 Fintype.card U ^ k \u2227\n      \u2203 C' x x M' c0', (MathDept.MD_0105.R M' c0' k).card = Fintype.card U ^ k"
+    },
+    "MathDept.MD_0107.aeval_mem_span_lt": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0107",
+      "type": "\u2200 {K : Type u_1} {V : Type u_2} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  (M : Module.End K V) (c0 : V) (d : \u2115) (p : Polynomial K),\n  p.degree < \u2191d \u2192 ((Polynomial.aeval M) p) c0 \u2208 Submodule.span K (Set.range fun i => (M ^ \u2191i) c0)"
+    },
+    "MathDept.MD_0107.finrank_iInf_ker": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0107",
+      "type": "\u2200 {K : Type u_1} {V : Type u_2} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  [FiniteDimensional K V] (r : \u2115) (\u2113 : Fin r \u2192 Module.Dual K V),\n  LinearIndependent K \u2113 \u2192 Module.finrank K \u21a5(\u2a05 i, LinearMap.ker (\u2113 i)) = Module.finrank K V - r"
+    },
+    "MathDept.MD_0107.finrank_krylov_le": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0107",
+      "type": "\u2200 {K : Type u_1} {V : Type u_2} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  [FiniteDimensional K V] (M : Module.End K V) (c0 : V),\n  Module.finrank K \u21a5(Submodule.span K (Set.range fun k => (M ^ k) c0)) \u2264 (minpoly K M).natDegree"
+    },
+    "MathDept.MD_0107.invariant_const": {
+      "axioms": [
+        "propext",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0107",
+      "type": "\u2200 {K : Type u_1} {V : Type u_2} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  (M : Module.End K V) (c0 : V) (\u2113 : Module.Dual K V), \u2113 \u2218\u2097 M = \u2113 \u2192 \u2200 (k : \u2115), \u2113 ((M ^ k) c0) = \u2113 c0"
+    },
+    "MathDept.MD_0107.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0107",
+      "type": "\u2200 {K : Type u_1} {V : Type u_2} [inst : Field K] [inst_1 : AddCommGroup V] [inst_2 : _root_.Module K V]\n  [FiniteDimensional K V] (M : Module.End K V) (c0 : V),\n  (Set.range fun k => (M ^ k) c0) \u2286 \u2191(Submodule.span K (Set.range fun k => (M ^ k) c0)) \u2227\n    Module.finrank K \u21a5(Submodule.span K (Set.range fun k => (M ^ k) c0)) \u2264 (minpoly K M).natDegree \u2227\n      (\u2200 (\u2113 : Module.Dual K V), \u2113 \u2218\u2097 M = \u2113 \u2192 \u2200 v \u2208 Set.range fun k => (M ^ k) c0, \u2113 v = \u2113 c0) \u2227\n        \u2200 (r : \u2115) (\u2113 : Fin r \u2192 Module.Dual K V),\n          LinearIndependent K \u2113 \u2192\n            (\u2200 (i : Fin r), \u2113 i \u2218\u2097 M = \u2113 i) \u2192\n              (Set.range fun k => (M ^ k) c0) \u2286 {v | \u2200 (i : Fin r), (\u2113 i) v = (\u2113 i) c0} \u2227\n                {v | \u2200 (i : Fin r), (\u2113 i) v = (\u2113 i) c0} = {v | v - c0 \u2208 \u2a05 i, LinearMap.ker (\u2113 i)} \u2227\n                  Module.finrank K \u21a5(\u2a05 i, LinearMap.ker (\u2113 i)) = Module.finrank K V - r"
+    },
+    "MathDept.MD_0108.bound": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [DecidableEq C] [Nonempty C],\n  1 - (1 - 1 / \u2191(Fintype.card C)) ^ Fintype.card C \u2265 1 - Real.exp (-1)"
+    },
+    "MathDept.MD_0108.card_miss": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [inst_1 : DecidableEq C] [Nonempty C] (s : C),\n  {X | \u00ac\u2203 i, X i = s}.card = (Fintype.card C - 1) ^ Fintype.card C"
+    },
+    "MathDept.MD_0108.card_pos": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [DecidableEq C] [Nonempty C], 0 < Fintype.card C"
+    },
+    "MathDept.MD_0108.cond_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [inst_1 : DecidableEq C] [Nonempty C] (s : C),\n  \u2191{X | \u2203 i, X i = s}.card / \u2191(Fintype.card C) ^ Fintype.card C = 1 - (1 - 1 / \u2191(Fintype.card C)) ^ Fintype.card C"
+    },
+    "MathDept.MD_0108.exists_lt_card_iterate_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [DecidableEq C] [Nonempty C] (M : C \u2192 C) (c0 : C) (m : \u2115),\n  \u2203 k < Fintype.card C, M^[k] c0 = M^[m] c0"
+    },
+    "MathDept.MD_0108.hit_iff": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [DecidableEq C] [Nonempty C] (M : C \u2192 C) (c0 s : C),\n  (\u2203 k < Fintype.card C, M^[k] c0 = s) \u2194 s \u2208 MathDept.MD_0108.orbit M c0"
+    },
+    "MathDept.MD_0108.memHit": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "(C : Type u_1) \u2192 [Fintype C] \u2192 [DecidableEq C] \u2192 (C \u2192 \u211d) \u2192 \u211d"
+    },
+    "MathDept.MD_0108.memHit_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [inst_1 : DecidableEq C] [Nonempty C] (\u03c0 : C \u2192 \u211d),\n  \u2211 s, \u03c0 s = 1 \u2192 MathDept.MD_0108.memHit C \u03c0 = 1 - (1 - 1 / \u2191(Fintype.card C)) ^ Fintype.card C"
+    },
+    "MathDept.MD_0108.mem_orbit": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [DecidableEq C] [Nonempty C] (M : C \u2192 C) (c0 s : C),\n  s \u2208 MathDept.MD_0108.orbit M c0 \u2194 s \u2208 Set.range fun k => M^[k] c0"
+    },
+    "MathDept.MD_0108.orbit": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "{C : Type u_1} \u2192 [Fintype C] \u2192 (C \u2192 C) \u2192 C \u2192 Finset C"
+    },
+    "MathDept.MD_0108.orbitHit": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "{C : Type u_1} \u2192 [Fintype C] \u2192 [DecidableEq C] \u2192 (C \u2192 C) \u2192 C \u2192 (C \u2192 \u211d) \u2192 \u211d"
+    },
+    "MathDept.MD_0108.orbitHit.congr_simp": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] {inst_1 : DecidableEq C} [inst_2 : DecidableEq C] (M M_1 : C \u2192 C),\n  M = M_1 \u2192\n    \u2200 (c0 c0_1 : C),\n      c0 = c0_1 \u2192 \u2200 (\u03c0 \u03c0_1 : C \u2192 \u211d), \u03c0 = \u03c0_1 \u2192 MathDept.MD_0108.orbitHit M c0 \u03c0 = MathDept.MD_0108.orbitHit M_1 c0_1 \u03c0_1"
+    },
+    "MathDept.MD_0108.orbitHit_eq": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [inst_1 : DecidableEq C] [Nonempty C] (M : C \u2192 C) (c0 : C) (\u03c0 : C \u2192 \u211d),\n  MathDept.MD_0108.orbitHit M c0 \u03c0 = \u2211 s \u2208 MathDept.MD_0108.orbit M c0, \u03c0 s"
+    },
+    "MathDept.MD_0108.statement": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [inst_1 : DecidableEq C] [Nonempty C] (M : C \u2192 C) (c0 : C),\n  (MathDept.MD_0108.orbitHit M c0 (MathDept.MD_0108.uniform C) =\n        \u2191(MathDept.MD_0108.orbit M c0).card / \u2191(Fintype.card C) \u2227\n      MathDept.MD_0108.memHit C (MathDept.MD_0108.uniform C) = 1 - (1 - 1 / \u2191(Fintype.card C)) ^ Fintype.card C \u2227\n        1 - (1 - 1 / \u2191(Fintype.card C)) ^ Fintype.card C \u2265 1 - Real.exp (-1) \u2227\n          (MathDept.MD_0108.orbitHit M c0 (MathDept.MD_0108.uniform C) >\n              MathDept.MD_0108.memHit C (MathDept.MD_0108.uniform C) \u2192\n            \u2191(MathDept.MD_0108.orbit M c0).card > (1 - Real.exp (-1)) * \u2191(Fintype.card C))) \u2227\n    \u2200 (\u03c0 : C \u2192 \u211d),\n      (\u2200 (s : C), 0 \u2264 \u03c0 s) \u2192\n        \u2211 s, \u03c0 s = 1 \u2192\n          MathDept.MD_0108.orbitHit M c0 \u03c0 = \u2211 s \u2208 MathDept.MD_0108.orbit M c0, \u03c0 s \u2227\n            MathDept.MD_0108.memHit C \u03c0 = 1 - (1 - 1 / \u2191(Fintype.card C)) ^ Fintype.card C \u2227\n              (MathDept.MD_0108.orbitHit M c0 \u03c0 > MathDept.MD_0108.memHit C \u03c0 \u2192\n                \u2211 s \u2208 MathDept.MD_0108.orbit M c0, \u03c0 s > 1 - Real.exp (-1))"
+    },
+    "MathDept.MD_0108.uniform": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "(C : Type u_1) \u2192 [Fintype C] \u2192 C \u2192 \u211d"
+    },
+    "MathDept.MD_0108.uniform_sum": {
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "module": "MathDept.Results.MD_0108",
+      "type": "\u2200 {C : Type u_1} [inst : Fintype C] [DecidableEq C] [Nonempty C], \u2211 s, MathDept.MD_0108.uniform C s = 1"
+    },
     "MathDept.smoke": {
       "axioms": [
         "propext",
@@ -16,5 +2177,5 @@
   "ok": true,
   "schema_version": 2,
   "sorry_violations": [],
-  "sources_sha256": "23e9c3e2bdd71e27f2514353eb2cf6bcfaef98a68bbae8ca6c6d64914024638d"
+  "sources_sha256": "9e8b6e255c328370a165793926ff5c7323aecc2cd9541f6cef6d9e10850c1bc9"
 }

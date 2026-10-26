@@ -5,6 +5,234 @@
 
 ## Python
 
+### counterexamples/MD_0012_sign_of_derivative_term.py
+_MD_0012: g_vk at Pr = 1 is NOT 1 - F(a) + a F'(a). The sign of the derivative term is minus._
+- const N_MODES  ·L59
+- const CLAIM_RTOL  ·L63
+- _slab(s: complex, D: float, y0: float=1.0) -> complex  ·L67
+- _disc(s: complex, D: float, R: float=1.0) -> complex  ·L72
+- _ladder_slab(y0: float=1.0, n: int=N_MODES)  ·L77
+- _ladder_disc(R: float=1.0, n: int=N_MODES)  ·L82
+- const GEOMETRY  ·L87
+- _reference(omega: float, alpha: float, geometry: str) -> complex  ·L94: g_vk at Pr = 1 from MD_0011 (17), which contains neither 1 - Pr nor a derivative.
+- _a_F_prime(omega: float, alpha: float, geometry: str) -> complex  ·L102: a F'(a), by the modal series, so it too is free of the disputed algebra.
+- _F(omega: float, alpha: float, geometry: str) -> complex  ·L113
+- _claim(omega, alpha, geometry, g_reference, a_F_prime, F_alpha) -> bool  ·L118: MD_0012's printed clause (ii), evaluated at the point.
+- _check_hypotheses(omega: float, alpha: float, geometry: str, label: str) -> None  ·L129: Every hypothesis of MD_0012, by name. Raises on the first violation.
+- _point(omega: float, alpha: float, geometry: str) -> dict  ·L146
+- _corrected_formula_holds(omega: float, alpha: float, geometry: str) -> None  ·L157: Non-vacuity: (*) DOES match the reference, so the failure is the sign and nothing else.
+- _reference_is_converged(omega: float, alpha: float, geometry: str) -> None  ·L174: Truncation control: halving the mode count must not move the reference.
+- _report() -> str  ·L190
+- refute() -> Witness  ·L206
+
+### counterexamples/MD_0015_shape_varying_duct.py
+_MD_0015: Lambda'' does NOT lie between Lambda and Lambda'. A smooth periodic duct._
+- const REGIONS  ·L113
+- const GRID  ·L119
+- const GRID_COARSE  ·L121
+- _phi(t)  ·L124: C-infinity monotone step: 0 for t <= 0, 1 for t >= 1, flat to all orders at both ends.
+- class _Profile  ·L137: Periodic plateau profile with C-infinity compactly supported transitions.
+  - __init__(self, vals, lens, dwid)  ·L140
+  - __call__(self, x)  ·L151
+- _profiles(regions=REGIONS)  ·L165
+- const _G  ·L172
+- const _GP  ·L173
+- const _LN  ·L174
+- _shape(g)  ·L177
+- class _Mesh  ·L186: Quarter duct 0 <= y <= w/2, 0 <= z <= h/2, periodic in x.
+  - __init__(self, xs, w, h, Ny, Nz, Lx)  ·L189
+  - elements(self)  ·L196
+- _solve(mesh)  ·L217
+- _integrate(mesh, psi, conn, crd)  ·L245: Volume and true-wall integrals of |v|^p, p = 0, 1, 2, plus the H2 diagnostics.
+- _graded_x(wf, hf, Lx, Nx, M=40001)  ·L293
+- _run(regions, grid)  ·L300
+- _claim(regions, grid, Lambda, Lambda_prime, Lambda_double_prime) -> bool  ·L315: MD_0015's betweenness clause at this point, with a tolerance far below the gap.
+- _solver_is_exact_on_a_straight_duct() -> None  ·L324: A uniform duct must give Lambda = Lambda' = Lambda'' = 2V/S = wh/(w+h) and psi = 0.
+- _exact_2V_over_S(regions=REGIONS, N=400001) -> float  ·L342: 2V/S on the TRUE curved wall by 1-D quadrature. Lambda' must reproduce this.
+- _lubrication(regions=REGIONS, N=200000)  ·L353: The three lengths in the lubrication limit |v| = Q/A(x), by 1-D quadrature.
+- _signed_lengths_too(regions=REGIONS, grid=GRID_COARSE) -> tuple[float, float]  ·L362: MD_0018 reads the third weight as v.e_hat. On this straight duct that changes
+- _report(fine, coarse, lub, geo) -> str  ·L399
+- _build()  ·L423: Run the computation; return the witness and the human-readable report.
+- refute()  ·L492: The witness entry point; silent, so `python -m mdept.refute` prints only its verdict.
+
+### counterexamples/MD_0015_single_length_high_frequency.py
+_MD_0015: the high-frequency deficit is NOT carried by the single length Lambda''._
+- const GUARD_RTOL  ·L93
+- _f_tube(s: complex, D: float, R: float) -> complex  ·L96: <h_D> on the disc of radius R, through the scaled Bessel ratio so large |z| is finite.
+- _g_tube(s: complex, nu: float, al: float, R: float) -> complex  ·L102: Exact g_vk on the disc (MD_0011), with the MD_0016 derivative form at Pr = 1.
+- _lengths(R: np.ndarray) -> tuple[float, float, float, float]  ·L112: (alpha_inf, Lambda, Lambda'', Lambda') for the quasi-1D duct, from |v| ~ 1/R^2.
+- _g_quasi1d(s: complex, nu: float, al: float, R: np.ndarray) -> complex  ·L123: Exact quasi-1D g_vk over one period. The period length divides out.
+- single_length_holds(eps: float, n_x: int, Pr: float, omega_over_wc: float, rtol: float) -> bool  ·L132: True when MD_0015's single-length coefficient matches the measured deficit.
+- refute() -> Witness  ·L165
+
+### counterexamples/MD_0020_expanding_step_map.py
+_MD_0020 (b): there are tau0 > 0 and C' (independent of tau and U) such that for tau <= tau0, theta in U_
+- const KAPPA  ·L64
+- const T  ·L65
+- const RHO  ·L66
+- _certain(cond, what)  ·L69
+- _phi(x)  ·L75
+- _dphi(x)  ·L80
+- _check_phi()  ·L85
+- _check_lemmas()  ·L100
+- class _D  ·L133: Dual number (value, d/dtheta) over Fraction.
+  - __init__(self, v, d=Fraction(0))  ·L136
+  - __add__(s, o)  ·L139
+  - __sub__(s, o)  ·L145
+  - __rsub__(s, o)  ·L149
+  - __mul__(s, o)  ·L152
+  - __truediv__(s, o)  ·L158
+  - __rtruediv__(s, o)  ·L162
+- _phi_dual(x)  ·L166
+- _sqrt_exact(q: Fraction) -> Fraction  ·L170
+- _run_point(theta: Fraction, tau: Fraction)  ·L176: Exact run with duals. Returns (R, H, N, a_list, yN). Raises unless every decision is strict.
+- _run_box(theta: Fraction, tau: Fraction, r_exp: int)  ·L207: Interval run of the same controller on theta in [theta - r, theta + r]; returns N.
+- _certify_k(k: int)  ·L238: All hypotheses and the closed forms at tau_k; returns (R, H, N).
+- _k_for(tau0: Fraction, Cprime: Fraction, H0: Fraction) -> int  ·L253: The Conclusion's choice: least k >= 3 with 2^k > 90 C', h_k <= H0, tau_k <= tau0.
+- claim(theta: Fraction, ks: tuple, adversaries: tuple) -> bool  ·L261: Clause (b). Returns False when the proof's every step is certified (so (b) is false for every
+- refute() -> Witness  ·L276
+
+### counterexamples/MD_0021_fat_cantor_decision_set.py
+_MD_0021 (a): the set B of non-locally-constant decision patterns can have positive measure._
+- const PSI_BOUND  ·L29
+- _gaps(stages)  ·L32: Removed gaps (a, b, stage) of the Smith-Volterra-Cantor set, exact rationals.
+- _mu(theta, gaps)  ·L45
+- _phi(x)  ·L52
+- _controller(theta, gaps, T, tau, h_init)  ·L60: Exact run of the MD_0020 controller; returns (pattern, N, y_N, min unclipped eps/tau).
+- _claim(stages, tau, T, h_init)  ·L82
+- refute() -> Witness  ·L114
+
+### counterexamples/MD_0022_dense_output_kink.py
+_MD_0022: theta -> yhat(T; theta) is C^1 on all of Theta (claim (a))._
+- _F(z)  ·L19
+- _step(z)  ·L24
+- _one_sided_derivatives(theta0)  ·L33
+- _derivative_is_continuous(theta)  ·L53
+- refute() -> Witness  ·L58
+
+### counterexamples/MD_0023_resolvent_squared_scalar.py
+_MD_0023: the sensitivity error of the frozen-grid fixed point is bounded by C2 H^p / dist(1, spec M)_
+- _split(x: Fraction)  ·L27
+- d_ystar_h(a, N)  ·L31: d_a y*_h for Euler on the two-rate grid, interval-valued.
+- claim(a: Fraction, C2: Fraction, Ns: tuple) -> bool  ·L45: The stipulated bound d_theta-error <= C2 H^p / dist(1, spec M), required at every small H;
+- refute() -> Witness  ·L59
+
+### counterexamples/MD_0025_hermite_inflection.py
+_MD_0025: theta -> yhat(T; theta) is C^1 on all of Theta (cubic Hermite extension)._
+- const _T  ·L24
+- _g(y, th)  ·L27
+- _f(y, th)  ·L32
+- _F(y, t, th)  ·L36
+- _hermite(z0, z1, F0, F1)  ·L41: Cubic Hermite in sigma on one component, from values and Delta s F slopes.
+- _first_interval()  ·L49
+- _checks()  ·L59
+- _yhat_is_differentiable_at(theta)  ·L76
+- refute() -> Witness  ·L93
+
+### counterexamples/MD_0026_resolvent_cubed_exact.py
+_MD_0026: the sensitivity error of the frozen-grid fixed point is bounded by C2 H^p ||(I-M)^-1||^2_
+- _q(x)  ·L56
+- e1_closed(a)  ·L60: lim_{H->0} (d y*_h - 1/a)/H for Euler on the two-rate grid (a is an interval).
+- remainder_const()  ·L69: F in |d y*_h - 1/a - H e1| <= F H^2 / a^5 for H <= a^2/(8 pi).
+- certified_H1(a, C2)  ·L76: H1 > 0 such that |d y*_h - 1/a| > C2 H R^2 for every H <= H1, or None if gap > 0 is not certified.
+- claim(C2s: tuple) -> bool  ·L88: The stipulated bound |d y*_h - d y*| <= C2 H ||(I-M)^-1||^2 for all H <= H0, for some H0 > 0.
+- refute() -> Witness  ·L99
+
+### counterexamples/MD_0027_oscillating_gradient_estimate.py
+_MD_0027 (b): with a stable step-size map (slope bound) and a nondegenerate estimate, there are tau0 > 0 and C'_
+- const KAPPA  ·L67
+- const T  ·L68
+- _certain(cond, what)  ·L71
+- _check_phi()  ·L77
+- _check_E_c2()  ·L96
+- _check_lemmas()  ·L128
+- class _D  ·L155
+  - __init__(self, v, d=Fraction(0))  ·L156
+  - _c(o)  ·L159
+  - __add__(s, o)  ·L160
+  - __sub__(s, o)  ·L162
+  - __rsub__(s, o)  ·L163
+  - __mul__(s, o)  ·L164
+  - __truediv__(s, o)  ·L166
+  - __rtruediv__(s, o)  ·L167
+- _rat_sqrt(q: Fraction) -> Fraction  ·L170
+- _eps_dual(h: _D, th: _D) -> _D  ·L176
+- _phi_dual(x: _D) -> _D  ·L184
+- _run_point(j: int)  ·L190
+- _run_box(j: int, r_exp: int=40)  ·L222: Interval run of the controller on theta in [1 - r, 1 + r]; returns N. All decisions strict.
+- _certify_j(j: int)  ·L255
+- _j_for(tau0: Fraction, Cp: Fraction, H0: Fraction) -> int  ·L268: An odd j >= 3 with (j - 3)/672 > C', 4/j^2 <= H0 and 64/j^4 <= tau0 (integer search by doubling, then bisect).
+- claim(theta: Fraction, js: tuple, adversaries: tuple) -> bool  ·L281: Clause (b). Returns False when every step of the proof is certified: the exact runs at the listed j match the
+- refute() -> Witness  ·L297
+
+### counterexamples/MD_0029_g_steep_outside_tube.py
+_MD_0029: Euler + cubic Hermite, small step, the t-component of every u_n has positive slope._
+- _psi(x)  ·L25
+- _g(y, h)  ·L30
+- _t_slope_is_positive(h)  ·L35
+- refute() -> Witness  ·L64
+
+### counterexamples/MD_0034_dense_weight_overshoot.py
+_MD_0034: |l(u(t)) - l(y0)| <= delta t max_theta sum_i |beta_i(theta)| for every accepted-step piece._
+- _beta1(theta)  ·L27
+- _claim(t, delta)  ·L31
+- refute() -> Witness  ·L59
+
+### counterexamples/MD_0049_alternating_velocity.py
+_MD_0049: every eigenvalue of -(alpha K + diag(u) D + diag(h)) has negative real part._
+- _D_from_definition(N, L)  ·L23: The ledger definition, evaluated exactly in sympy (omega = exp(2 pi i / N)).
+- _hurwitz_stable(poly, lam)  ·L34: Exact: True iff every root of the real polynomial has negative real part (Routh-Hurwitz).
+- _claim(N, L_over_2pi, alpha, u, h)  ·L48
+- refute() -> Witness  ·L71
+
+### counterexamples/MD_0052_jordan_residual.py
+_MD_0052: ||Mu - theta u|| <= eps < 1 - |theta| puts an eigenvalue of M within eps of theta._
+- _claim(theta, u_unnorm)  ·L16
+- refute() -> Witness  ·L33
+
+### counterexamples/MD_0071_input_weighted_two_state.py
+_MD_0071 (b): the input-weighted bank is passive for every input iff rdot_j >= -2 p_j r_j for every j, t._
+- _claim(T, p, r)  ·L16
+- refute() -> Witness  ·L47
+
+### counterexamples/MD_0071_output_weighted_two_state.py
+_MD_0071 (a): the output-weighted bank is passive for every input iff rdot_j <= 2 p_j r_j for every j, t._
+- _claim(T, p, r)  ·L18
+- refute() -> Witness  ·L52
+
+### counterexamples/MD_0077_detached_solid.py
+_MD_0077: 1 - f(s) = <theta>_{Omega_g} = w0 + sum_n w_n s/(s+lambda_n), w0 = C_g|g|/(C_g|g|+C_s|s|)._
+- _claim(s, Cg, Cs, kg, ks, gas, solids)  ·L30
+- refute() -> Witness  ·L54
+
+### counterexamples/MD_0083_phase_drift_family.py
+_MD_0083 clause 1: mu'(s0)=0 and a family that is not locally a reparametrisation of a_
+- _flow()  ·L20
+- _claim(s0)  ·L30
+- refute() -> Witness  ·L61
+
+### counterexamples/MD_0083_pitchfork_of_cycles.py
+_MD_0083 clause 2: at a fold (mu'(s0)=0, mu''(s0) != 0) with the eigenvalue 1 of_
+- _claim(s0)  ·L21
+- refute() -> Witness  ·L57
+
+### counterexamples/MD_0084_inflection_at_equality.py
+_MD_0084 (a): the curve sigma(r) = kappa r - l r^2 + m r^3 has a fold (a critical point at_
+- _claim(kappa, l, m, r)  ·L20: (a) with fold := critical point at r > 0, evaluated at one exhibited critical point.
+- refute() -> Witness  ·L34
+
+### counterexamples/MD_0094_negative_frequency.py
+_MD_0094: for every real omega, |K(i omega) - K_N(i omega)| <= omega sum_{k>N} w_k (1/a_k + 1/b_k)._
+- _claim(omega, N, Pr, alpha)  ·L15
+- refute() -> Witness  ·L34
+
+### counterexamples/MD_0097_one_node_even_window.py
+_MD_0097 part (a): a one-internal-node synchronous Boolean network passes the associative_
+- _run(F, x, inputs)  ·L23
+- _passes(F, W, G)  ·L31: the pass predicate of MD_0097 for k = 1 (readout is the single node)
+- _no_one_node_network_passes(W, G)  ·L50
+- refute() -> Witness  ·L59
+
 ### mdept/__init__.py
 _Tooling for the math-dept ledger of stipulated mathematical statements._
 - class MDeptError(Exception)  ·L28: Base class for every error this package raises.
@@ -821,6 +1049,306 @@ _`python -m mdept.view`: the consumer's generated view, and its drift guard._
 - test_a_request_token_naming_a_candidate_that_does_not_exist_is_located(private)  ·L311
 
 ## Lean
+
+### MathDept/Results/MD_0033.lean
+- namespace MathDept.MD_0033  ·L46
+- theorem ell_stage  ·L53
+- theorem ell_comb  ·L63
+- theorem statement  ·L68
+
+### MathDept/Results/MD_0035.lean
+- namespace MathDept.MD_0035  ·L35
+- def omega  ·L40
+- def hat  ·L43
+- def kappa  ·L47
+- def D  ·L53
+- lemma omega_isPrimitiveRoot  ·L57
+- lemma sum_omega_zpow  ·L62
+- lemma kappa_zero  ·L80
+- theorem statement  ·L87
+
+### MathDept/Results/MD_0036.lean
+- namespace MathDept.MD_0036  ·L38
+- theorem ell_stage  ·L45
+- theorem statement  ·L54
+
+### MathDept/Results/MD_0038.lean
+- namespace MathDept.MD_0038  ·L59
+- theorem abs_ell_stage  ·L66
+- theorem abs_ell_comb  ·L77
+- theorem abs_ell_y  ·L91
+- theorem statement  ·L111
+- theorem statement_elapsed  ·L138
+
+### MathDept/Results/MD_0039.lean
+- namespace MathDept.MD_0039  ·L50
+- def omega  ·L55
+- def hat  ·L58
+- def kappa  ·L62
+- def D  ·L68
+- def M  ·L73
+- def E  ·L76
+- def c  ·L85
+- def Pi  ·L89
+- lemma omega_isPrimitiveRoot  ·L94
+- lemma omega_ne_zero  ·L98
+- lemma omega_zpow_mul_self  ·L100
+- lemma sum_omega_zpow  ·L104
+- lemma hat_periodic  ·L124
+- lemma hat_neg_half  ·L132
+- lemma sum_Pi  ·L141
+- def wt  ·L165
+- lemma E_eq  ·L168
+- lemma sum_prod_modes  ·L196
+- def kappaS  ·L238
+- lemma kappaS_neg  ·L241
+- lemma exists_rep  ·L250
+- lemma hat_D  ·L288
+- lemma sum_neg_reindex  ·L338
+- lemma pair_cancel  ·L348
+- theorem statement  ·L355
+
+### MathDept/Results/MD_0041.lean
+- namespace MathDept.MD_0041  ·L32
+- lemma omega_ne_zero  ·L36
+- lemma omega_mul  ·L38
+- lemma dvd_sub_iff  ·L42
+- lemma pair  ·L53
+- lemma kappa_half  ·L62
+- lemma omega_half  ·L66
+- lemma omega_sign  ·L78
+- lemma sign_sum  ·L83
+- theorem statement  ·L111
+
+### MathDept/Results/MD_0042.lean
+- namespace MathDept.MD_0042  ·L34
+- lemma omega_ne_zero  ·L38
+- lemma omega_mul  ·L40
+- lemma dvd_sub_iff  ·L44
+- lemma orth  ·L55
+- lemma pair  ·L64
+- lemma kappa_ne_zero  ·L73
+- lemma kappa_half  ·L84
+- lemma omega_half  ·L88
+- lemma omega_sign  ·L100
+- def m0  ·L105
+- def mh  ·L106
+- lemma sum_two  ·L108
+- lemma sign_sum  ·L121
+- lemma reconW  ·L150
+- lemma W_zero  ·L172
+- theorem statement  ·L199
+
+### MathDept/Results/MD_0043.lean
+- namespace MathDept.MD_0043  ·L39
+- lemma comp_eq_of_conserved  ·L48
+- theorem statement  ·L61
+
+### MathDept/Results/MD_0044.lean
+- namespace MathDept.MD_0044  ·L44
+- def W  ·L51
+- theorem charpoly_eq_restrict_mul_mapQ  ·L65
+- theorem charpoly_id  ·L100
+- theorem charpoly_zero  ·L106
+- theorem finrank_quot  ·L113
+- theorem statement_field  ·L128
+- theorem statement  ·L188
+
+### MathDept/Results/MD_0045.lean
+- namespace MathDept.MD_0045  ·L40
+- lemma second_order  ·L49
+- theorem statement  ·L113
+
+### MathDept/Results/MD_0046.lean
+- namespace MathDept.MD_0046  ·L46
+- lemma omega_ne_zero  ·L51
+- lemma omega_mul  ·L53
+- lemma dvd_sub_iff  ·L57
+- lemma orth  ·L68
+- lemma pair  ·L77
+- lemma recon  ·L87
+- lemma kappa_ne_zero  ·L107
+- lemma kappa_half  ·L118
+- lemma omega_half  ·L122
+- lemma omega_sign  ·L134
+- def m0  ·L139
+- def mh  ·L140
+- lemma sum_two  ·L142
+- lemma hat_zero_of_D_zero  ·L155
+- lemma ker_D  ·L175
+- lemma neg_one_pow_odd  ·L186
+- lemma ker_D_two  ·L195
+- def Dmat  ·L217
+- def K  ·L222
+- lemma Dmat_mulVec  ·L224
+- lemma star_omega_zpow  ·L233
+- lemma Dmat_conjTranspose  ·L243
+- lemma K_eq  ·L254
+- lemma K_isHermitian  ·L257
+- lemma quad_form  ·L260
+- theorem statement  ·L272
+- theorem statement_principal  ·L314
+
+### MathDept/Results/MD_0051.lean
+- namespace MathDept.MD_0051  ·L31
+- lemma toEuclideanCLM_vecMulVec  ·L36
+- theorem statement  ·L46
+
+### MathDept/Results/MD_0070.lean
+- namespace MathDept.MD_0070  ·L50
+- def energy  ·L57
+- lemma hasDerivAt_energy  ·L59
+- theorem pointwise_Y  ·L73
+- theorem pointwise_Z  ·L83
+- lemma energy_nonneg  ·L103
+- lemma ac_energy  ·L106
+- theorem integral_Y  ·L125
+- lemma ac_congr  ·L149
+- lemma of_integral_form  ·L160
+- theorem integral_Y_integral_form  ·L182
+- theorem integral_Z  ·L196
+- theorem transfer_Y  ·L227
+- theorem transfer_Z  ·L240
+- theorem statement  ·L264
+
+### MathDept/Results/MD_0073.lean
+- namespace MathDept.MD_0073  ·L53
+- lemma trace_adjugate_mul  ·L61
+- lemma hasDerivAt_det_add_zero  ·L87
+- lemma hasDerivAt_det_add  ·L104
+- lemma sub_mulVec_eq_zero_iff  ·L115
+- lemma vecMul_sub_eq_zero_iff  ·L119
+- lemma eigen_iff_det  ·L124
+- lemma eq_smul_of_simple  ·L130
+- lemma adjugate_eq  ·L150
+- def share  ·L194
+- theorem statement_sum  ·L198
+- lemma trace_rank_one  ·L208
+- lemma charpoly_eval_eq  ·L216
+- lemma trace_adjugate_ne_zero  ·L221
+- lemma smulRight_one_eq  ·L242
+- theorem deriv_core  ·L247
+- theorem statement_deriv  ·L372
+- theorem statement  ·L383
+
+### MathDept/Results/MD_0101.lean
+- namespace MathDept.MD_0101  ·L60
+- def step  ·L67
+- def window  ·L70
+- def evokes  ·L74
+- def assocCond  ·L79
+- def passes  ·L88
+- theorem iter_three  ·L93
+- theorem iter_add_two  ·L98
+- theorem iter_add_two_mul  ·L102
+- theorem evokes_add_two  ·L109
+- theorem evokes_add_two_mul  ·L127
+- theorem window_add_two_mul  ·L134
+- theorem passes_W_reduce  ·L138
+- theorem passes_G_reduce  ·L143
+- def tbl  ·L148
+- theorem eq_tbl  ·L158
+- instance  ·L166
+- theorem residue_1_1  ·L169
+- theorem residue_1_2  ·L171
+- theorem residue_3_1  ·L173
+- theorem residue_3_2  ·L175
+- theorem not_passes_residue  ·L178
+- theorem part_a1  ·L188
+- theorem part_a2  ·L205
+- def F₂  ·L215
+- theorem iter_idem  ·L218
+- theorem step_idem  ·L224
+- theorem window_F₂  ·L228
+- theorem evokes_F₂  ·L232
+- theorem part_b  ·L239
+- theorem statement  ·L248
+
+### MathDept/Results/MD_0102.lean
+- namespace MathDept.MD_0102  ·L61
+- def step  ·L66
+- def window  ·L70
+- def gapEnd  ·L75
+- def testReadout  ·L79
+- def pretestReadout  ·L84
+- def evokes  ·L88
+- def associativeConditioning  ·L91
+- theorem gapEnd_eq  ·L99
+- theorem readout_eq  ·L111
+- theorem associativeConditioning_fails  ·L122
+- theorem statement  ·L133
+
+### MathDept/Results/MD_0103.lean
+- namespace MathDept.MD_0103  ·L81
+- abbrev State  ·L84
+- abbrev Input  ·L87
+- def G  ·L92
+- def window  ·L95
+- def readout  ·L99
+- def testReadout  ·L105
+- def pretestReadout  ·L110
+- def Evokes  ·L115
+- def AssociativeConditioning  ·L118
+- def Persistent  ·L127
+- theorem settle  ·L138
+- theorem settle_eq  ·L150
+- theorem reach  ·L161
+- theorem reach_of_le  ·L167
+- theorem isFixed  ·L174
+- theorem fixedPt_eq  ·L179
+- theorem exists_unique_fixedPt  ·L183
+- theorem readout_eq  ·L187
+- theorem no_conditioning  ·L197
+- theorem not_persistent  ·L205
+- theorem statement  ·L213
+
+### MathDept/Results/MD_0104.lean
+- namespace MathDept.MD_0104  ·L51
+- def reach  ·L56
+- theorem reach_eq_range  ·L59
+- theorem ncard_reach_le  ·L65
+- theorem eventually_periodic  ·L70
+- theorem exists_lt_card_iterate_eq  ·L86
+- theorem statement  ·L98
+
+### MathDept/Results/MD_0105.lean
+- namespace MathDept.MD_0105  ·L58
+- def applyWord  ·L62
+- def R  ·L65
+- theorem card_R_le_pow  ·L68
+- theorem card_R_le_choose  ·L74
+- abbrev Words  ·L101
+- instance  ·L103
+- def append  ·L107
+- theorem foldl_append_words  ·L110
+- theorem exists_card_R_eq_pow  ·L123
+- theorem statement  ·L147
+
+### MathDept/Results/MD_0107.lean
+- namespace MathDept.MD_0107  ·L47
+- lemma aeval_mem_span_lt  ·L56
+- lemma finrank_krylov_le  ·L69
+- lemma invariant_const  ·L94
+- lemma finrank_iInf_ker  ·L102
+- theorem statement  ·L114
+
+### MathDept/Results/MD_0108.lean
+- namespace MathDept.MD_0108  ·L53
+- def orbit  ·L64
+- lemma mem_orbit  ·L68
+- def orbitHit  ·L74
+- def memHit  ·L80
+- def uniform  ·L86
+- lemma exists_lt_card_iterate_eq  ·L89
+- lemma hit_iff  ·L111
+- lemma orbitHit_eq  ·L117
+- lemma card_pos  ·L123
+- lemma card_miss  ·L126
+- lemma cond_eq  ·L136
+- lemma memHit_eq  ·L153
+- lemma uniform_sum  ·L159
+- lemma bound  ·L163
+- theorem statement  ·L169
 
 ### MathDept/Smoke.lean
 - theorem MathDept.smoke  ·L11
