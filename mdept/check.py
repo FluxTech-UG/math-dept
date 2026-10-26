@@ -353,6 +353,11 @@ def i4_status_evidence(ctx: Context) -> None:
             fail("I4 status/evidence", ctx.rel(entry.path), "provenance.settled_by",
                  f"status {status!r} is settled, so settled_by is required")
 
+        problem = schema.settled_support_problem(status, evidence, entry.at("formal.file"),
+                                                 entry.front["source"])
+        if problem:
+            fail("I4 status/evidence", ctx.rel(entry.path), "evidence", problem)
+
         if status == "cited":
             if entry.front["source"] is None:
                 fail("I4 status/evidence", ctx.rel(entry.path), "source",

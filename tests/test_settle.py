@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from mdept import ConfigError, audit, settle
+from mdept import ConfigError, audit, schema, settle
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
@@ -181,7 +181,11 @@ def test_a_stale_audit_is_refused(tmp_path, capsys):
 
 def test_a_settlement_the_entry_gate_rejects_is_rolled_back(tmp_path, capsys):
     public, _ = stage(tmp_path)
-    # MD_0004 carries no counterexample evidence, so I4 rejects `refuted`.
+    # MD_0004 carries a proof row but no counterexample row: settle writes, and I4 rejects `refuted`.
+    path = public / "ledger" / "MD_0004.md"
+    path.write_text(replace_once(path.read_text(encoding="utf-8"), "evidence: []\n",
+                                 "evidence:\n  - kind: proof\n    path: ledger/MD_0004.md\n"),
+                    encoding="utf-8")
     err = refused(capsys, public, "MD_0004", "--status", "refuted", "--by", "claude", "--model", "m")
     assert "I4 status/evidence" in err and "restored" in err
 
@@ -233,3 +237,11 @@ def test_a_refutation_may_name_its_compiled_negation(tmp_path, capsys):
     text = path.read_text(encoding="utf-8")
     assert "  decl: MathDept.MD_0002.negation\n  file: MathDept/Conjectures/MD_0002.lean\n" in text
     assert f"statement_hash: {audit.type_hash(TYPE_0001)}\n" in text
+
+
+def test_a_settled_status_with_no_evidence_and_no_formal_pointer_is_refused_before_writing(tmp_path, capsys):
+    public, _ = stage(tmp_path)
+    # MD_0004 carries `evidence: []` and a null formal pointer, so no settled status may land.
+    err = refused(capsys, public, "MD_0004", "--status", "proven-informal", "--by", "claude",
+                  "--model", "m")
+    assert schema.SETTLED_SUPPORT_RULE in err and "restored" not in err

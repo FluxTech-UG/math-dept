@@ -185,7 +185,10 @@ Underneath those:
   keeps the edit only when the entry's scoped check passes.
 - `python -m mdept.release MD_0007 [MD_0008 ...]` moves one or several settled entries
   from private to public as one batch and abstracts their provenance; `--dry-run` reports
-  the whole batch's plan and preflight. The rules are under Release in `docs/protocol.md`.
+  the whole batch's plan and preflight. A release of several entries is one batch call,
+  never a loop of single releases, and a loop of runs that change state stops at its
+  first failure (41 single releases launched in a loop written to carry on all failed and
+  rolled back on 26 October 2026). The rules are under Release in `docs/protocol.md`.
 - `python scripts/gen_root.py --write` regenerates `MathDept.lean` after adding or moving
   a module; `repo-outline --write` regenerates `docs/MAP.md` after adding or moving a
   symbol. Both have `--check` guards that fail while stale.

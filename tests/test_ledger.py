@@ -247,6 +247,19 @@ def test_broken_case_raises_its_own_invariant(case, tmp_path):
     )
 
 
+def test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path):
+    """A settled entry stripped of every evidence row, with no formal pointer, fails on the
+    general rule before any status-specific one, so the message names what is missing."""
+    root = stage(tmp_path) / "good_public"
+    apply_overlay(root, FIXTURES / "broken" / "I04_settled_without_evidence")
+    index.write(root)
+    with pytest.raises(CheckError) as raised:
+        check.run(root)
+    message = str(raised.value)
+    assert message.startswith("I4 status/evidence: ledger/MD_0002.md: field 'evidence'"), message
+    assert schema.SETTLED_SUPPORT_RULE in message
+
+
 # --- I9b is a notice, not a failure -----------------------------------------
 
 

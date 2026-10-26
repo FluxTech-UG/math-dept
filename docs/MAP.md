@@ -326,40 +326,40 @@ _Ledger invariants I1 to I21._
 - i2_permanence(ctx: Context) -> None  ·L293
 - i3_schema(ctx: Context) -> None  ·L324
 - i4_status_evidence(ctx: Context) -> None  ·L337
-- _require_how(ctx: Context, entry, settled) -> None  ·L391
-- i5_formal_pointer(ctx: Context) -> None  ·L401
-- i6_counterexamples(ctx: Context) -> None  ·L442
-- i7_raised_by(ctx: Context) -> None  ·L486: Every anchor is a form of the grammar, and resolves to one place.
-- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L505
-- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L544
-- i8_links(ctx: Context) -> None  ·L559
-- const _IMPLIED_BY  ·L582
-- const _IMPLIES  ·L583
-- const _ESTABLISHED  ·L584
-- i9a_no_contradiction(ctx: Context) -> None  ·L587: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
-- i9b_inheritance_notice(ctx: Context) -> None  ·L612: The one informational check. Its notices are section 7 of the generated index.
-- i10_cited_sources(ctx: Context) -> None  ·L622
-- i11_tag_sync(ctx: Context) -> None  ·L649
-- i12_dangling_references(ctx: Context) -> None  ·L677
-- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L698
-- reference_surfaces(root: Path) -> list[Path]  ·L705: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside.
-- i13_inbox(ctx: Context) -> None  ·L720
-- i14_request_backlinks(ctx: Context) -> None  ·L757
-- const WRAP_WINDOW  ·L791
-- citation_text(lines: list[str], index: int, token: str) -> str  ·L794: The text that must carry `token`'s status word for its citation on `lines[index]`.
-- i15_consumer_citations(ctx: Context) -> None  ·L808: Every line of a listed file that names an entry carries its status word.
-- i16_generated_views(ctx: Context) -> None  ·L871
-- i17_prose(ctx: Context) -> None  ·L891
-- i18_dates(ctx: Context) -> None  ·L905
-- i19_attempt_records(ctx: Context) -> None  ·L924
-- i20_sorry_fence(ctx: Context) -> None  ·L955
-- i21_unlisted_citations(ctx: Context) -> None  ·L967: Every entry mention in a listed consumer appears in that entry's `cited_by`.
-- const INVARIANTS  ·L1019
-- bibliography_path(root: Path, kind: str) -> Path  ·L1045: The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1065
-- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1114: Narrow the context to the named entries, refusing the modes that read the whole tree.
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1138: Run every invariant in order; `CheckError` names the first failing invariant.
-- main(argv: list[str] | None=None) -> int  ·L1154
+- _require_how(ctx: Context, entry, settled) -> None  ·L396
+- i5_formal_pointer(ctx: Context) -> None  ·L406
+- i6_counterexamples(ctx: Context) -> None  ·L447
+- i7_raised_by(ctx: Context) -> None  ·L491: Every anchor is a form of the grammar, and resolves to one place.
+- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L510
+- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L549
+- i8_links(ctx: Context) -> None  ·L564
+- const _IMPLIED_BY  ·L587
+- const _IMPLIES  ·L588
+- const _ESTABLISHED  ·L589
+- i9a_no_contradiction(ctx: Context) -> None  ·L592: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
+- i9b_inheritance_notice(ctx: Context) -> None  ·L617: The one informational check. Its notices are section 7 of the generated index.
+- i10_cited_sources(ctx: Context) -> None  ·L627
+- i11_tag_sync(ctx: Context) -> None  ·L654
+- i12_dangling_references(ctx: Context) -> None  ·L682
+- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L703
+- reference_surfaces(root: Path) -> list[Path]  ·L710: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside.
+- i13_inbox(ctx: Context) -> None  ·L725
+- i14_request_backlinks(ctx: Context) -> None  ·L762
+- const WRAP_WINDOW  ·L796
+- citation_text(lines: list[str], index: int, token: str) -> str  ·L799: The text that must carry `token`'s status word for its citation on `lines[index]`.
+- i15_consumer_citations(ctx: Context) -> None  ·L813: Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L876
+- i17_prose(ctx: Context) -> None  ·L896
+- i18_dates(ctx: Context) -> None  ·L910
+- i19_attempt_records(ctx: Context) -> None  ·L929
+- i20_sorry_fence(ctx: Context) -> None  ·L960
+- i21_unlisted_citations(ctx: Context) -> None  ·L972: Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- const INVARIANTS  ·L1024
+- bibliography_path(root: Path, kind: str) -> Path  ·L1050: The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1070
+- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1119: Narrow the context to the named entries, refusing the modes that read the whole tree.
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1143: Run every invariant in order; `CheckError` names the first failing invariant.
+- main(argv: list[str] | None=None) -> int  ·L1159
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -600,48 +600,50 @@ _The closed front-matter schema for a ledger entry._
 - const PRIVATE_EVIDENCE_KINDS  ·L51
 - const PRIVATE_EVIDENCE_PREFIXES  ·L57
 - is_private_evidence_path(path: str) -> bool  ·L60: True when an evidence path names a private-only surface.
-- settling_evidence_problem(entry_id: str, status: str, evidence: list) -> str | None  ·L65: I4's evidence rule: why `evidence` lacks the row `status` rests on, or None.
-- const SOURCE_KINDS  ·L82
-- const TRUSTED_SOURCE_KINDS  ·L85
-- const RELATIONS  ·L87
-- const CITATION_WORDS  ·L93
-- const ENTRY_KEYS  ·L101
-- const FORMAL_KEYS  ·L117
-- const BETWEEN_KEYS  ·L118
-- const PROVENANCE_KEYS  ·L119
-- const RAISED_BY_KEYS  ·L120
-- const RAISED_BY_PUBLIC_KEYS  ·L122
-- const STIPULATED_BY_KEYS  ·L123
-- const SETTLED_BY_KEYS  ·L124
-- const EVIDENCE_KEYS  ·L125
-- const ID_RE  ·L129
-- const ID_TOKEN_RE  ·L130
-- const REQUEST_STEM_RE  ·L131
-- const REQUEST_TOKEN_RE  ·L132
-- const REQUEST_STEM_TOKEN_RE  ·L134
-- const TOPIC_RE  ·L137
-- const BIB_TAG_RE  ·L138
-- const DECL_RE  ·L139
-- const LEAN_FILE_RE  ·L140
-- const COUNTEREXAMPLE_STEM_RE  ·L141
-- const CITED_BY_RE  ·L146
-- const SHA256_RE  ·L149
-- const ISO_DATE_RE  ·L150
-- const BODY_HEADINGS  ·L153
-- const EM_DASH  ·L155
-- split_cited_by(citation: str) -> tuple[str, str, str | None] | None  ·L158: (repo, path, locator) from one `cited_by` string, or None when it is malformed.
-- cited_by_form(repo: str, path: str) -> str  ·L167: The `cited_by` string for this repo and path, quoted when it has to be.
-- citation_words(status: str) -> tuple[str, ...]  ·L172: The status words I15 requires on a line citing an entry at this status.
-- _fail(path: Path, field: str, message: str) -> None  ·L177
-- _closed_mapping(value, keys, path: Path, field: str) -> dict  ·L181
-- _enum(value, allowed, path: Path, field: str) -> None  ·L193
-- _iso_date(value, path: Path, field: str) -> None  ·L198
-- _str_list(value, path: Path, field: str) -> list  ·L207
-- _id_list(value, path: Path, field: str) -> list  ·L213
-- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L220: Validate one entry's front matter. `kind` is 'public' or 'private'.
-- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L300
-- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L326
-- _validate_settled_by(settled_by, path: Path) -> None  ·L347
+- const SETTLED_SUPPORT_RULE  ·L68
+- settled_support_problem(status: str, evidence: list, formal_file: str | None, source: str | None) -> str | None  ·L71: Why a settled `status` stands on nothing, or None.
+- settling_evidence_problem(entry_id: str, status: str, evidence: list) -> str | None  ·L84: I4's evidence rule: why `evidence` lacks the row `status` rests on, or None.
+- const SOURCE_KINDS  ·L101
+- const TRUSTED_SOURCE_KINDS  ·L104
+- const RELATIONS  ·L106
+- const CITATION_WORDS  ·L112
+- const ENTRY_KEYS  ·L120
+- const FORMAL_KEYS  ·L136
+- const BETWEEN_KEYS  ·L137
+- const PROVENANCE_KEYS  ·L138
+- const RAISED_BY_KEYS  ·L139
+- const RAISED_BY_PUBLIC_KEYS  ·L141
+- const STIPULATED_BY_KEYS  ·L142
+- const SETTLED_BY_KEYS  ·L143
+- const EVIDENCE_KEYS  ·L144
+- const ID_RE  ·L148
+- const ID_TOKEN_RE  ·L149
+- const REQUEST_STEM_RE  ·L150
+- const REQUEST_TOKEN_RE  ·L151
+- const REQUEST_STEM_TOKEN_RE  ·L153
+- const TOPIC_RE  ·L156
+- const BIB_TAG_RE  ·L157
+- const DECL_RE  ·L158
+- const LEAN_FILE_RE  ·L159
+- const COUNTEREXAMPLE_STEM_RE  ·L160
+- const CITED_BY_RE  ·L165
+- const SHA256_RE  ·L168
+- const ISO_DATE_RE  ·L169
+- const BODY_HEADINGS  ·L172
+- const EM_DASH  ·L174
+- split_cited_by(citation: str) -> tuple[str, str, str | None] | None  ·L177: (repo, path, locator) from one `cited_by` string, or None when it is malformed.
+- cited_by_form(repo: str, path: str) -> str  ·L186: The `cited_by` string for this repo and path, quoted when it has to be.
+- citation_words(status: str) -> tuple[str, ...]  ·L191: The status words I15 requires on a line citing an entry at this status.
+- _fail(path: Path, field: str, message: str) -> None  ·L196
+- _closed_mapping(value, keys, path: Path, field: str) -> dict  ·L200
+- _enum(value, allowed, path: Path, field: str) -> None  ·L212
+- _iso_date(value, path: Path, field: str) -> None  ·L217
+- _str_list(value, path: Path, field: str) -> list  ·L226
+- _id_list(value, path: Path, field: str) -> list  ·L232
+- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L239: Validate one entry's front matter. `kind` is 'public' or 'private'.
+- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L319
+- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L345
+- _validate_settled_by(settled_by, path: Path) -> None  ·L366
 
 ### mdept/search.py
 _Random search for numeric leads._
@@ -649,24 +651,24 @@ _Random search for numeric leads._
 
 ### mdept/settle.py
 _Settle one ledger entry: the one way a lead sets `status` and `provenance.settled_by`._
-- _iso(value: str, flag: str) -> str  ·L51
-- _formal_pointer(root: Path, entry_id: str, front: dict, decl: str | None, proven: bool) -> dict  ·L61: `formal.decl`, `formal.file` and `statement_hash` read off the cached audit.
-- plan(root: Path, entry_id: str, front: dict, status: str, *, by: str | None, model: str | None, how: str | None, date: str | None, checked_by: str | None, decl: str | None, merged_into: str | None) -…  ·L100: The settled fields as {dotted path: value}, every flag validated first.
-- _scalar(value) -> str  ·L159: One YAML scalar as it reads back: plain where plain parses to itself.
-- _indent(line: str) -> int  ·L172
-- _ending(line: str) -> str  ·L176
-- class _Front  ·L180: The front-matter lines of one entry, edited in place one key at a time.
-  - __init__(self, text: str, where: str)  ·L183
-  - _refuse(self, key: str, why: str)  ·L193
-  - _find(self, key: str, start: int, stop: int, indent: int) -> int  ·L197
-  - _block(self, key: str, at: int) -> tuple[int, int, int]  ·L204: (first child, stop, child indent) of the block whose key line is `at`.
-  - _locate(self, dotted: str) -> tuple[int, int]  ·L219: (line index, indent) of a dotted key, walking blocks from the top level.
-  - set_scalar(self, dotted: str, value) -> None  ·L230
-  - set_settled_by(self, value: dict | None) -> None  ·L237
-  - text(self) -> str  ·L259
-- _apply(front: dict, changes: dict) -> dict  ·L263
-- settle(root: Path | str, entry_id: str, status: str, *, by: str | None=None, model: str | None=None, how: str | None=None, date: str | None=None, checked_by: str | None=None, decl: str | None=None, m…  ·L274: Write the settlement into the entry file; return the fields written. Refuses before writing.
-- main(argv: list[str] | None=None) -> int  ·L310
+- _iso(value: str, flag: str) -> str  ·L53
+- _formal_pointer(root: Path, entry_id: str, front: dict, decl: str | None, proven: bool) -> dict  ·L63: `formal.decl`, `formal.file` and `statement_hash` read off the cached audit.
+- plan(root: Path, entry_id: str, front: dict, status: str, *, by: str | None, model: str | None, how: str | None, date: str | None, checked_by: str | None, decl: str | None, merged_into: str | None) -…  ·L102: The settled fields as {dotted path: value}, every flag validated first.
+- _scalar(value) -> str  ·L161: One YAML scalar as it reads back: plain where plain parses to itself.
+- _indent(line: str) -> int  ·L174
+- _ending(line: str) -> str  ·L178
+- class _Front  ·L182: The front-matter lines of one entry, edited in place one key at a time.
+  - __init__(self, text: str, where: str)  ·L185
+  - _refuse(self, key: str, why: str)  ·L195
+  - _find(self, key: str, start: int, stop: int, indent: int) -> int  ·L199
+  - _block(self, key: str, at: int) -> tuple[int, int, int]  ·L206: (first child, stop, child indent) of the block whose key line is `at`.
+  - _locate(self, dotted: str) -> tuple[int, int]  ·L221: (line index, indent) of a dotted key, walking blocks from the top level.
+  - set_scalar(self, dotted: str, value) -> None  ·L232
+  - set_settled_by(self, value: dict | None) -> None  ·L239
+  - text(self) -> str  ·L261
+- _apply(front: dict, changes: dict) -> dict  ·L265
+- settle(root: Path | str, entry_id: str, status: str, *, by: str | None=None, model: str | None=None, how: str | None=None, date: str | None=None, checked_by: str | None=None, decl: str | None=None, m…  ·L276: Write the settlement into the entry file; return the fields written. Refuses before writing.
+- main(argv: list[str] | None=None) -> int  ·L317
 
 ### mdept/symbolic.py
 _Sympy helpers for stage S1: settle a claim exactly before anyone opens Lean._
@@ -822,37 +824,38 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_every_invariant_has_a_case()  ·L221
 - test_the_invariant_list_is_the_one_that_runs()  ·L229
 - @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L237
-- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L253
-- test_template_front_matter_validates()  ·L265
-- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L273
-- test_new_never_reuses_an_id(tmp_path)  ·L294
-- _stage_wrapped_request(tmp_path: Path) -> Path  ·L303: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
-- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L311
-- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L319
-- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L326
-- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L336: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
-- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L350: The variable promised a repo, so the variable is what the message names.
-- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L368
-- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L387
-- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L391
-- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L396: The fixture cites `research/toy notes.md`, whose name contains a space.
-- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L409: A consumer checkout is scanned through git, and every violation is listed.
-- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L438: MD_0006 is cited from two files in ToyRepo and is one row, not two.
-- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L452: Two citing lines without their status word fail together, one line each.
-- const TOY_PARAGRAPH  ·L471
-- _rewrite_toy(root: Path, paragraph: str) -> None  ·L475
-- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L482: An ID in a line's last characters carries its status word at the next line's start.
-- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L491
-- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L502
-- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L514
-- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L520: MD_0001 carries an orphan artifact; MD_0003 is clean.
-- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L532
-- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L539: A half-built Result of MD_0001 and a stale index fail only the full run.
-- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L559
-- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L565
-- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L574
-- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L584
-- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L595
+- test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path)  ·L250: A settled entry stripped of every evidence row, with no formal pointer, fails on the
+- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L266
+- test_template_front_matter_validates()  ·L278
+- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L286
+- test_new_never_reuses_an_id(tmp_path)  ·L307
+- _stage_wrapped_request(tmp_path: Path) -> Path  ·L316: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
+- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L324
+- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L332
+- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L339
+- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L349: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
+- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L363: The variable promised a repo, so the variable is what the message names.
+- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L381
+- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L400
+- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L404
+- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L409: The fixture cites `research/toy notes.md`, whose name contains a space.
+- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L422: A consumer checkout is scanned through git, and every violation is listed.
+- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L451: MD_0006 is cited from two files in ToyRepo and is one row, not two.
+- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L465: Two citing lines without their status word fail together, one line each.
+- const TOY_PARAGRAPH  ·L484
+- _rewrite_toy(root: Path, paragraph: str) -> None  ·L488
+- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L495: An ID in a line's last characters carries its status word at the next line's start.
+- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L504
+- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L515
+- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L527
+- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L533: MD_0001 carries an orphan artifact; MD_0003 is clean.
+- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L545
+- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L552: A half-built Result of MD_0001 and a stale index fail only the full run.
+- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L572
+- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L578
+- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L587
+- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L597
+- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L608
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._
@@ -998,11 +1001,12 @@ _`python -m mdept.settle` writes an entry's settlement and nothing else._
 - test_a_declaration_missing_from_the_audit_is_refused(tmp_path, capsys)  ·L168
 - test_a_stale_audit_is_refused(tmp_path, capsys)  ·L175
 - test_a_settlement_the_entry_gate_rejects_is_rolled_back(tmp_path, capsys)  ·L182
-- test_an_unsettled_status_takes_no_settler(tmp_path, capsys)  ·L189
-- test_a_how_that_contradicts_the_status_is_refused(tmp_path, capsys)  ·L194
-- test_an_unknown_status_is_refused(tmp_path)  ·L200
-- test_a_layout_the_line_editor_cannot_place_is_refused(tmp_path, capsys)  ·L206
-- test_a_refutation_may_name_its_compiled_negation(tmp_path, capsys)  ·L218
+- test_an_unsettled_status_takes_no_settler(tmp_path, capsys)  ·L193
+- test_a_how_that_contradicts_the_status_is_refused(tmp_path, capsys)  ·L198
+- test_an_unknown_status_is_refused(tmp_path)  ·L204
+- test_a_layout_the_line_editor_cannot_place_is_refused(tmp_path, capsys)  ·L210
+- test_a_refutation_may_name_its_compiled_negation(tmp_path, capsys)  ·L222
+- test_a_settled_status_with_no_evidence_and_no_formal_pointer_is_refused_before_writing(tmp_path, capsys)  ·L242
 
 ### tests/test_sorry_scope.py
 _Guard: the `sorry` fence and the entry-file naming rules, without Lean._

@@ -62,6 +62,25 @@ def is_private_evidence_path(path: str) -> bool:
     return str(path).startswith(PRIVATE_EVIDENCE_PREFIXES)
 
 
+#: I4's general rule for every settled status, and `mdept.settle`'s refusal before
+#: it writes. A cited entry's `source` is its pointer: its extract row is private
+#: and a release drops it, so a public cited entry rightly carries `evidence: []`.
+SETTLED_SUPPORT_RULE = "a settled entry carries evidence or a formal pointer"
+
+
+def settled_support_problem(status: str, evidence: list, formal_file: str | None,
+                            source: str | None) -> str | None:
+    """Why a settled `status` stands on nothing, or None.
+
+    Settled means `SETTLED_STATUSES`; `merged` rests on the entry it merged into.
+    """
+    if status not in SETTLED_STATUSES or evidence or formal_file is not None:
+        return None
+    if status == "cited" and source is not None:
+        return None
+    return f"{SETTLED_SUPPORT_RULE}; status {status!r} has an empty evidence list and formal.file null"
+
+
 def settling_evidence_problem(entry_id: str, status: str, evidence: list) -> str | None:
     """I4's evidence rule: why `evidence` lacks the row `status` rests on, or None.
 

@@ -25,7 +25,9 @@ and leaves every other byte as it was:
 - for `merged`, `merged_into` from `--merged-into`, and `--how` is required.
 
 The entry must already carry its evidence (a counterexample row, a proof row, a
-`source`); the command writes provenance, not evidence. It then runs
+`source`); the command writes provenance, not evidence, and refuses before writing a
+settled status that would stand on no evidence row, no formal pointer and (cited) no
+source (`schema.settled_support_problem`). It then runs
 `python -m mdept.check --entry MD_0007` and prints the result. A failing check
 restores the entry file byte for byte, so a settlement lands whole or not at
 all.
@@ -286,6 +288,11 @@ def settle(root: Path | str, entry_id: str, status: str, *, by: str | None = Non
     schema.validate_front(front, path, config.repo_kind(root))
     changes = plan(root, entry_id, front, status, by=by, model=model, how=how, date=date,
                    checked_by=checked_by, decl=decl, merged_into=merged_into)
+    planned = _apply(front, changes)
+    problem = schema.settled_support_problem(status, planned["evidence"], planned["formal"]["file"],
+                                             planned["source"])
+    if problem:
+        raise CheckError(f"{path.relative_to(root)}: field 'evidence': {problem}; nothing is written")
 
     original = path.read_text(encoding="utf-8")
     editor = _Front(original, str(path.relative_to(root)))
