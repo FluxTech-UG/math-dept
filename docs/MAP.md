@@ -71,63 +71,67 @@ _Three guards over the Lean side, and the JSON contract the ledger reads._
 
 ### mdept/check.py
 _Ledger invariants I1 to I21._
-- const REFERENCE_SURFACES  ·L64
-- const EM_DASH_EXCLUDE  ·L77
-- const ROLE_LINE_SURFACES  ·L81
-- const STANDARD_AXIOMS  ·L83
-- fail(invariant: str, path, field_name: str, message: str) -> None  ·L86
-- @dataclass class Context  ·L91
-  - @property private(self) -> bool  ·L110
-  - @property scoped(self) -> bool  ·L114
-  - owns(self, path) -> bool  ·L117: True when `path` belongs to an entry in scope (always, unscoped).
-  - unowned_by_any(self, path) -> bool  ·L133: True when no entry of either ledger claims `path` by stem or by field.
-  - counts(self, path) -> bool  ·L141: Whether a scoped run reports on an entry-file surface's `path`.
-  - checked_requests(self) -> list  ·L151: The requests whose lifecycle this run checks: all, or those naming an entry in scope.
-  - _owned_paths(self) -> set[str]  ·L163
-  - rel(self, path) -> str  ·L169
-  - family_by_id(self) -> dict  ·L175: Both ledgers' entries by ID: an ID resolves wherever it lives.
-- const _OWNER_RE  ·L192
-- owner_id(path: Path) -> str | None  ·L195: The entry ID a file's stem names, or None.
-- _entry_paths(entry) -> set[str]  ·L201: The repo-relative paths an entry claims through its own fields.
-- i1_filename_is_id(ctx: Context) -> None  ·L218
-- _precheck_filenames(root: Path) -> None  ·L225
-- i2_permanence(ctx: Context) -> None  ·L235
-- i3_schema(ctx: Context) -> None  ·L266
-- i4_status_evidence(ctx: Context) -> None  ·L279
-- _require_how(ctx: Context, entry, settled) -> None  ·L335
-- i5_formal_pointer(ctx: Context) -> None  ·L345
-- i6_counterexamples(ctx: Context) -> None  ·L386
-- i7_raised_by(ctx: Context) -> None  ·L430: Every anchor is a form of the grammar, and resolves to one place.
-- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L449
-- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L488
-- i8_links(ctx: Context) -> None  ·L503
-- const _IMPLIED_BY  ·L523
-- const _IMPLIES  ·L524
-- const _ESTABLISHED  ·L525
-- i9a_no_contradiction(ctx: Context) -> None  ·L528
-- i9b_inheritance_notice(ctx: Context) -> None  ·L549: The one informational check. Its notices are section 7 of the generated index.
-- i10_cited_sources(ctx: Context) -> None  ·L559
-- i11_tag_sync(ctx: Context) -> None  ·L586
-- i12_dangling_references(ctx: Context) -> None  ·L614
-- _reference_surfaces(ctx: Context) -> list[Path]  ·L634
-- _known_in_sibling(ctx: Context, token: str) -> bool  ·L646: True when a private repo's token names an entry that lives in the public one.
-- i13_inbox(ctx: Context) -> None  ·L663
-- i14_request_backlinks(ctx: Context) -> None  ·L700
-- const WRAP_WINDOW  ·L734
-- citation_text(lines: list[str], index: int, token: str) -> str  ·L737: The text that must carry `token`'s status word for its citation on `lines[index]`.
-- i15_consumer_citations(ctx: Context) -> None  ·L751: Every line of a listed file that names an entry carries its status word.
-- i16_generated_views(ctx: Context) -> None  ·L814
-- i17_prose(ctx: Context) -> None  ·L834
-- i18_dates(ctx: Context) -> None  ·L848
-- i19_attempt_records(ctx: Context) -> None  ·L867
-- i20_sorry_fence(ctx: Context) -> None  ·L898
-- i21_unlisted_citations(ctx: Context) -> None  ·L910: Every entry mention in a listed consumer appears in that entry's `cited_by`.
-- const INVARIANTS  ·L962
-- bibliography_path(root: Path, kind: str) -> Path  ·L988: The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1008
-- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1057: Narrow the context to the named entries, refusing the modes that read the whole tree.
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1081: Run every invariant in order; `CheckError` names the first failing invariant.
-- main(argv: list[str] | None=None) -> int  ·L1097
+- const REFERENCE_SURFACES  ·L71
+- const EM_DASH_EXCLUDE  ·L84
+- const ROLE_LINE_SURFACES  ·L88
+- const STANDARD_AXIOMS  ·L90
+- fail(invariant: str, path, field_name: str, message: str) -> None  ·L93
+- @dataclass class Context  ·L98
+  - @property private(self) -> bool  ·L120
+  - @property scoped(self) -> bool  ·L124
+  - owns(self, path) -> bool  ·L127: True when `path` belongs to an entry in scope (always, unscoped).
+  - unowned_by_any(self, path) -> bool  ·L143: True when no entry of either ledger claims `path` by stem or by field.
+  - counts(self, path) -> bool  ·L151: Whether a scoped run reports on an entry-file surface's `path`.
+  - checked_requests(self) -> list  ·L161: The requests whose lifecycle this run checks: all, or those naming an entry in scope.
+  - _owned_paths(self) -> set[str]  ·L173
+  - rel(self, path) -> str  ·L179: The path relative to this repo, or `public sibling <path>` for a file of the sibling.
+  - family_by_id(self) -> dict  ·L197: Both ledgers' entries by ID: an ID resolves wherever it lives.
+  - sibling_entries(self) -> list  ·L217: The public sibling's entries this run also walks through I8, I9a and I12.
+  - sibling_reference_surfaces(self) -> list[Path]  ·L228: The public sibling's I12 surfaces, when this run walks the sibling (`sibling_entries`).
+  - resolve(self, entry_id: str)  ·L234: The entry an ID names, as this repo's links and references see it, or None.
+  - held(self, entry_id: str) -> bool  ·L245: True when this is the public repo and the ID is unreleased (`family.held`), never a failure.
+- const _OWNER_RE  ·L250
+- owner_id(path: Path) -> str | None  ·L253: The entry ID a file's stem names, or None.
+- _entry_paths(entry) -> set[str]  ·L259: The repo-relative paths an entry claims through its own fields.
+- i1_filename_is_id(ctx: Context) -> None  ·L276
+- _precheck_filenames(root: Path) -> None  ·L283
+- i2_permanence(ctx: Context) -> None  ·L293
+- i3_schema(ctx: Context) -> None  ·L324
+- i4_status_evidence(ctx: Context) -> None  ·L337
+- _require_how(ctx: Context, entry, settled) -> None  ·L391
+- i5_formal_pointer(ctx: Context) -> None  ·L401
+- i6_counterexamples(ctx: Context) -> None  ·L442
+- i7_raised_by(ctx: Context) -> None  ·L486: Every anchor is a form of the grammar, and resolves to one place.
+- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L505
+- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L544
+- i8_links(ctx: Context) -> None  ·L559
+- const _IMPLIED_BY  ·L582
+- const _IMPLIES  ·L583
+- const _ESTABLISHED  ·L584
+- i9a_no_contradiction(ctx: Context) -> None  ·L587: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
+- i9b_inheritance_notice(ctx: Context) -> None  ·L612: The one informational check. Its notices are section 7 of the generated index.
+- i10_cited_sources(ctx: Context) -> None  ·L622
+- i11_tag_sync(ctx: Context) -> None  ·L649
+- i12_dangling_references(ctx: Context) -> None  ·L677
+- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L698
+- reference_surfaces(root: Path) -> list[Path]  ·L705: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside.
+- i13_inbox(ctx: Context) -> None  ·L720
+- i14_request_backlinks(ctx: Context) -> None  ·L757
+- const WRAP_WINDOW  ·L791
+- citation_text(lines: list[str], index: int, token: str) -> str  ·L794: The text that must carry `token`'s status word for its citation on `lines[index]`.
+- i15_consumer_citations(ctx: Context) -> None  ·L808: Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L871
+- i17_prose(ctx: Context) -> None  ·L891
+- i18_dates(ctx: Context) -> None  ·L905
+- i19_attempt_records(ctx: Context) -> None  ·L924
+- i20_sorry_fence(ctx: Context) -> None  ·L955
+- i21_unlisted_citations(ctx: Context) -> None  ·L967: Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- const INVARIANTS  ·L1019
+- bibliography_path(root: Path, kind: str) -> Path  ·L1045: The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1065
+- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1114: Narrow the context to the named entries, refusing the modes that read the whole tree.
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1138: Run every invariant in order; `CheckError` names the first failing invariant.
+- main(argv: list[str] | None=None) -> int  ·L1154
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -169,25 +173,28 @@ _The family this package reads: both ledgers, the inbox, and the listed consumer
   - @property private(self) -> bool  ·L217
   - entries(self) -> list  ·L220
   - requests(self) -> list  ·L225
-- const _UNRESOLVED  ·L233
-- @dataclass class Family  ·L237: Both ledgers and the consumers, as one read surface, resolved on demand.
-  - @property other(self) -> Repo | None  ·L245: The ledger this family was not located from, resolved on first ask.
-  - @property public(self) -> Repo | None  ·L257
-  - @property private(self) -> Repo | None  ·L261
-  - @property repos_yaml(self) -> Path | None  ·L265: The consumer map, which lives in the private repo, or None.
-  - @property consumers(self) -> dict  ·L274: Name to Consumer, parsed from `repos.yaml` on first ask.
-  - ledgers(self) -> list[Repo]  ·L281
-  - entries(self) -> list  ·L284: Every entry in the family, public first within an ID, sorted by ID.
-  - by_id(self) -> dict  ·L288
-  - requests(self) -> list  ·L291
-  - repo_at(self, root: Path) -> Repo  ·L294: The Repo object for this root, whichever side of the family it is.
-  - sibling_of(self, root: Path) -> Path | None  ·L309: The other ledger's root, seen from this one.
-  - consumer(self, name: str) -> Consumer  ·L319: One listed consumer, or a failure that names the ones there are.
-- locate(root: Path | str | None=None) -> Family  ·L338: The family, as paths only: nothing is read off disk yet.
-- load_family(root: Path | str | None=None) -> Family  ·L357: `locate`, with both ledgers and the inbox read now rather than later.
-- read_consumers(repos_yaml: Path) -> dict  ·L371: `repos.yaml` consumers as name to Consumer, paths resolved against the repo.
-- require_private(family: Family, what: str) -> Repo  ·L391: The private repo, or a failure that says what needed it.
-- request_by_stem(family: Family, stem: str)  ·L401: One request from the inbox, by its filename stem.
+- const HELD  ·L235
+- resolver(private: bool, own: dict, both)  ·L238: The one rule for what an ID names, as a repo's links and mentions see it.
+- held(private: bool, resolve, entry_id: str) -> bool  ·L253: True when the public repo reads `entry_id` as unreleased, held in the private ledger.
+- const _UNRESOLVED  ·L267
+- @dataclass class Family  ·L271: Both ledgers and the consumers, as one read surface, resolved on demand.
+  - @property other(self) -> Repo | None  ·L279: The ledger this family was not located from, resolved on first ask.
+  - @property public(self) -> Repo | None  ·L291
+  - @property private(self) -> Repo | None  ·L295
+  - @property repos_yaml(self) -> Path | None  ·L299: The consumer map, which lives in the private repo, or None.
+  - @property consumers(self) -> dict  ·L308: Name to Consumer, parsed from `repos.yaml` on first ask.
+  - ledgers(self) -> list[Repo]  ·L315
+  - entries(self) -> list  ·L318: Every entry in the family, public first within an ID, sorted by ID.
+  - by_id(self) -> dict  ·L322
+  - requests(self) -> list  ·L325
+  - repo_at(self, root: Path) -> Repo  ·L328: The Repo object for this root, whichever side of the family it is.
+  - sibling_of(self, root: Path) -> Path | None  ·L343: The other ledger's root, seen from this one.
+  - consumer(self, name: str) -> Consumer  ·L353: One listed consumer, or a failure that names the ones there are.
+- locate(root: Path | str | None=None) -> Family  ·L372: The family, as paths only: nothing is read off disk yet.
+- load_family(root: Path | str | None=None) -> Family  ·L391: `locate`, with both ledgers and the inbox read now rather than later.
+- read_consumers(repos_yaml: Path) -> dict  ·L405: `repos.yaml` consumers as name to Consumer, paths resolved against the repo.
+- require_private(family: Family, what: str) -> Repo  ·L425: The private repo, or a failure that says what needed it.
+- request_by_stem(family: Family, stem: str)  ·L435: One request from the inbox, by its filename stem.
 
 ### mdept/index.py
 _The generated views: `ledger/INDEX.md` and `ledger.json`._
@@ -198,23 +205,27 @@ _The generated views: `ledger/INDEX.md` and `ledger.json`._
 - const _ESTABLISHED  ·L29
 - const _IMPLIED_BY  ·L30
 - escape(text: str) -> str  ·L33: Make a value safe inside a markdown table cell.
-- inheritance_notices(entries: list) -> list[str]  ·L38: I9b: unsettled entries that something already established implies.
-- anchor_notices(entries: list, requests: list) -> list[str]  ·L56: I7: entries and requests anchored on wording rather than on an ID.
-- _anchor_notice(subject: str, source: dict) -> str | None  ·L78
-- partial_results(entries: list) -> list[tuple]  ·L89: Settled entries that are a special case of something still unsettled.
-- _between_column(entry) -> str  ·L103
-- _status_summary(entries: list) -> list[str]  ·L112
-- _topic_index(entries: list) -> list[str]  ·L124
-- _all_entries(entries: list) -> list[str]  ·L141
-- _partial_section(entries: list) -> list[str]  ·L157
-- _by_consumer(entries: list) -> list[str]  ·L166: Which repo raised and which repo cites each entry, one row per entry.
-- _requests(requests: list) -> list[str]  ·L195
-- _report(entries: list, requests: list) -> list[str]  ·L206
-- render_index(entries: list, requests: list, kind: str) -> str  ·L216
-- render_json(entries: list, requests: list) -> str  ·L238
-- render(root: Path) -> dict[str, str]  ·L263: Both generated views, as {repo-relative path: content}.
-- write(root: Path) -> list[str]  ·L276: Write both views. Returns the paths that changed.
-- main(argv: list[str] | None=None) -> int  ·L289
+- inheritance_notices(entries: list, resolve) -> list[str]  ·L38: I9b: unsettled entries that something already established implies.
+- anchor_notices(entries: list, requests: list) -> list[str]  ·L61: I7: entries and requests anchored on wording rather than on an ID.
+- _anchor_notice(subject: str, source: dict) -> str | None  ·L83
+- partial_results(entries: list, resolve) -> list[tuple]  ·L94: Settled entries that are a special case of something still unsettled (`resolve` as above).
+- const BODY_FIELD  ·L108
+- const PROOF_FIELD  ·L109
+- held_links(entries: list, is_held) -> dict[str, list[tuple[str, str]]]  ·L112: Each held ID (`family.held`) an entry names, to the (entry, field) pairs naming it.
+- _between_column(entry, is_held) -> str  ·L140
+- _status_summary(entries: list) -> list[str]  ·L150
+- _topic_index(entries: list) -> list[str]  ·L162
+- _all_entries(entries: list, is_held) -> list[str]  ·L179
+- _partial_section(entries: list, resolve) -> list[str]  ·L195
+- _by_consumer(entries: list) -> list[str]  ·L204: Which repo raised and which repo cites each entry, one row per entry.
+- _requests(requests: list) -> list[str]  ·L233
+- _report(entries: list, requests: list, resolve) -> list[str]  ·L244
+- _held_section(entries: list, is_held) -> list[str]  ·L254: Section 8, present only when an entry names a held ID (public repo only).
+- render_index(entries: list, requests: list, kind: str, resolve, is_held) -> str  ·L269
+- render_json(entries: list, requests: list, is_held) -> str  ·L294
+- render(root: Path) -> dict[str, str]  ·L326: Both generated views, as {repo-relative path: content}.
+- write(root: Path) -> list[str]  ·L345: Write both views. Returns the paths that changed.
+- main(argv: list[str] | None=None) -> int  ·L358
 
 ### mdept/new.py
 _Allocate the next ID and write the entry file._
@@ -321,20 +332,31 @@ _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
 - main(argv: list[str] | None=None) -> int  ·L213
 
 ### mdept/release.py
-_Move a settled entry from the private repo into this public one._
-- const MOVABLE_STATUSES  ·L46
-- const PRIVATE_LIB_PREFIX  ·L48
-- const PUBLIC_LIB_PREFIX  ·L49
-- publicize(rel: str) -> str  ·L52: A private repo-relative path rewritten to its public counterpart.
-- _load_entry(root: Path, entry_id: str)  ·L63
-- abstract_provenance(front: dict) -> dict  ·L71: Return a copy of the front matter with every private-only field removed.
-- plan_moves(private: Path, public: Path, entry) -> list[tuple[Path, Path]]  ·L104: Every (source, destination) pair this release performs.
-- release(entry_id: str, public: Path, private: Path, dry_run: bool=False) -> dict  ·L130
-- preflight(entry, public_front: dict, moves: list, public: Path) -> None  ·L182: Refuse a release that cannot land, before anything moves.
-- _roll_back(completed: list, entry_path: Path, original_entry_text: str) -> None  ·L229: Undo every move that happened, newest first, and restore the entry file.
-- _regenerate(root: Path) -> None  ·L239: Rewrite `root`'s Lean root and generated ledger views.
-- _verify(root: Path, needs_lean: bool) -> dict  ·L258
-- main(argv: list[str] | None=None) -> int  ·L272
+_Move settled entries from the private repo into this public one._
+- const MOVABLE_STATUSES  ·L62
+- const PRIVATE_LIB_PREFIX  ·L64
+- const PUBLIC_LIB_PREFIX  ·L65
+- const PRIVATE_MODULE_PREFIX  ·L67
+- const _IMPORT_LINE_RE  ·L71
+- private_imports(text: str) -> list[str]  ·L74: Every private module a Lean file's `import` lines name, comments cut away.
+- publicize(rel: str) -> str  ·L82: A private repo-relative path rewritten to its public counterpart.
+- module_of(rel: str) -> str  ·L93: The Lean module a repo-relative `.lean` path compiles to.
+- _load_entry(root: Path, entry_id: str)  ·L98
+- abstract_provenance(front: dict) -> dict  ·L106: Return a copy of the front matter with every private-only field removed.
+- plan_moves(private: Path, public: Path, entry, batch_modules=frozenset()) -> list[tuple[Path, Path]]  ·L152: Every (source, destination) pair releasing `entry` performs.
+- plan_rewrites(private: Path, moves: list, batch_modules) -> list[tuple[Path, Path, str, str]]  ·L183: Every Lean file whose text names a module moving in this batch.
+- release(entry_ids, public: Path, private: Path, dry_run: bool=False) -> dict  ·L211: Release one entry (an ID) or a batch (a list of IDs), all or nothing.
+- render_entry(front: dict, body: str) -> str  ·L296: The public entry file: the abstracted front matter over the unchanged body.
+- preflight(entries: list, fronts: dict, moves: list, public: Path) -> None  ·L302: Refuse a release that cannot land, before anything moves.
+- _roll_back(completed: list, originals: dict) -> None  ·L357: Undo every move that happened, newest first, then restore every rewritten file.
+- _read_audit_bytes(root: Path) -> bytes | None  ·L368
+- _restore_audits(cached: dict) -> None  ·L373: Put each repo's cached audit back exactly as it was before the release.
+- _regenerate(root: Path) -> None  ·L384: Rewrite `root`'s Lean root, generated ledger views and file map (what `make regen` does).
+- _require_outline() -> None  ·L404: Refuse when `repo-outline`, which rewrites `docs/MAP.md`, is not on PATH.
+- _outline(root: Path) -> None  ·L413: Rewrite `docs/MAP.md`, which lists the counterexample scripts a release moves.
+- _audit(root: Path) -> None  ·L422: Re-run the Lean audit and rewrite `audit/latest.json` (what `make lean` does in `root`).
+- _verify(root: Path, needs_lean: bool) -> dict  ·L435
+- main(argv: list[str] | None=None) -> int  ·L449
 
 ### mdept/schema.py
 _The closed front-matter schema for a ledger entry._
@@ -348,47 +370,50 @@ _The closed front-matter schema for a ledger entry._
 - const SETTLING_HOW  ·L41
 - const EVIDENCE_KINDS  ·L47
 - const PRIVATE_EVIDENCE_KINDS  ·L51
-- const SOURCE_KINDS  ·L53
-- const TRUSTED_SOURCE_KINDS  ·L56
-- const RELATIONS  ·L58
-- const CITATION_WORDS  ·L64
-- const ENTRY_KEYS  ·L72
-- const FORMAL_KEYS  ·L88
-- const BETWEEN_KEYS  ·L89
-- const PROVENANCE_KEYS  ·L90
-- const RAISED_BY_KEYS  ·L91
-- const RAISED_BY_PUBLIC_KEYS  ·L93
-- const STIPULATED_BY_KEYS  ·L94
-- const SETTLED_BY_KEYS  ·L95
-- const EVIDENCE_KEYS  ·L96
-- const ID_RE  ·L100
-- const ID_TOKEN_RE  ·L101
-- const REQUEST_STEM_RE  ·L102
-- const REQUEST_TOKEN_RE  ·L103
-- const REQUEST_STEM_TOKEN_RE  ·L105
-- const TOPIC_RE  ·L108
-- const BIB_TAG_RE  ·L109
-- const DECL_RE  ·L110
-- const LEAN_FILE_RE  ·L111
-- const COUNTEREXAMPLE_STEM_RE  ·L112
-- const CITED_BY_RE  ·L117
-- const SHA256_RE  ·L120
-- const ISO_DATE_RE  ·L121
-- const BODY_HEADINGS  ·L124
-- const EM_DASH  ·L126
-- split_cited_by(citation: str) -> tuple[str, str, str | None] | None  ·L129: (repo, path, locator) from one `cited_by` string, or None when it is malformed.
-- cited_by_form(repo: str, path: str) -> str  ·L138: The `cited_by` string for this repo and path, quoted when it has to be.
-- citation_words(status: str) -> tuple[str, ...]  ·L143: The status words I15 requires on a line citing an entry at this status.
-- _fail(path: Path, field: str, message: str) -> None  ·L148
-- _closed_mapping(value, keys, path: Path, field: str) -> dict  ·L152
-- _enum(value, allowed, path: Path, field: str) -> None  ·L164
-- _iso_date(value, path: Path, field: str) -> None  ·L169
-- _str_list(value, path: Path, field: str) -> list  ·L178
-- _id_list(value, path: Path, field: str) -> list  ·L184
-- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L191: Validate one entry's front matter. `kind` is 'public' or 'private'.
-- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L265
-- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L291
-- _validate_settled_by(settled_by, path: Path) -> None  ·L312
+- const PRIVATE_EVIDENCE_PREFIXES  ·L57
+- is_private_evidence_path(path: str) -> bool  ·L60: True when an evidence path names a private-only surface.
+- settling_evidence_problem(entry_id: str, status: str, evidence: list) -> str | None  ·L65: I4's evidence rule: why `evidence` lacks the row `status` rests on, or None.
+- const SOURCE_KINDS  ·L82
+- const TRUSTED_SOURCE_KINDS  ·L85
+- const RELATIONS  ·L87
+- const CITATION_WORDS  ·L93
+- const ENTRY_KEYS  ·L101
+- const FORMAL_KEYS  ·L117
+- const BETWEEN_KEYS  ·L118
+- const PROVENANCE_KEYS  ·L119
+- const RAISED_BY_KEYS  ·L120
+- const RAISED_BY_PUBLIC_KEYS  ·L122
+- const STIPULATED_BY_KEYS  ·L123
+- const SETTLED_BY_KEYS  ·L124
+- const EVIDENCE_KEYS  ·L125
+- const ID_RE  ·L129
+- const ID_TOKEN_RE  ·L130
+- const REQUEST_STEM_RE  ·L131
+- const REQUEST_TOKEN_RE  ·L132
+- const REQUEST_STEM_TOKEN_RE  ·L134
+- const TOPIC_RE  ·L137
+- const BIB_TAG_RE  ·L138
+- const DECL_RE  ·L139
+- const LEAN_FILE_RE  ·L140
+- const COUNTEREXAMPLE_STEM_RE  ·L141
+- const CITED_BY_RE  ·L146
+- const SHA256_RE  ·L149
+- const ISO_DATE_RE  ·L150
+- const BODY_HEADINGS  ·L153
+- const EM_DASH  ·L155
+- split_cited_by(citation: str) -> tuple[str, str, str | None] | None  ·L158: (repo, path, locator) from one `cited_by` string, or None when it is malformed.
+- cited_by_form(repo: str, path: str) -> str  ·L167: The `cited_by` string for this repo and path, quoted when it has to be.
+- citation_words(status: str) -> tuple[str, ...]  ·L172: The status words I15 requires on a line citing an entry at this status.
+- _fail(path: Path, field: str, message: str) -> None  ·L177
+- _closed_mapping(value, keys, path: Path, field: str) -> dict  ·L181
+- _enum(value, allowed, path: Path, field: str) -> None  ·L193
+- _iso_date(value, path: Path, field: str) -> None  ·L198
+- _str_list(value, path: Path, field: str) -> list  ·L207
+- _id_list(value, path: Path, field: str) -> list  ·L213
+- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L220: Validate one entry's front matter. `kind` is 'public' or 'private'.
+- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L300
+- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L326
+- _validate_settled_by(settled_by, path: Path) -> None  ·L347
 
 ### mdept/search.py
 _Random search for numeric leads._
@@ -648,29 +673,72 @@ _The stage S1 toolkit on toy claims._
 
 ### tests/test_release.py
 _Releasing an entry is all or nothing._
-- const FIXTURES  ·L24
-- const BASES  ·L25
-- const ENTRY  ·L27
-- const LEAN_PRIVATE  ·L28
-- const LEAN_PUBLIC  ·L29
-- const TYPE_0007  ·L30
-- const TYPE_0001  ·L31
-- stage(tmp_path: Path, name: str='work') -> Path  ·L34: A throwaway copy of the fixture pair, laid out as siblings.
-- post_release_shas(tmp_path: Path) -> tuple[str, str]  ·L43: Both repos' sources_sha256 as they will be after the release.
-- write_audit(root: Path, declarations: dict, sources_sha: str) -> None  ·L57
-- prepare(tmp_path: Path) -> tuple[Path, Path]  ·L74: Stage the pair and seed both audits for the post-release state.
-- @pytest.mark.parametrize test_publicize_rewrites_only_the_library_prefix(given, expected)  ·L103
-- test_abstract_provenance_drops_private_rows_and_follows_the_rest_across()  ·L107
-- test_the_rewritten_entry_satisfies_the_public_schema()  ·L124
-- test_release_lands_the_entry_and_both_repos_still_validate(tmp_path)  ·L132
-- test_release_regenerates_both_lean_roots(tmp_path)  ·L152: The private repo has no gen_root.py of its own; a release still rewrites its root.
-- test_the_released_id_still_resolves_from_the_private_triage_record(tmp_path)  ·L171
-- assert_nothing_moved(public: Path, private: Path) -> None  ·L182
-- test_release_refuses_an_evidence_row_that_would_not_resolve(tmp_path)  ·L189
-- test_release_refuses_when_the_destination_is_taken(tmp_path)  ·L208
-- test_release_refuses_an_unsettled_entry(tmp_path)  ·L219
-- test_a_dry_run_reports_the_moves_and_touches_nothing(tmp_path)  ·L225
-- test_a_verification_failure_rolls_every_move_back(tmp_path, monkeypatch)  ·L236
+- const FIXTURES  ·L26
+- const BASES  ·L27
+- const REAL_OUTLINE  ·L29
+- const REAL_REQUIRE_OUTLINE  ·L30
+- const ENTRY  ·L32
+- const LEAN_PRIVATE  ·L33
+- const LEAN_PUBLIC  ·L34
+- const TYPE_0007  ·L35
+- const TYPE_0001  ·L36
+- const TYPE_0008  ·L37
+- const TYPES  ·L38
+- const DEPENDENT  ·L39
+- const PRIVATE_MODULE  ·L40
+- const PUBLIC_MODULE  ·L41
+- @pytest.fixture map_writer(monkeypatch)  ·L45: A release rewrites `docs/MAP.md` with `repo-outline`, a family tool CI does not carry.
+- stage(tmp_path: Path, name: str='work') -> Path  ·L57: A throwaway copy of the fixture pair, laid out as siblings.
+- write_audit(root: Path, declarations: dict, sources_sha: str) -> None  ·L66
+- audit_of_disk(root: Path) -> None  ·L83: What `make lean` would cache for `root` as it stands: one record per Lean file on disk.
+- install_fake_audit(monkeypatch) -> list  ·L99: Replace the release's Lean audit with `audit_of_disk`; the list records each call's root.
+- prepare(tmp_path: Path, monkeypatch) -> tuple[Path, Path]  ·L111: Stage the pair regenerated, with both audits fresh for the tree as it is, and fake the audit runner.
+- add_private_entry(private: Path, entry_id: str, *, status: str, revises: str | None=None, imports: tuple[str, ...]=(), below_of: tuple[str, ...]=()) -> Path | None  ·L122: A second private entry, built from MD_0007's file. With `imports` it gets a Lean file
+- snapshot(*roots: Path) -> dict  ·L162: Every file's bytes under the given roots, generated views and audits included.
+- @pytest.mark.parametrize test_publicize_rewrites_only_the_library_prefix(given, expected)  ·L179
+- test_abstract_provenance_drops_private_rows_and_follows_the_rest_across()  ·L183
+- test_the_rewritten_entry_satisfies_the_public_schema()  ·L200
+- test_release_lands_the_entry_and_both_repos_still_validate(tmp_path, monkeypatch)  ·L208
+- test_release_regenerates_both_lean_roots(tmp_path, monkeypatch)  ·L228: The private repo has no gen_root.py of its own; a release still rewrites its root.
+- test_the_released_id_still_resolves_from_the_private_triage_record(tmp_path, monkeypatch)  ·L247
+- assert_nothing_moved(public: Path, private: Path) -> None  ·L258
+- test_release_refuses_an_evidence_row_that_would_not_resolve(tmp_path, monkeypatch)  ·L265
+- test_release_refuses_when_the_destination_is_taken(tmp_path, monkeypatch)  ·L284
+- test_release_refuses_an_unsettled_entry(tmp_path, monkeypatch)  ·L295
+- test_a_dry_run_reports_the_moves_and_touches_nothing(tmp_path, monkeypatch)  ·L301
+- generated_files(public: Path, private: Path) -> dict  ·L312: The bytes of the files a regeneration writes besides the ledger views: both Lean
+- test_a_verification_failure_rolls_every_move_back(tmp_path, monkeypatch)  ·L321
+- test_a_failing_rollback_step_does_not_stop_the_later_ones(tmp_path, monkeypatch)  ·L353: The public root's map step fails during the rollback; the private root is still regenerated,
+- test_a_release_without_repo_outline_moves_nothing(tmp_path, monkeypatch)  ·L387: The map tool is looked for in the preflight, so a dry run fails exactly as a real run would.
+- test_release_reaudits_each_repo_whose_lean_sources_changed(tmp_path, monkeypatch)  ·L404: Before the move both audits are fresh; the move stales both, so both are re-run, once each.
+- test_a_private_entry_may_link_to_a_released_one(tmp_path, monkeypatch)  ·L417
+- _set_revises(path: Path, target: str) -> None  ·L430
+- test_a_public_link_to_an_unreleased_id_passes_and_renders_as_held(tmp_path, monkeypatch)  ·L436
+- test_a_public_proof_mentioning_an_unreleased_id_passes(tmp_path, monkeypatch)  ·L448
+- test_a_private_link_to_an_id_in_neither_ledger_still_fails(tmp_path, monkeypatch)  ·L462
+- test_a_public_link_to_an_id_in_neither_ledger_fails_in_the_private_run(tmp_path, monkeypatch)  ·L469: The public run reads the typo as held; the private run resolves through both and fails it.
+- test_a_public_proof_mentioning_an_id_in_neither_ledger_fails_in_the_private_run(tmp_path, monkeypatch)  ·L480
+- test_a_public_link_to_a_private_merged_entry_fails_in_the_private_run(tmp_path, monkeypatch)  ·L494
+- test_the_private_resolver_is_built_once_per_run(tmp_path, monkeypatch)  ·L519
+- test_a_private_mention_of_an_id_in_neither_ledger_still_fails(tmp_path, monkeypatch)  ·L530
+- test_a_release_naming_an_unreleased_private_id_lands(tmp_path, monkeypatch)  ·L538
+- test_one_resolver_serves_the_check_and_the_views()  ·L554: The rule has one home: both callers reach `family.resolver`, neither restates it.
+- test_release_rewrites_private_imports_of_the_released_module(tmp_path, monkeypatch)  ·L566
+- test_a_rollback_restores_the_rewritten_imports(tmp_path, monkeypatch)  ·L582
+- test_an_entry_importing_an_unreleased_private_module_is_refused_alone(tmp_path, monkeypatch)  ·L600
+- @pytest.mark.parametrize test_a_private_import_is_refused_whatever_follows_it_on_the_line(tmp_path, monkeypatch, line)  ·L611
+- test_a_commented_import_of_a_batch_module_passes(tmp_path, monkeypatch)  ·L620: The comment is cut before the tokens are read, so neither it nor the batch module refuses.
+- test_abstract_provenance_drops_an_experiment_row_at_a_private_path()  ·L633
+- test_a_proof_row_at_a_private_path_is_dropped_beside_a_settling_one(tmp_path, monkeypatch)  ·L643
+- @pytest.mark.parametrize test_a_release_refuses_when_the_only_settling_row_is_private(status, kind, why)  ·L670
+- test_the_public_schema_refuses_an_evidence_row_at_a_private_path()  ·L681
+- test_the_inheritance_notice_survives_the_release_of_what_implies_it(tmp_path, monkeypatch)  ·L691
+- test_a_batch_releases_a_dependent_with_what_it_imports(tmp_path, monkeypatch)  ·L706
+- test_a_batch_failure_rolls_the_whole_batch_back(tmp_path, monkeypatch)  ·L733
+- test_a_batch_dry_run_reports_every_move_and_touches_nothing(tmp_path, monkeypatch)  ·L748
+- test_a_batch_refuses_a_repeated_id(tmp_path, monkeypatch)  ·L759
+- test_the_cli_takes_several_ids(tmp_path, monkeypatch, capsys)  ·L765
+- test_release_refuses_without_repo_outline(tmp_path, monkeypatch)  ·L775
 
 ### tests/test_root_fresh.py
 _Guard: MathDept.lean imports exactly the modules on disk._

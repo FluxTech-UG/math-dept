@@ -24,7 +24,9 @@ never reused. Files are never deleted and never renamed: a duplicate becomes
 `status: merged` with `merged_into` pointing at the survivor, and a restated theorem is
 a new entry carrying `revises`. I2 checks uniqueness always and contiguity
 `MD_0001..MD_N` across both repos in `--family` mode; I8 checks that every link
-resolves, that no entry links to itself, and that nothing links to a `merged` entry.
+resolves (in the public repo a well-formed ID absent from the public ledger resolves
+as unreleased, held in the private ledger), that no entry links to itself, and that
+nothing links to a `merged` entry.
 
 ## One ID form
 
@@ -181,7 +183,11 @@ non-citation settlement has a triage record; I20 `sorry` only under `Conjectures
 anchor grammar and, in a consumer on disk, resolves to exactly one place; I8 links resolve, no self-links, no
 links to `merged`; I9a a refuted entry is not implied by a proven one; I10 `cited`
 sources are of a trusted Kind and have an extract; I11 bibliography tags and extract
-filenames stay in sync; I12 every `MD_####` and `MDR:` token resolves.
+filenames stay in sync; I12 every `MD_####` and `MDR:` token resolves. In the public
+repo, I8 and I12 read a well-formed ID absent from the public ledger as unreleased and
+held in the private ledger; in the private repo an ID in neither ledger fails, and its
+full run walks the public sibling's entries (I8, I9a) and reference surfaces (I12) too,
+so a public link to such an ID or to a merged private entry fails there.
 
 **Flow.** I13 inbox lifecycle and Outcome completeness; I14 requests back-link to the
 IDs they seeded; I15 every line of a listed file that names an entry carries its status

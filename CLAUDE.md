@@ -21,10 +21,20 @@ reaches back into them.
 A private sibling, `math-dept-private`, holds the source extracts, the request inbox,
 the triage records, and unreleased entries with their Lean modules. It depends on this
 package (a Lake `require` by path, plus an editable install of `mdept`); the dependency
-never runs the other way, so nothing public is allowed to reference anything private.
-Releasing an entry moves its files from private to public without renaming anything:
-the ID and the Lean declaration name are the same before and after, so an outside
-citation keeps resolving.
+never runs the other way, so nothing public imports, builds on or points at a private
+file. Releasing an entry moves its files from private to public without renaming
+anything: the ID and the Lean declaration name are the same before and after, so an
+outside citation keeps resolving.
+
+A public entry may name an unreleased ID, in a link field (`revises`, `between.*`,
+`provenance.connects`, `merged_into`) or in its entry or proof text. An entry is
+private because it is still being worked on, not because that part of the corpus is
+secret. The public checks read a well-formed ID the public ledger holds no entry for
+as unreleased, held in the private ledger, and pass it (a self-link and a link to a
+merged entry still fail); the generated views (`ledger/INDEX.md`, `ledger.json`) name
+it as such. The private repo resolves every ID through both ledgers, and an ID in
+neither fails there. The resolver and the held rule are `resolver` and `held` in
+`mdept/family.py`.
 
 Point at another repo's axioms, definitions, and results by reference; never copy them
 into an entry. A copied axiom drifts from its source the moment the source is edited,
@@ -173,8 +183,9 @@ Underneath those:
   writes `status` and `provenance.settled_by` (for `proven-formal` also the formal
   pointer and `statement_hash` from `audit/latest.json`), touches no other line, and
   keeps the edit only when the entry's scoped check passes.
-- `python -m mdept.release MD_0007` moves a settled entry from private to public and
-  abstracts its provenance.
+- `python -m mdept.release MD_0007 [MD_0008 ...]` moves one or several settled entries
+  from private to public as one batch and abstracts their provenance; `--dry-run` reports
+  the whole batch's plan and preflight. The rules are under Release in `docs/protocol.md`.
 - `python scripts/gen_root.py --write` regenerates `MathDept.lean` after adding or moving
   a module; `repo-outline --write` regenerates `docs/MAP.md` after adding or moving a
   symbol. Both have `--check` guards that fail while stale.

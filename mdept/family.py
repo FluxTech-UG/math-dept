@@ -228,6 +228,40 @@ class Repo:
         return self._requests
 
 
+#: How the public repo names an ID it holds no entry for. An entry is private
+#: because it is still being worked on, not because that part of the corpus is
+#: secret, so a public entry may link to or mention an unreleased ID, and a
+#: public reader is told what the ID is.
+HELD = "unreleased, held in the private ledger"
+
+
+def resolver(private: bool, own: dict, both):
+    """The one rule for what an ID names, as a repo's links and mentions see it.
+
+    Returns a function from an ID to its entry, or None. A private repo resolves
+    through both ledgers (`both`, called on first use, maps every ID of the pair):
+    it depends on the public one, and releasing an entry moves it there while
+    private entries keep linking to it and triage records keep naming it. The
+    public repo resolves only its own entries (`own`): it imports nothing private
+    and validates standalone in CI, so what it cannot resolve is read by `held`.
+    """
+    if private:
+        return lambda entry_id: both().get(entry_id)
+    return own.get
+
+
+def held(private: bool, resolve, entry_id: str) -> bool:
+    """True when the public repo reads `entry_id` as unreleased, held in the private ledger.
+
+    That is a well-formed ID the public ledger has no entry for. It is never a
+    failure there. The private repo resolves through the pair, so nothing is
+    held from its side, and an ID in neither ledger fails its checks. Callers
+    pass only well-formed IDs (link fields the schema has validated, tokens
+    `schema.ID_TOKEN_RE` found), so the form is not tested again here.
+    """
+    return not private and resolve(entry_id) is None
+
+
 #: The sentinel for "the other ledger has not been looked for yet". None is a
 #: real answer (there is no copy on this machine), so it cannot stand for both.
 _UNRESOLVED = object()

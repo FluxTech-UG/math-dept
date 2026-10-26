@@ -35,16 +35,21 @@ def escape(text: str) -> str:
     return str(text).replace("|", "\\|").replace("\n", " ")
 
 
-def inheritance_notices(entries: list) -> list[str]:
-    """I9b: unsettled entries that something already established implies."""
-    by_id = {e.id: e for e in entries}
+def inheritance_notices(entries: list, resolve) -> list[str]:
+    """I9b: unsettled entries that something already established implies.
+
+    `resolve` maps an ID to its entry as the repo's links see it (None when it
+    names nothing): a private repo resolves through both ledgers, so an entry
+    implied by one already released keeps its notice; the public repo resolves
+    only its own.
+    """
     notices = []
     for entry in entries:
         if entry.status not in schema.UNSETTLED_STATUSES:
             continue
         for relation in _IMPLIED_BY:
             for target in entry.front["between"][relation]:
-                other = by_id.get(target)
+                other = resolve(target)
                 if other is not None and other.status in _ESTABLISHED:
                     notices.append(
                         f"I9b: {entry.id} is {entry.status} but {target} ({other.status}) implies it; "
@@ -86,26 +91,59 @@ def _anchor_notice(subject: str, source: dict) -> str | None:
     )
 
 
-def partial_results(entries: list) -> list[tuple]:
-    """Settled entries that are a special case of something still unsettled."""
-    by_id = {e.id: e for e in entries}
+def partial_results(entries: list, resolve) -> list[tuple]:
+    """Settled entries that are a special case of something still unsettled (`resolve` as above)."""
     rows = []
     for entry in entries:
         if entry.status in schema.UNSETTLED_STATUSES:
             continue
         for target in entry.front["between"]["special_case_of"]:
-            other = by_id.get(target)
+            other = resolve(target)
             if other is not None and other.status in schema.UNSETTLED_STATUSES:
                 rows.append((entry.id, entry.status, target, other.status))
     return rows
 
 
-def _between_column(entry) -> str:
+#: The field a held ID is recorded under when the entry names it in text, not in a link field.
+BODY_FIELD = "<body>"
+PROOF_FIELD = "<proof>"
+
+
+def held_links(entries: list, is_held) -> dict[str, list[tuple[str, str]]]:
+    """Each held ID (`family.held`) an entry names, to the (entry, field) pairs naming it.
+
+    A link field is recorded by its name. An ID the entry names only in its body,
+    or only in its informal proof `proofs/<ID>.md`, is recorded once as `<body>`
+    or `<proof>` (the body first): the text is read the way I12 reads it, so the
+    views name every held ID the checks pass.
+    """
+    held: dict[str, list[tuple[str, str]]] = {}
+    for entry in entries:
+        named = set()
+        for field_name, targets in entry.linked_ids().items():
+            for target in targets:
+                if is_held(target):
+                    held.setdefault(target, []).append((entry.id, field_name))
+                    named.add(target)
+        proof = entry.root / "proofs" / f"{entry.id}.md"
+        texts = [(BODY_FIELD, entry.body)]
+        if proof.is_file():
+            texts.append((PROOF_FIELD, proof.read_text(encoding="utf-8")))
+        for field_name, text in texts:
+            for target in sorted(parse.id_tokens(text) - named):
+                if is_held(target):
+                    held.setdefault(target, []).append((entry.id, field_name))
+                    named.add(target)
+    return dict(sorted(held.items()))
+
+
+def _between_column(entry, is_held) -> str:
     parts = []
     for relation in schema.RELATIONS:
         targets = entry.front["between"][relation]
         if targets:
-            parts.append(f"{relation} {' '.join(targets)}")
+            shown = (f"{t} ({family_mod.HELD})" if is_held(t) else t for t in targets)
+            parts.append(f"{relation} {' '.join(shown)}")
     return "; ".join(parts) or "."
 
 
@@ -138,7 +176,7 @@ def _topic_index(entries: list) -> list[str]:
     return lines
 
 
-def _all_entries(entries: list) -> list[str]:
+def _all_entries(entries: list, is_held) -> list[str]:
     lines = [
         "## 3. All entries",
         "",
@@ -149,16 +187,16 @@ def _all_entries(entries: list) -> list[str]:
         lines.append(
             f"| {entry.id} | {escape(entry.title)} | `{entry.status}` | {entry.kind} "
             f"| {escape(entry.at('provenance.raised_by.repo') or '.')} "
-            f"| {escape(entry.at('formal.decl') or '.')} | {escape(_between_column(entry))} |"
+            f"| {escape(entry.at('formal.decl') or '.')} | {escape(_between_column(entry, is_held))} |"
         )
     return lines
 
 
-def _partial_section(entries: list) -> list[str]:
+def _partial_section(entries: list, resolve) -> list[str]:
     lines = ["## 4. Partial results", "",
              "Settled entries that are a special case of something still open.", "",
              "| Settled entry | Status | Special case of | That entry |", "|---|---|---|---|"]
-    for entry_id, status, target, target_status in partial_results(entries):
+    for entry_id, status, target, target_status in partial_results(entries, resolve):
         lines.append(f"| {entry_id} | `{status}` | {target} | `{target_status}` |")
     return lines
 
@@ -203,9 +241,9 @@ def _requests(requests: list) -> list[str]:
     return lines
 
 
-def _report(entries: list, requests: list) -> list[str]:
+def _report(entries: list, requests: list, resolve) -> list[str]:
     lines = ["## 7. Contradiction and staleness report", ""]
-    notices = inheritance_notices(entries) + anchor_notices(entries, requests)
+    notices = inheritance_notices(entries, resolve) + anchor_notices(entries, requests)
     if not notices:
         lines.append("No notices. `python -m mdept.check` passes with nothing to report.")
     else:
@@ -213,7 +251,22 @@ def _report(entries: list, requests: list) -> list[str]:
     return lines
 
 
-def render_index(entries: list, requests: list, kind: str) -> str:
+def _held_section(entries: list, is_held) -> list[str]:
+    """Section 8, present only when an entry names a held ID (public repo only)."""
+    held = held_links(entries, is_held)
+    if not held:
+        return []
+    lines = ["## 8. Unreleased IDs", "",
+             "IDs that entries here link to or name in their text or proof, and that this repo "
+             "holds no entry for.", "",
+             "| ID | What it is | Named by |", "|---|---|---|"]
+    for target, namers in held.items():
+        lines.append(f"| {target} | {family_mod.HELD} | "
+                     f"{', '.join(f'{entry_id} {field_name}' for entry_id, field_name in namers)} |")
+    return lines
+
+
+def render_index(entries: list, requests: list, kind: str, resolve, is_held) -> str:
     lines = [
         "# Ledger index",
         HEADER,
@@ -224,18 +277,21 @@ def render_index(entries: list, requests: list, kind: str) -> str:
     for section in (
         _status_summary(entries),
         _topic_index(entries),
-        _all_entries(entries),
-        _partial_section(entries),
+        _all_entries(entries, is_held),
+        _partial_section(entries, resolve),
         _by_consumer(entries),
         _requests(requests),
-        _report(entries, requests),
+        _report(entries, requests, resolve),
+        _held_section(entries, is_held),
     ):
+        if not section:
+            continue
         lines.extend(section)
         lines.append("")
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
-def render_json(entries: list, requests: list) -> str:
+def render_json(entries: list, requests: list, is_held) -> str:
     digest = hashlib.sha256()
     for entry in entries:
         digest.update(entry.front_text.encode("utf-8"))
@@ -257,19 +313,32 @@ def render_json(entries: list, requests: list) -> str:
             for request in requests
         ],
     }
+    held = held_links(entries, is_held)
+    if held:
+        payload["unreleased"] = [
+            {"id": target, "held": family_mod.HELD,
+             "named_by": [{"entry": entry_id, "field": field_name} for entry_id, field_name in namers]}
+            for target, namers in held.items()
+        ]
     return json.dumps(payload, indent=2, sort_keys=True) + "\n"
 
 
 def render(root: Path) -> dict[str, str]:
     """Both generated views, as {repo-relative path: content}."""
     root = Path(root).resolve()
-    repo = family_mod.locate(root).repo_at(root)
+    family = family_mod.locate(root)
+    repo = family.repo_at(root)
     entries = repo.entries()
     requests = repo.requests()
     kind = repo.kind
+    resolve = family_mod.resolver(repo.private, {e.id: e for e in entries}, family.by_id)
+
+    def is_held(entry_id: str) -> bool:
+        return family_mod.held(repo.private, resolve, entry_id)
+
     return {
-        INDEX_PATH: render_index(entries, requests, kind),
-        JSON_PATH: render_json(entries, requests),
+        INDEX_PATH: render_index(entries, requests, kind, resolve, is_held),
+        JSON_PATH: render_json(entries, requests, is_held),
     }
 
 

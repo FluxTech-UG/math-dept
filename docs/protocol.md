@@ -117,17 +117,39 @@ records the exposure in its own register, citing the ID.
 
 ### Release
 
-`python -m mdept.release MD_0007` promotes one settled entry from private to public:
+`python -m mdept.release MD_0007 [MD_0008 ...]` promotes one or several settled
+entries from private to public as one batch; `--dry-run` reports the batch's plan and
+preflight without moving anything. A release:
 
-- moves the entry, its Lean file, its informal proof and its counterexample script
+- moves each entry, its Lean file, its informal proof and its counterexample scripts
   into this repo, keeping the directory-for-status split (`Results/` stays
   `Results/`);
 - abstracts provenance: keeps `raised_by.repo`, adds a one-line neutral `domain`,
   drops `doc`, `anchor` and `application`. `stipulated_by` and `settled_by` cross
   intact, because they are the credit trail;
+- drops an evidence row that is private by kind (`triage`) or by path (`sources/`,
+  `triage/`, whatever the row's kind), and refuses only when the entry would then
+  fail the public schema or I4: a proven-informal entry left without its
+  `proofs/<ID>.md` proof row, or a refuted entry left without a `counterexample` row;
+- rewrites, in every private Lean file, the module path of a Lean file that moves
+  (`MathDeptPrivate.Results.MD_0007` becomes `MathDept.Results.MD_0007`), so a
+  dependent left behind keeps building; an entry whose Lean file imports a private
+  module is released together with that module or after it, never before;
 - regenerates both Lean roots, using the public repo's `scripts/gen_root.py` (the one
-  copy; the private repo has none) for each, and both ledger indexes;
+  copy; the private repo has none), both ledger indexes and both `docs/MAP.md`;
+- re-runs the Lean audit in each repo whose Lean sources changed, so
+  `audit/latest.json` matches the sources on disk;
 - runs both repos' checks with `MATHDEPT_REQUIRE_LEAN=1`.
+
+A released entry may link to, or name in its entry or proof text, an ID that is
+still private: the public repo reads it as unreleased, held in the private ledger,
+and its views say so, while the private repo resolves it through both ledgers (the
+rule is under Place in the family in `CLAUDE.md`). Preflight refuses a batch before
+the first byte moves on the schema, a missing source, a taken destination or a path
+that would not resolve after the move, and when `repo-outline` is not on PATH. A batch is all or nothing: on any failure every move
+and rewrite is undone, both audit caches are put back and both repos regenerated,
+each step run even when an earlier one fails, and the error names every step that
+did.
 
 IDs and Lean declaration names are stable across a release. A consumer cites
 `MathDept.MD_0007.statement` before and after; only the module path moves.

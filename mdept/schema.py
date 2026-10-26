@@ -50,6 +50,35 @@ EVIDENCE_KINDS = ("extract", "proof", "counterexample", "triage", "experiment")
 #: drops them, because a public path that does not resolve is a dead pointer.
 PRIVATE_EVIDENCE_KINDS = ("extract", "triage")
 
+#: Repo surfaces that exist only in the private repo. An evidence row whose path
+#: lies under one of them is private whatever its kind, so a released entry
+#: drops it; the release refuses only when the status would then lack the row
+#: it rests on (`settling_evidence_problem`).
+PRIVATE_EVIDENCE_PREFIXES = ("sources/", "triage/")
+
+
+def is_private_evidence_path(path: str) -> bool:
+    """True when an evidence path names a private-only surface."""
+    return str(path).startswith(PRIVATE_EVIDENCE_PREFIXES)
+
+
+def settling_evidence_problem(entry_id: str, status: str, evidence: list) -> str | None:
+    """I4's evidence rule: why `evidence` lacks the row `status` rests on, or None.
+
+    A proven-informal entry carries `{kind: proof, path: proofs/<ID>.md}`; a refuted
+    entry carries at least one `counterexample` row. Other statuses rest on no row.
+    """
+    paths = {}
+    for item in evidence:
+        paths.setdefault(item["kind"], []).append(item["path"])
+    if status == "proven-informal":
+        expected = f"proofs/{entry_id}.md"
+        if expected not in paths.get("proof", []):
+            return f"a proven-informal entry carries evidence {{kind: proof, path: {expected}}}"
+    elif status == "refuted" and not paths.get("counterexample"):
+        return "a refuted entry carries evidence {kind: counterexample, path: counterexamples/...}"
+    return None
+
 SOURCE_KINDS = ("paper", "book", "notes", "mathlib", "forum", "draft")
 #: A `cited` entry may only rest on one of these. Forum posts and drafts are
 #: read, and may seed a conjecture, but they never carry a citation alone.
@@ -234,6 +263,12 @@ def validate_front(front: dict, path: Path, kind: str = "public") -> None:
                 path,
                 f"evidence[{i}].kind",
                 f"{item['kind']!r} names a private-only surface; a released entry drops it",
+            )
+        if kind == "public" and is_private_evidence_path(item["path"]):
+            _fail(
+                path,
+                f"evidence[{i}].path",
+                f"{item['path']!r} lies on a private-only surface; a released entry drops it",
             )
 
     between = _closed_mapping(front["between"], BETWEEN_KEYS, path, "between")

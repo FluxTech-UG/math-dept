@@ -44,6 +44,13 @@ Two scoping decisions worth knowing before reading the code:
   reliance rather than an illustration.
 - HTML comments are stripped before any token scan, which is what makes a
   commented-out example in `bibliography.md` legal.
+- The private repo's full run (plain or `--family`) also walks the public
+  sibling's entries through I8 and I9a, and its reference surfaces through
+  I12, resolving through both ledgers. The public run reads an ID it holds no
+  entry for as held (`family.held`), so this is where a public link to an ID in
+  neither ledger, or to a merged private entry, fails. A failure there names
+  the file as `public sibling <path>`. A scoped run leaves the sibling out, as
+  it leaves out every file that is not its entries'.
 """
 
 from __future__ import annotations
@@ -105,6 +112,9 @@ class Context:
     scope: frozenset | None = None
     all_entries: list = field(default_factory=list)
     _sibling_entries: list | None = field(default=None, repr=False)
+    _sibling_root: Path | None = field(default=None, repr=False)
+    _family_by_id: dict | None = field(default=None, repr=False)
+    _resolve: object = field(default=None, repr=False)
 
     @property
     def private(self) -> bool:
@@ -167,26 +177,74 @@ class Context:
         return owned
 
     def rel(self, path) -> str:
+        """The path relative to this repo, or `public sibling <path>` for a file of the sibling.
+
+        The prefix is what tells a failure in the private run apart from one in
+        the public repo's own run, which names the same file without it.
+        """
+        resolved = Path(path).resolve()
         try:
-            return str(Path(path).resolve().relative_to(self.root))
+            return str(resolved.relative_to(self.root))
         except ValueError:
-            return str(path)
+            pass
+        if self._family_by_id is not None and self._sibling_root is not None:
+            try:
+                return f"public sibling {resolved.relative_to(self._sibling_root)}"
+            except ValueError:
+                pass
+        return str(path)
 
     def family_by_id(self) -> dict:
         """Both ledgers' entries by ID: an ID resolves wherever it lives.
 
         Releasing an entry moves it to the public repo, so a consumer's citation
         of a released ID is checked against the public entry while the private
-        repo is the one running the family check.
+        repo is the one running the family check. Built once per run: the
+        Context lives for one run, and nothing changes the ledgers under it.
         """
-        if self._sibling_entries is None:
+        if self._family_by_id is None:
             sibling = self.sibling if self.sibling is not None else config.public_root(self.root)
-            self._sibling_entries = (
-                parse.load_entries(sibling)
-                if sibling is not None and sibling != self.root and (sibling / "ledger").is_dir()
-                else []
-            )
-        return {e.id: e for e in [*self._sibling_entries, *(self.all_entries or self.entries)]}
+            if sibling is not None and Path(sibling).resolve() != self.root and (sibling / "ledger").is_dir():
+                self._sibling_root = Path(sibling).resolve()
+                self._sibling_entries = parse.load_entries(self._sibling_root)
+            else:
+                self._sibling_entries = []
+            self._family_by_id = {
+                e.id: e for e in [*self._sibling_entries, *(self.all_entries or self.entries)]
+            }
+        return self._family_by_id
+
+    def sibling_entries(self) -> list:
+        """The public sibling's entries this run also walks through I8, I9a and I12.
+
+        Only the private repo's full run walks them: the public run imports
+        nothing private, and a scoped run checks its own entries' files only.
+        """
+        if not self.private or self.scoped:
+            return []
+        self.family_by_id()
+        return self._sibling_entries
+
+    def sibling_reference_surfaces(self) -> list[Path]:
+        """The public sibling's I12 surfaces, when this run walks the sibling (`sibling_entries`)."""
+        if not self.sibling_entries():
+            return []
+        return reference_surfaces(self._sibling_root)
+
+    def resolve(self, entry_id: str):
+        """The entry an ID names, as this repo's links and references see it, or None.
+
+        The rule is `family.resolver`'s: a private repo resolves through both
+        ledgers, the public repo only through its own. The resolver is built on
+        first use and kept for the run.
+        """
+        if self._resolve is None:
+            self._resolve = family_mod.resolver(self.private, self.by_id, self.family_by_id)
+        return self._resolve(entry_id)
+
+    def held(self, entry_id: str) -> bool:
+        """True when this is the public repo and the ID is unreleased (`family.held`), never a failure."""
+        return family_mod.held(self.private, self.resolve, entry_id)
 
 
 _OWNER_RE = re.compile(r"^(MD_\d{4})(?:_|$)")
@@ -281,13 +339,11 @@ def i4_status_evidence(ctx: Context) -> None:
         status = entry.status
         settled = entry.at("provenance.settled_by")
         evidence = entry.front["evidence"]
-        by_kind: dict[str, list[str]] = {}
         for i, item in enumerate(evidence):
             target = ctx.root / item["path"]
             if not target.exists():
                 fail("I4 status/evidence", ctx.rel(entry.path), f"evidence[{i}].path",
                      f"{item['path']} does not exist in this repo")
-            by_kind.setdefault(item["kind"], []).append(item["path"])
 
         if status in schema.UNSETTLED_STATUSES:
             if settled is not None:
@@ -309,9 +365,9 @@ def i4_status_evidence(ctx: Context) -> None:
             _require_how(ctx, entry, settled)
         elif status == "proven-informal":
             expected = f"proofs/{entry.id}.md"
-            if expected not in by_kind.get("proof", []):
-                fail("I4 status/evidence", ctx.rel(entry.path), "evidence",
-                     f"a proven-informal entry carries evidence {{kind: proof, path: {expected}}}")
+            problem = schema.settling_evidence_problem(entry.id, status, evidence)
+            if problem:
+                fail("I4 status/evidence", ctx.rel(entry.path), "evidence", problem)
             proof_text = (ctx.root / expected).read_text(encoding="utf-8")
             if "Formalization blockers" not in proof_text:
                 fail("I4 status/evidence", expected, "<body>",
@@ -322,9 +378,9 @@ def i4_status_evidence(ctx: Context) -> None:
                 fail("I4 status/evidence", ctx.rel(entry.path), "provenance.settled_by.checked_by",
                      "an informal proof is only proven once a second session has checked it")
         elif status == "refuted":
-            if not by_kind.get("counterexample"):
-                fail("I4 status/evidence", ctx.rel(entry.path), "evidence",
-                     "a refuted entry carries evidence {kind: counterexample, path: counterexamples/...}")
+            problem = schema.settling_evidence_problem(entry.id, status, evidence)
+            if problem:
+                fail("I4 status/evidence", ctx.rel(entry.path), "evidence", problem)
             _require_how(ctx, entry, settled)
         elif status == "merged":
             if entry.front["merged_into"] is None:
@@ -501,19 +557,22 @@ def _consumer_path(ctx: Context, repo: str, invariant: str = "I7 raised-by") -> 
 
 
 def i8_links(ctx: Context) -> None:
-    for entry in ctx.entries:
+    for entry in [*ctx.entries, *ctx.sibling_entries()]:
         for field_name, targets in entry.linked_ids().items():
             for target in targets:
                 if target == entry.id:
                     fail("I8 links", ctx.rel(entry.path), field_name, f"{target} links to itself")
-                other = ctx.by_id.get(target)
+                other = ctx.resolve(target)
                 if other is None:
+                    if ctx.held(target):
+                        continue
                     fail("I8 links", ctx.rel(entry.path), field_name, f"{target} does not exist")
                 if other.status == "merged" and field_name != "merged_into":
                     fail("I8 links", ctx.rel(entry.path), field_name,
                          f"{target} is merged into {other.front['merged_into']}; link to that instead")
         merged_into = entry.front["merged_into"]
-        if merged_into is not None and ctx.by_id[merged_into].status == "merged":
+        target = ctx.resolve(merged_into) if merged_into is not None else None
+        if target is not None and target.status == "merged":
             fail("I8 links", ctx.rel(entry.path), "merged_into",
                  f"{merged_into} is itself merged; merged_into resolves to a live entry")
 
@@ -526,21 +585,25 @@ _ESTABLISHED = ("cited", "proven-formal", "proven-informal")
 
 
 def i9a_no_contradiction(ctx: Context) -> None:
-    for entry in ctx.entries:
+    """A pair this repo cannot resolve is skipped: in the public repo that is a held ID
+    (`family.held`), whose status is not known here; in the private repo I8 has failed it.
+    The private run walks the public sibling's entries too, so a public refuted entry
+    against a proven private one is caught on the side that can see both."""
+    for entry in [*ctx.entries, *ctx.sibling_entries()]:
         between = entry.front["between"]
         if entry.status == "refuted":
             for relation in _IMPLIED_BY:
                 for target in between[relation]:
-                    other = ctx.by_id[target]
-                    if other.status in _ESTABLISHED:
+                    other = ctx.resolve(target)
+                    if other is not None and other.status in _ESTABLISHED:
                         fail("I9a contradiction", ctx.rel(entry.path), f"between.{relation}",
                              f"{entry.id} is refuted but {target} ({other.status}) implies it; "
                              "one of the two is wrong")
         if entry.status in _ESTABLISHED:
             for relation in _IMPLIES:
                 for target in between[relation]:
-                    other = ctx.by_id[target]
-                    if other.status == "refuted":
+                    other = ctx.resolve(target)
+                    if other is not None and other.status == "refuted":
                         fail("I9a contradiction", ctx.rel(entry.path), f"between.{relation}",
                              f"{entry.id} ({entry.status}) implies {target}, which is refuted; "
                              "one of the two is wrong")
@@ -550,7 +613,7 @@ def i9b_inheritance_notice(ctx: Context) -> None:
     """The one informational check. Its notices are section 7 of the generated index."""
     from . import index as index_mod
 
-    ctx.notices.extend(index_mod.inheritance_notices(ctx.entries))
+    ctx.notices.extend(index_mod.inheritance_notices(ctx.entries, ctx.resolve))
 
 
 # --- I10 cited sources ------------------------------------------------------
@@ -612,12 +675,13 @@ def i11_tag_sync(ctx: Context) -> None:
 
 
 def i12_dangling_references(ctx: Context) -> None:
-    for path in _reference_surfaces(ctx):
+    # The sibling's surfaces are the public repo's: their MDR tokens are its own
+    # run's business, and only their entry IDs need both ledgers to resolve.
+    for path in ctx.sibling_reference_surfaces():
+        _dangling_ids(ctx, path, path.read_text(encoding="utf-8"))
+    for path in [p for p in reference_surfaces(ctx.root) if ctx.owns(p)]:
         text = path.read_text(encoding="utf-8")
-        for token in sorted(parse.id_tokens(text)):
-            if token not in ctx.by_id and not _known_in_sibling(ctx, token):
-                fail("I12 dangling", ctx.rel(path), "<MD token>",
-                     f"{token} does not resolve to a ledger entry")
+        _dangling_ids(ctx, path, text)
         if not ctx.private:
             continue
         stems = {r.stem: r for r in ctx.requests}
@@ -631,30 +695,23 @@ def i12_dangling_references(ctx: Context) -> None:
                      f"{request.rel} has no '### {candidate}' heading")
 
 
-def _reference_surfaces(ctx: Context) -> list[Path]:
+def _dangling_ids(ctx: Context, path: Path, text: str) -> None:
+    for token in sorted(parse.id_tokens(text)):
+        if ctx.resolve(token) is None and not ctx.held(token):
+            fail("I12 dangling", ctx.rel(path), "<MD token>",
+                 f"{token} does not resolve to a ledger entry")
+
+
+def reference_surfaces(root: Path) -> list[Path]:
+    """Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside."""
     paths: list[Path] = []
     for surface in REFERENCE_SURFACES:
-        target = ctx.root / surface
+        target = Path(root) / surface
         if target.is_file() and target.suffix == ".md":
             paths.append(target)
         elif target.is_dir():
             paths.extend(parse.iter_markdown(target))
-    return [p for p in sorted(set(paths))
-            if p.name not in ("TEMPLATE.md", "INDEX.md") and ctx.owns(p)]
-
-
-def _known_in_sibling(ctx: Context, token: str) -> bool:
-    """True when a private repo's token names an entry that lives in the public one.
-
-    Releasing an entry moves it out of this repo but deliberately leaves its
-    triage record behind, because attempts stay private. That record still names
-    the ID, so a private repo resolves unknown tokens against its public sibling
-    even outside `--family`. The public repo never does the reverse: it has to
-    validate standalone in CI, where no private repo exists.
-    """
-    if not ctx.private:
-        return False
-    return token in ctx.family_by_id()
+    return [p for p in sorted(set(paths)) if p.name not in ("TEMPLATE.md", "INDEX.md")]
 
 
 # --- I13 inbox lifecycle ----------------------------------------------------
@@ -718,7 +775,7 @@ def i14_request_backlinks(ctx: Context) -> None:
                  f"{entry.id} cites this request but the Outcome does not name it")
     for request in ctx.checked_requests():
         for token in sorted(parse.id_tokens(request.outcome())):
-            entry = ctx.by_id.get(token)
+            entry = ctx.resolve(token)
             if entry is None:
                 fail("I14 back-link", request.rel, "Outcome", f"{token} does not exist")
             back = entry.at("provenance.stipulated_by.request")
