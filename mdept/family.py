@@ -60,6 +60,8 @@ class Consumer:
 
     An archived consumer (`archived` set, `path` None) is a repo whose files are
     kept off-line: its key still resolves, and nothing of it is read.
+    `candidates` are the paths `repos.yaml` lists for it, resolved, in order;
+    `path` is the first of them on disk, or the first of them when none is.
     """
 
     name: str
@@ -67,6 +69,7 @@ class Consumer:
     ignore: tuple[str, ...] = ()
     view: str = "docs/MATH.md"
     archived: str | None = None
+    candidates: tuple[Path, ...] = ()
 
     @property
     def view_path(self) -> Path:
@@ -403,7 +406,13 @@ def load_family(root: Path | str | None = None) -> Family:
 
 
 def read_consumers(repos_yaml: Path) -> dict:
-    """`repos.yaml` consumers as name to Consumer, paths resolved against the repo."""
+    """`repos.yaml` consumers as name to Consumer, paths resolved against the repo.
+
+    Each candidate path is expanded (`~`) and, when relative, resolved against the
+    directory holding `repos.yaml`. The first candidate that is a directory on
+    disk is the consumer's path; when none is, the first candidate is, so the
+    family check fails on it as on any absent repo, naming every candidate.
+    """
     repos_yaml = Path(repos_yaml)
     declared = parse.load_repos_yaml(repos_yaml)
     root = repos_yaml.parent
@@ -412,12 +421,16 @@ def read_consumers(repos_yaml: Path) -> dict:
         if value["archived"] is not None:
             consumers[name] = Consumer(name=name, path=None, archived=value["archived"])
             continue
-        raw = Path(str(value["path"])).expanduser()
+        candidates = []
+        for written in value["paths"]:
+            raw = Path(written).expanduser()
+            candidates.append(raw if raw.is_absolute() else (root / raw))
         consumers[name] = Consumer(
             name=name,
-            path=raw if raw.is_absolute() else (root / raw),
+            path=next((c for c in candidates if c.is_dir()), candidates[0]),
             ignore=tuple(value["ignore"]),
             view=value["view"],
+            candidates=tuple(candidates),
         )
     return consumers
 

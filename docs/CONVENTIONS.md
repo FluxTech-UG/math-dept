@@ -155,7 +155,11 @@ them, other entries' files ignored, a file that belongs to no entry still report
 left to the full run; it excludes `--family` and `--lean`.
 
 `repos.yaml` lists each consumer as a bare path, as `{path, ignore, view}`, or as
-`{archived: <where>}` for a repo whose files are kept off-line. An archived consumer
+`{archived: <where>}` for a repo whose files are kept off-line. The mapping's `path` may
+be a list of candidate paths, each expanded (`~`) and resolved against the `repos.yaml`
+directory when relative: the first that is a directory on disk is the consumer's path,
+and when none is, the first fails the family check with every candidate named, so one
+`repos.yaml` serves checkouts laid out differently. An archived consumer
 takes no other key. Its name still resolves, so the entries and requests it raised keep
 their provenance as written: I7 checks the `repo` key and leaves `doc` and `anchor`
 unresolved, I21 skips the repo, I15 fails on a `cited_by` that names it (a citation

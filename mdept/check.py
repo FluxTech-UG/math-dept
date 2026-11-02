@@ -553,8 +553,10 @@ def _consumer_path(ctx: Context, repo: str, invariant: str = "I7 raised-by") -> 
              f"is archived ({consumer.archived}), so it has no files to read")
     path = consumer.path
     if not path.is_dir():
+        others = [str(candidate) for candidate in consumer.candidates if candidate != path]
+        tried = f" (candidates also tried, none on disk: {', '.join(others)})" if others else ""
         fail(invariant, "repos.yaml", f"consumers.{repo}",
-             f"{path} is listed but absent from disk; a listed repo is required, never skipped")
+             f"{path} is listed but absent from disk{tried}; a listed repo is required, never skipped")
     return path
 
 

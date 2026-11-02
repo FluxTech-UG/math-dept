@@ -135,10 +135,79 @@ def test_a_bare_consumer_path_still_means_the_default_view(tmp_path):
     written.write_text("consumers:\n  Bare: /somewhere/else\n", encoding="utf-8")
     assert parse.load_repos_yaml(written)["consumers"]["Bare"] == {
         "path": "/somewhere/else",
+        "paths": ["/somewhere/else"],
         "ignore": [],
         "view": "docs/MATH.md",
         "archived": None,
     }
+
+
+# --- a consumer path that lists candidates: the first on disk wins ----------
+
+
+def list_toy_candidates(root: Path, candidates: list[str]) -> None:
+    """Rewrite the fixture's `path: consumers/ToyRepo` as a list of candidates."""
+    repos = root / "repos.yaml"
+    text = repos.read_text(encoding="utf-8")
+    assert text.count("    path: consumers/ToyRepo\n") == 1
+    listed = ", ".join(f'"{candidate}"' for candidate in candidates)
+    repos.write_text(text.replace("    path: consumers/ToyRepo\n", f"    path: [{listed}]\n"),
+                     encoding="utf-8")
+
+
+def test_the_first_candidate_on_disk_is_the_consumer_path(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    list_toy_candidates(root, ["nowhere/ToyRepo", "consumers/ToyRepo", "consumers"])
+    context = check.run(root, family=True)
+    toy = context.consumers["ToyRepo"]
+    assert toy.path == root / "consumers/ToyRepo"
+    assert toy.candidates == (root / "nowhere/ToyRepo", root / "consumers/ToyRepo", root / "consumers")
+
+
+def test_a_list_with_no_candidate_on_disk_fails_naming_every_candidate(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    list_toy_candidates(root, ["nowhere/one", "~/nowhere-two-mdept-test"])
+    with pytest.raises(CheckError, match="absent from disk") as raised:
+        check.run(root, family=True)
+    message = str(raised.value)
+    assert "consumers.ToyRepo" in message
+    assert str(root / "nowhere/one") in message
+    assert str(Path("~/nowhere-two-mdept-test").expanduser()) in message
+
+
+def test_a_single_path_and_a_one_element_list_resolve_the_same(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    single = family_mod.read_consumers(root / "repos.yaml")["ToyRepo"]
+    assert single.path == root / "consumers/ToyRepo"
+    assert single.candidates == (root / "consumers/ToyRepo",)
+    list_toy_candidates(root, ["consumers/ToyRepo"])
+    assert family_mod.read_consumers(root / "repos.yaml")["ToyRepo"] == single
+
+
+def test_a_single_absent_path_names_no_other_candidate(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    list_toy_candidates(root, ["nowhere/ToyRepo"])
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    assert str(raised.value).endswith(
+        f"{root / 'nowhere/ToyRepo'} is listed but absent from disk; "
+        "a listed repo is required, never skipped"
+    )
+
+
+@pytest.mark.parametrize("value", [
+    "Listed: {path: []}",
+    "Listed: {path: 5}",
+    "Listed: {path: [consumers/ToyRepo, 5]}",
+    "Listed: {path: [consumers/ToyRepo, '']}",
+    "Listed: {path: {nested: mapping}}",
+    "Listed: 5",
+])
+def test_a_malformed_consumer_path_is_refused(value, tmp_path):
+    written = tmp_path / "repos.yaml"
+    written.write_text(f"consumers:\n  {value}\n", encoding="utf-8")
+    with pytest.raises(CheckError, match=r"I7 raised-by: .*field 'consumers\.Listed"):
+        parse.load_repos_yaml(written)
 
 
 # --- an archived consumer: the key resolves, nothing of it is read ----------
@@ -163,6 +232,7 @@ def test_an_archived_consumer_parses_without_a_path(tmp_path):
     written.write_text("consumers:\n" + SHELVED, encoding="utf-8")
     assert parse.load_repos_yaml(written)["consumers"]["Shelved"] == {
         "path": None,
+        "paths": [],
         "ignore": [],
         "view": "docs/MATH.md",
         "archived": "external drive, off-line",

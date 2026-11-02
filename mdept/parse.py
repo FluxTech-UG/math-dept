@@ -348,9 +348,12 @@ def load_repos_yaml(path: Path) -> dict:
 
     A consumer's value is either a bare path, a mapping `{path, ignore, view}`, or
     `{archived: <where>}` for a repo whose files are kept off-line. The bare form
-    means `{path: <it>, ignore: [], view: 'docs/MATH.md'}`. Every form comes back
-    normalized with all four keys (`archived` None for a repo on disk, `path` None
-    for an archived one), so no caller has to test which was written.
+    means `{path: <it>, ignore: [], view: 'docs/MATH.md'}`. The mapping's `path` is
+    one path or a non-empty list of candidate paths, tried in order where the
+    consumers are resolved (`family.read_consumers`). Every form comes back
+    normalized with the same five keys: `paths` the candidates in order, `path` the
+    first of them, `archived` None for a repo on disk, and for an archived one
+    `path` None and `paths` empty, so no caller has to test which was written.
     """
     path = Path(path)
     if not path.is_file():
@@ -394,11 +397,17 @@ def _consumer_entry(path: Path, name: str, value) -> dict:
                 f"I7 raised-by: {path}: field 'consumers.{name}': an archived consumer has no "
                 f"tree on disk, so it takes no {extra}"
             )
-        return {"path": None, "ignore": [], "view": DEFAULT_VIEW, "archived": where.strip()}
+        return {"path": None, "paths": [], "ignore": [], "view": DEFAULT_VIEW, "archived": where.strip()}
     if not value.get("path"):
         raise CheckError(
             f"I7 raised-by: {path}: field 'consumers.{name}.path': a consumer declares a path, "
             "or `archived` when its files are off-line"
+        )
+    candidates = value["path"] if isinstance(value["path"], list) else [value["path"]]
+    if not all(isinstance(candidate, str) and candidate for candidate in candidates):
+        raise CheckError(
+            f"I7 raised-by: {path}: field 'consumers.{name}.path': expected a path or a non-empty "
+            f"list of paths, got {value['path']!r}"
         )
     ignore = value.get("ignore") or []
     if not isinstance(ignore, list) or not all(isinstance(glob, str) for glob in ignore):
@@ -406,7 +415,8 @@ def _consumer_entry(path: Path, name: str, value) -> dict:
             f"I7 raised-by: {path}: field 'consumers.{name}.ignore': expected a list of glob strings"
         )
     return {
-        "path": str(value["path"]),
+        "path": candidates[0],
+        "paths": list(candidates),
         "ignore": [str(glob) for glob in ignore],
         "view": str(value.get("view") or DEFAULT_VIEW),
         "archived": None,
