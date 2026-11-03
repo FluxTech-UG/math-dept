@@ -157,7 +157,7 @@ now, and dated attempts live in the private `triage/` record.
 | `make lean` | `python -m mdept.audit all --json --write audit/latest.json` | after any Lean change, to refresh what `--lean` reads |
 | `make counterexamples` | `python -m mdept.refute --all` | to re-verify every witness |
 | `make test` | `python -m pytest -v` | before a milestone commit |
-| `make site` | `python -m mdept.site --repo . --out site` | to read the site locally; `site/` is gitignored and the `site` workflow publishes it to GitHub Pages on every push to `main` |
+| `make site` | `python -m mdept.site --repo . --out build/site` | to read the site locally; `build/site/` is gitignored and the `site` workflow publishes it to GitHub Pages on every push to `main` |
 | `make site-check` | `python -m mdept.site --repo . --check` | after editing an entry body or `mdept/site.py`, the site's part of `make check` alone |
 | `make figures` | `python -m mdept.figures --repo .` | after adding or changing a counterexample script that carries `--svg`; commit the redrawn `figures/` |
 | `python -m mdept.query "<question>"` | both ledgers ranked by words, the hits above the score floor as cards; `-k N` hits, `--exact` (substrings as typed), `--topic`, `--status`, `--consumer`, `--resolve MDR:...`, `--json`; one `MD_####` prints that entry's card | step 0 of the protocol, from any repo in the family |

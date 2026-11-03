@@ -162,7 +162,7 @@ never be the evidence that settles one.
 | `make lean` | `lake build`, then the axiom audit, cached to `audit/latest.json`. |
 | `make counterexamples` | Loads and verifies every script in `counterexamples/`. |
 | `make test` | The pytest suite, which is the one command that covers all guards. |
-| `make site` | Builds the reading site into `site/` (gitignored); the `site` workflow publishes it to GitHub Pages on every push to `main`. |
+| `make site` | Builds the reading site into `build/site/` (gitignored); the `site` workflow publishes it to GitHub Pages on every push to `main`. |
 | `make figures` | Redraws `figures/MD_####.svg` from every counterexample script that carries `--svg`; commit the result. |
 
 Underneath those:

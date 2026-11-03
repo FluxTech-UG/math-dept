@@ -31,10 +31,10 @@ test:
 all: regen check test
 
 # The reading site (mdept/site.py, settings in site.toml): one page per entry and an index.
-# `site/` is the local build and is gitignored; the `site` workflow publishes it to Pages.
+# `build/site/` is the local build and is gitignored; the `site` workflow publishes it to Pages.
 .PHONY: site site-check figures
 site:
-	python -m mdept.site --repo . --out site
+	python -m mdept.site --repo . --out build/site
 
 site-check:
 	python -m mdept.site --repo . --check

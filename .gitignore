@@ -8,14 +8,12 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .venv/
+# Also the reading site's local build (`make site` writes build/site/); GitHub Actions builds the published one
 build/
 dist/
 
 # Session scratch
 cc-logs/
-
-# The reading site's local build (`make site`); GitHub Actions builds the published one
-/site/
 
 # The user's global gitignore excludes `.claude/` wholesale. This repo's
 # committed settings and skills live there, and git cannot re-include a file

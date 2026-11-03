@@ -34,11 +34,11 @@ jobs:
 
       - run: pip install -e .
 
-      - run: python -m mdept.site --repo . --out site
+      - run: python -m mdept.site --repo . --out build/site
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: build/site
 
   deploy:
     needs: build

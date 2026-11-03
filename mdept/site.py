@@ -2,7 +2,7 @@
 
 Run:
 
-    python -m mdept.site --repo . --out site
+    python -m mdept.site --repo . --out build/site
     python -m mdept.site --repo . --check
 
 The ledger is written for the validator and for an agent that already knows an ID;
