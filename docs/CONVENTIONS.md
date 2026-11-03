@@ -192,8 +192,11 @@ itself generated in its first eight lines.
 ## Which invariant enforces which rule
 
 **Ledger shape.** I1 filename equals `id`, and the ID form; I2 IDs permanent, unique,
-contiguous across both repos; I3 closed key set, closed enums, ISO dates; I4 status
-matches its required evidence; I18 dates monotone, with `proven-informal` checked later
+contiguous across both repos; I3 closed key set, closed enums, ISO dates, and a non-empty
+`## In plain words` section on every entry that states the entry's own claim, so it names
+no other entry's ID near a status word or verb in one sentence (a refutation may be named)
+and, in a conjectured or open entry, carries no phrase about the work instead of the claim
+(the lists are in `mdept/schema.py`); I4 status matches its required evidence; I18 dates monotone, with `proven-informal` checked later
 than settled.
 
 **Evidence.** I5 formal pointer resolves and `statement_hash` freezes the statement; I6

@@ -30,13 +30,15 @@ BASES = ("good_public", "good_private")
 
 @dataclass(frozen=True)
 class Case:
-    """One deliberate break: which base, which modes, and the invariant it must raise."""
+    """One deliberate break: which base, which modes, the invariant it must raise, and,
+    where one invariant enforces several rules, the words that name the rule it breaks."""
 
     name: str
     base: str
     invariant: str
     modes: dict
     regen: bool = False
+    rule: str = ""
 
 
 PLAIN: dict = {}
@@ -48,6 +50,12 @@ CASES = [
     Case("I01_filename_id_mismatch", "good_public", "I1 filename", PLAIN),
     Case("I02_contiguity_gap", "good_private", "I2 permanence", FAMILY),
     Case("I03_unknown_status", "good_public", "I3 schema", PLAIN),
+    Case("I03_plain_words_missing", "good_public", "I3 schema", PLAIN,
+         rule="every entry carries a '## In plain words' section"),
+    Case("I03_plain_words_other_status", "good_private", "I3 schema", PLAIN,
+         rule="names the status of another entry"),
+    Case("I03_plain_words_stale_phrase", "good_public", "I3 schema", PLAIN,
+         rule="the stale phrase 'no attempt has been made'"),
     Case("I04_cited_without_source", "good_public", "I4 status/evidence", PLAIN),
     Case("I05_statement_hash_drift", "good_public", "I5 formal pointer", LEAN),
     Case("I06_witness_does_not_refute", "good_public", "I6 counterexample", COUNTEREXAMPLES),
@@ -316,6 +324,42 @@ def test_broken_case_raises_its_own_invariant(case, tmp_path):
     assert message.startswith(case.invariant), (
         f"{case.name} was designed to break {case.invariant} but raised: {message}"
     )
+    assert case.rule in message, f"{case.name} was designed to break {case.rule!r} but raised: {message}"
+
+
+def test_a_plain_words_section_may_name_another_entry_without_its_status(tmp_path):
+    """MD_0007's section names MD_0001 as its mirror, with no status word near it."""
+    root = stage(tmp_path) / "good_private"
+    plain = parse.body_sections((root / "ledger" / "MD_0007.md").read_text(encoding="utf-8"))
+    assert "MD_0001" in plain[schema.PLAIN_WORDS_HEADING], "the good case names another entry"
+    check.run(root, family=True)
+
+
+@pytest.mark.parametrize("text", [
+    "Unlike MD_0001, which is proven, this bound is strict.",
+    "This bound relies on MD_0001 for the base case.",
+    "The bound is proven-formal in MD_0001 and restated here.",
+])
+def test_the_other_status_rule_fires_on_each_form(text):
+    rules = [rule for rule, _ in schema.plain_words_problems("MD_0007", "proven-formal", text)]
+    assert rules == ["other-status"], text
+
+
+@pytest.mark.parametrize("text", [
+    "MD_0001 was refuted by a small witness, and this bound is the corrected form.",
+    "MD_0001 gives the base case, and the induction that follows carries the bound across every open step.",
+    "MD_0007 is proven here, by induction on the naturals.",
+    "The bound is the mirror of MD_0001. This entry is proven by induction.",
+])
+def test_the_other_status_rule_passes_a_refutation_a_distant_word_the_own_id_and_the_next_sentence(text):
+    assert schema.plain_words_problems("MD_0007", "proven-formal", text) == []
+
+
+def test_the_stale_phrase_rule_reads_only_unsettled_entries():
+    text = "This bound is already settled in the source, so the first draft stands."
+    assert [r for r, _ in schema.plain_words_problems("MD_0004", "conjectured", text)] == [
+        "stale-phrase", "stale-phrase"]
+    assert schema.plain_words_problems("MD_0004", "proven-informal", text) == []
 
 
 def test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path):

@@ -337,12 +337,18 @@ def i3_schema(ctx: Context) -> None:
                 fail("I3 schema", ctx.rel(entry.path), "<body>",
                      f"missing the '## {required}' section; the four sections are {list(schema.BODY_HEADINGS)}")
         plain = entry.sections().get(schema.PLAIN_WORDS_HEADING)
-        if plain is not None and not plain.strip():
+        if plain is None:
+            if config.REQUIRE_PLAIN_WORDS:
+                fail("I3 schema", ctx.rel(entry.path), "<body>",
+                     f"every entry carries a '## {schema.PLAIN_WORDS_HEADING}' section stating its own claim "
+                     f"(config.REQUIRE_PLAIN_WORDS)")
+            continue
+        if not plain.strip():
             fail("I3 schema", ctx.rel(entry.path), "<body>",
                  f"the '## {schema.PLAIN_WORDS_HEADING}' section is present but empty")
-        if plain is None and config.REQUIRE_PLAIN_WORDS and entry.status in schema.SETTLED_STATUSES:
-            fail("I3 schema", ctx.rel(entry.path), "<body>",
-                 f"a settled entry carries a '## {schema.PLAIN_WORDS_HEADING}' section (config.REQUIRE_PLAIN_WORDS)")
+        problems = schema.plain_words_problems(entry.id, entry.status, plain)
+        if problems:
+            fail("I3 schema", ctx.rel(entry.path), f"## {schema.PLAIN_WORDS_HEADING}", problems[0][1])
 
 
 # --- I4 status and evidence -------------------------------------------------

@@ -157,7 +157,7 @@ def lean_roots(root: Path) -> list[Path]:
     root = Path(root)
     return sorted(p for p in root.glob("MathDept*") if p.is_dir())
 
-#: Whether I3 requires the `## In plain words` section on every settled entry. Off while the
-#: backfill of 3 November 2026 writes the section into the existing entries; the lead flips it on
-#: once every settled entry in both repos carries one.
-REQUIRE_PLAIN_WORDS = False
+#: Whether I3 requires the `## In plain words` section on every entry, whatever its status. The
+#: section states the entry's own claim in plain words; `schema.plain_words_problems` holds the rules
+#: on its text.
+REQUIRE_PLAIN_WORDS = True

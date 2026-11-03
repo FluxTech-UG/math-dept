@@ -31,7 +31,7 @@ provenance:
 cited_by: []                   # "Repo:path/to/doc.md §n"; the doc must literally contain this ID
 aka: []                        # 1 to 5 informal names, at most 6 words each, no LaTeX (the reading and search layers)
 phrasings: []                  # 3 to 8 questions or sentences a consumer would type, at most 25 words each, no LaTeX
-plain_words_checked: null      # YYYY-MM-DD once John (or a reviewer he names) cleared the In plain words section
+plain_words_checked: null      # YYYY-MM-DD once John (or a reviewer he names) cleared the In plain words section, which every entry carries
 revises: null
 merged_into: null
 statement_hash: null           # sha256 of the audit's pretty-printed Lean type, once formal.decl exists
@@ -49,9 +49,15 @@ Every quantifier explicit. Every symbol defined here or in Hypotheses.
 
 ## In plain words
 
-One to two paragraphs for a reader who will not read the Statement: the special case first, then what
-the result decides for the consumer that raised it. Written at settle by a context that read the proof
-but did not write it; `plain_words_checked` stays null, and the page shows "unreviewed", until John clears it.
+Required on every entry, whatever its status (I3). One to two paragraphs stating this entry's own claim
+for a reader who will not read the Statement: the special case first, then what the result decides for
+the consumer that raised it. Rewritten at settle by a context that read the proof but did not write it;
+`plain_words_checked` stays null, and the page shows "unreviewed", until John clears it. I3 refuses:
+
+- another entry's status: its ID near a status word or verb in one sentence ("MD_0007, which is proven"),
+  which goes stale; a refutation may be named (`PLAIN_WORDS_STATUS_TERMS` in `mdept/schema.py`);
+- in a conjectured or open entry, a phrase about the work instead of the claim ("first draft", "no attempt
+  has been made"; `PLAIN_WORDS_STALE_PHRASES`).
 
 ## Why it was raised
 

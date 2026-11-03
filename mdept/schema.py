@@ -205,6 +205,71 @@ def citation_words(status: str) -> tuple[str, ...]:
     return CITATION_WORDS.get(status, ())
 
 
+# --- the In plain words section (I3) ------------------------------------------
+
+#: The section states the entry's own claim. Another entry's status goes stale the day that
+#: entry settles, so I3 refuses a status term within `PLAIN_WORDS_STATUS_WINDOW` words of another
+#: entry's ID in the same sentence. A refutation is permanent, so naming one never goes stale and
+#: is allowed.
+PLAIN_WORDS_PERMANENT_STATUSES = ("refuted",)
+#: How a status is spoken in prose, and the verbs that report one.
+PLAIN_WORDS_SPOKEN_STATUSES = ("proven informally", "proven formally", "proven in Lean", "settled", "pending")
+PLAIN_WORDS_STATUS_VERBS = ("proves", "proved", "proven", "settles", "settled", "rely on", "relies on")
+PLAIN_WORDS_STATUS_TERMS = tuple(dict.fromkeys(
+    [s for s in STATUSES if s not in PLAIN_WORDS_PERMANENT_STATUSES]
+    + list(PLAIN_WORDS_SPOKEN_STATUSES) + list(PLAIN_WORDS_STATUS_VERBS)))
+PLAIN_WORDS_STATUS_WINDOW = 6
+#: Phrases that report the work on an unsettled entry instead of its claim; each goes stale the
+#: day the entry settles, so I3 refuses them in a conjectured or open entry's section.
+PLAIN_WORDS_STALE_PHRASES = ("already settled", "already proved", "status waits", "status change",
+                             "fresh review", "first draft", "no attempt has been made", "no ladder stage")
+
+_SENTENCE_END_RE = re.compile(r"(?<=[.!?])\s+")
+#: Stripped from both ends of a word before it is compared; a hyphen inside a word stays, so a
+#: hyphenated form (`proven-formal`) is one word.
+_WORD_EDGES = ".,;:!?()[]{}\"'`*_$<>"
+
+
+def plain_words_problems(entry_id: str, status: str, text: str) -> list[tuple[str, str]]:
+    """Each way an entry's `## In plain words` text breaks I3, as (rule, message), in text order.
+
+    `other-status`: an ID other than `entry_id` within `PLAIN_WORDS_STATUS_WINDOW` words either
+    side of a term of `PLAIN_WORDS_STATUS_TERMS` in the same sentence (a multi-word term spans its
+    words), one problem per ID occurrence. The window stops at the sentence end, because the next
+    sentence's status term is the entry's own ("This entry proves ..."). `stale-phrase`: in an
+    entry whose status is unsettled, a phrase of `PLAIN_WORDS_STALE_PHRASES`, case-insensitive.
+    Each message quotes the offending sentence.
+    """
+    problems = []
+    for sentence in _SENTENCE_END_RE.split(" ".join(text.split())):
+        raws = sentence.split()
+        words = [raw.strip(_WORD_EDGES).lower() for raw in raws]
+        spans = []
+        for term in PLAIN_WORDS_STATUS_TERMS:
+            parts = term.lower().split()
+            spans.extend((start, start + len(parts) - 1, term) for start in range(len(words) - len(parts) + 1)
+                         if words[start:start + len(parts)] == parts)
+        spans.sort()
+        for position, raw in enumerate(raws):
+            for other in (found for found in ID_TOKEN_RE.findall(raw) if found != entry_id):
+                near = next((term for start, end, term in spans
+                             if start - PLAIN_WORDS_STATUS_WINDOW <= position <= end + PLAIN_WORDS_STATUS_WINDOW),
+                            None)
+                if near is not None:
+                    problems.append(("other-status",
+                                     f"names the status of another entry ({other} within "
+                                     f"{PLAIN_WORDS_STATUS_WINDOW} words of {near!r}); the section states "
+                                     f"this entry's own claim: {sentence!r}"))
+        if status in UNSETTLED_STATUSES:
+            for phrase in PLAIN_WORDS_STALE_PHRASES:
+                pattern = r"\b" + r"\s+".join(re.escape(part) for part in phrase.split())
+                if re.search(pattern, sentence, re.IGNORECASE):
+                    problems.append(("stale-phrase",
+                                     f"a {status} entry carries the stale phrase {phrase!r}, which reports the "
+                                     f"work on the entry instead of its claim: {sentence!r}"))
+    return problems
+
+
 def _fail(path: Path, field: str, message: str) -> None:
     raise CheckError(f"I3 schema: {path}: field '{field}': {message}")
 

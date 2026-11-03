@@ -96,6 +96,10 @@ def render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str:
             "",
             hypotheses,
             "",
+            f"## {schema.PLAIN_WORDS_HEADING}",
+            "",
+            "...",
+            "",
             "## Why it was raised",
             "",
             why,
@@ -315,7 +319,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     print(f"ok {entry_id} {path} (anchor form: {anchor_form})")
-    print("next: write the Statement and Hypotheses, then `make regen && make check`")
+    print(f"next: write the Statement, the Hypotheses and {schema.PLAIN_WORDS_HEADING}, "
+          "then `make regen && make check`")
     return 0
 
 
