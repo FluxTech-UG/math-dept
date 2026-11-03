@@ -332,34 +332,34 @@ _Ledger invariants I1 to I21._
 - i7_raised_by(ctx: Context) -> None  ·L491: Every anchor is a form of the grammar, and resolves to one place.
 - _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L510
 - _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L549
-- i8_links(ctx: Context) -> None  ·L564
-- const _IMPLIED_BY  ·L587
-- const _IMPLIES  ·L588
-- const _ESTABLISHED  ·L589
-- i9a_no_contradiction(ctx: Context) -> None  ·L592: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
-- i9b_inheritance_notice(ctx: Context) -> None  ·L617: The one informational check. Its notices are section 7 of the generated index.
-- i10_cited_sources(ctx: Context) -> None  ·L627
-- i11_tag_sync(ctx: Context) -> None  ·L654
-- i12_dangling_references(ctx: Context) -> None  ·L682
-- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L703
-- reference_surfaces(root: Path) -> list[Path]  ·L710: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside.
-- i13_inbox(ctx: Context) -> None  ·L725
-- i14_request_backlinks(ctx: Context) -> None  ·L762
-- const WRAP_WINDOW  ·L796
-- citation_text(lines: list[str], index: int, token: str) -> str  ·L799: The text that must carry `token`'s status word for its citation on `lines[index]`.
-- i15_consumer_citations(ctx: Context) -> None  ·L813: Every line of a listed file that names an entry carries its status word.
-- i16_generated_views(ctx: Context) -> None  ·L876
-- i17_prose(ctx: Context) -> None  ·L896
-- i18_dates(ctx: Context) -> None  ·L910
-- i19_attempt_records(ctx: Context) -> None  ·L929
-- i20_sorry_fence(ctx: Context) -> None  ·L960
-- i21_unlisted_citations(ctx: Context) -> None  ·L972: Every entry mention in a listed consumer appears in that entry's `cited_by`.
-- const INVARIANTS  ·L1024
-- bibliography_path(root: Path, kind: str) -> Path  ·L1050: The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1070
-- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1119: Narrow the context to the named entries, refusing the modes that read the whole tree.
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1143: Run every invariant in order; `CheckError` names the first failing invariant.
-- main(argv: list[str] | None=None) -> int  ·L1159
+- i8_links(ctx: Context) -> None  ·L566
+- const _IMPLIED_BY  ·L589
+- const _IMPLIES  ·L590
+- const _ESTABLISHED  ·L591
+- i9a_no_contradiction(ctx: Context) -> None  ·L594: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
+- i9b_inheritance_notice(ctx: Context) -> None  ·L619: The one informational check. Its notices are section 7 of the generated index.
+- i10_cited_sources(ctx: Context) -> None  ·L629
+- i11_tag_sync(ctx: Context) -> None  ·L656
+- i12_dangling_references(ctx: Context) -> None  ·L684
+- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L705
+- reference_surfaces(root: Path) -> list[Path]  ·L712: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside.
+- i13_inbox(ctx: Context) -> None  ·L727
+- i14_request_backlinks(ctx: Context) -> None  ·L764
+- const WRAP_WINDOW  ·L798
+- citation_text(lines: list[str], index: int, token: str) -> str  ·L801: The text that must carry `token`'s status word for its citation on `lines[index]`.
+- i15_consumer_citations(ctx: Context) -> None  ·L815: Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L878
+- i17_prose(ctx: Context) -> None  ·L898
+- i18_dates(ctx: Context) -> None  ·L912
+- i19_attempt_records(ctx: Context) -> None  ·L931
+- i20_sorry_fence(ctx: Context) -> None  ·L962
+- i21_unlisted_citations(ctx: Context) -> None  ·L974: Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- const INVARIANTS  ·L1026
+- bibliography_path(root: Path, kind: str) -> Path  ·L1052: The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1072
+- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1121: Narrow the context to the named entries, refusing the modes that read the whole tree.
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1145: Run every invariant in order; `CheckError` names the first failing invariant.
+- main(argv: list[str] | None=None) -> int  ·L1161
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -388,41 +388,41 @@ _The family this package reads: both ledgers, the inbox, and the listed consumer
 - const _COMMENT_OPEN_RE  ·L45
 - marker_line(line: str) -> str  ·L48: A line with its comment opener and markdown markup stripped, lower-cased.
 - @dataclass class Consumer  ·L58: One repo listed in `repos.yaml`: where it is, what to skip, where its view goes.
-  - @property view_path(self) -> Path  ·L72
-  - ignored(self, rel: str) -> bool  ·L75: True when this repo-relative path matches one of the consumer's globs.
-  - files(self) -> list[Path]  ·L84: Every file this repo owns, sorted, as one scannable surface.
-  - _git_toplevel(self) -> Path | None  ·L104: The checkout root git reports for this path, or None when it is not in one.
-  - _git_files(self) -> list[Path] | None  ·L118: Tracked plus untracked-but-not-ignored files, or None when not a checkout root.
-  - _walk_files(self) -> list[Path]  ·L150: The on-disk walk, for a consumer path that is not a git checkout root.
-  - rel(self, path: Path) -> str  ·L165
-  - text(self, path: Path) -> str | None  ·L168: The file's text, or None when it is not a readable text file at all.
-  - is_generated(self, path: Path, text: str | None=None) -> bool  ·L195: True when one of the file's opening lines declares it generated.
-- @dataclass class Repo  ·L208: One math repo: its root, its kind, and its two markdown surfaces.
-  - @property private(self) -> bool  ·L217
-  - entries(self) -> list  ·L220
-  - requests(self) -> list  ·L225
-- const HELD  ·L235
-- resolver(private: bool, own: dict, both)  ·L238: The one rule for what an ID names, as a repo's links and mentions see it.
-- held(private: bool, resolve, entry_id: str) -> bool  ·L253: True when the public repo reads `entry_id` as unreleased, held in the private ledger.
-- const _UNRESOLVED  ·L267
-- @dataclass class Family  ·L271: Both ledgers and the consumers, as one read surface, resolved on demand.
-  - @property other(self) -> Repo | None  ·L279: The ledger this family was not located from, resolved on first ask.
-  - @property public(self) -> Repo | None  ·L291
-  - @property private(self) -> Repo | None  ·L295
-  - @property repos_yaml(self) -> Path | None  ·L299: The consumer map, which lives in the private repo, or None.
-  - @property consumers(self) -> dict  ·L308: Name to Consumer, parsed from `repos.yaml` on first ask.
-  - ledgers(self) -> list[Repo]  ·L315
-  - entries(self) -> list  ·L318: Every entry in the family, public first within an ID, sorted by ID.
-  - by_id(self) -> dict  ·L322
-  - requests(self) -> list  ·L325
-  - repo_at(self, root: Path) -> Repo  ·L328: The Repo object for this root, whichever side of the family it is.
-  - sibling_of(self, root: Path) -> Path | None  ·L343: The other ledger's root, seen from this one.
-  - consumer(self, name: str) -> Consumer  ·L353: One listed consumer, or a failure that names the ones there are.
-- locate(root: Path | str | None=None) -> Family  ·L372: The family, as paths only: nothing is read off disk yet.
-- load_family(root: Path | str | None=None) -> Family  ·L391: `locate`, with both ledgers and the inbox read now rather than later.
-- read_consumers(repos_yaml: Path) -> dict  ·L405: `repos.yaml` consumers as name to Consumer, paths resolved against the repo.
-- require_private(family: Family, what: str) -> Repo  ·L425: The private repo, or a failure that says what needed it.
-- request_by_stem(family: Family, stem: str)  ·L435: One request from the inbox, by its filename stem.
+  - @property view_path(self) -> Path  ·L75
+  - ignored(self, rel: str) -> bool  ·L78: True when this repo-relative path matches one of the consumer's globs.
+  - files(self) -> list[Path]  ·L87: Every file this repo owns, sorted, as one scannable surface.
+  - _git_toplevel(self) -> Path | None  ·L107: The checkout root git reports for this path, or None when it is not in one.
+  - _git_files(self) -> list[Path] | None  ·L121: Tracked plus untracked-but-not-ignored files, or None when not a checkout root.
+  - _walk_files(self) -> list[Path]  ·L153: The on-disk walk, for a consumer path that is not a git checkout root.
+  - rel(self, path: Path) -> str  ·L168
+  - text(self, path: Path) -> str | None  ·L171: The file's text, or None when it is not a readable text file at all.
+  - is_generated(self, path: Path, text: str | None=None) -> bool  ·L198: True when one of the file's opening lines declares it generated.
+- @dataclass class Repo  ·L211: One math repo: its root, its kind, and its two markdown surfaces.
+  - @property private(self) -> bool  ·L220
+  - entries(self) -> list  ·L223
+  - requests(self) -> list  ·L228
+- const HELD  ·L238
+- resolver(private: bool, own: dict, both)  ·L241: The one rule for what an ID names, as a repo's links and mentions see it.
+- held(private: bool, resolve, entry_id: str) -> bool  ·L256: True when the public repo reads `entry_id` as unreleased, held in the private ledger.
+- const _UNRESOLVED  ·L270
+- @dataclass class Family  ·L274: Both ledgers and the consumers, as one read surface, resolved on demand.
+  - @property other(self) -> Repo | None  ·L282: The ledger this family was not located from, resolved on first ask.
+  - @property public(self) -> Repo | None  ·L294
+  - @property private(self) -> Repo | None  ·L298
+  - @property repos_yaml(self) -> Path | None  ·L302: The consumer map, which lives in the private repo, or None.
+  - @property consumers(self) -> dict  ·L311: Name to Consumer, parsed from `repos.yaml` on first ask.
+  - ledgers(self) -> list[Repo]  ·L318
+  - entries(self) -> list  ·L321: Every entry in the family, public first within an ID, sorted by ID.
+  - by_id(self) -> dict  ·L325
+  - requests(self) -> list  ·L328
+  - repo_at(self, root: Path) -> Repo  ·L331: The Repo object for this root, whichever side of the family it is.
+  - sibling_of(self, root: Path) -> Path | None  ·L346: The other ledger's root, seen from this one.
+  - consumer(self, name: str) -> Consumer  ·L356: One listed consumer, or a failure that names the ones there are.
+- locate(root: Path | str | None=None) -> Family  ·L375: The family, as paths only: nothing is read off disk yet.
+- load_family(root: Path | str | None=None) -> Family  ·L394: `locate`, with both ledgers and the inbox read now rather than later.
+- read_consumers(repos_yaml: Path) -> dict  ·L408: `repos.yaml` consumers as name to Consumer, paths resolved against the repo.
+- require_private(family: Family, what: str) -> Repo  ·L438: The private repo, or a failure that says what needed it.
+- request_by_stem(family: Family, stem: str)  ·L448: One request from the inbox, by its filename stem.
 
 ### mdept/index.py
 _The generated views: `ledger/INDEX.md` and `ledger.json`._
@@ -520,7 +520,7 @@ _Read the markdown surfaces: ledger entries, bibliography, requests, role lines.
 - request_stem_tokens(text: str) -> list[tuple[int, str, str | None]]  ·L313: Every MDR: token with its line and candidate, the candidate optional.
 - parse_role_line(path: Path) -> tuple[str, str]  ·L329: Return (role, status date) from line 2 of a doc. Raises when it is absent.
 - load_repos_yaml(path: Path) -> dict  ·L346: Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
-- _consumer_entry(path: Path, name: str, value) -> dict  ·L373
+- _consumer_entry(path: Path, name: str, value) -> dict  ·L376
 
 ### mdept/query.py
 _Search both ledgers, and resolve a request token, from anywhere in the family._
@@ -814,48 +814,54 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_good_private_passes_family(tmp_path)  ·L106
 - test_the_family_check_reads_the_extended_consumer_form(tmp_path)  ·L117: `repos.yaml` carries `{path, ignore, view}` for ToyRepo, and both hold.
 - test_a_bare_consumer_path_still_means_the_default_view(tmp_path)  ·L133
-- const SHELVED  ·L147
-- archive_a_consumer(root: Path) -> None  ·L150: List `Shelved` as archived, and let MD_0007 be raised there with its anchor kept.
-- test_an_archived_consumer_parses_without_a_path(tmp_path)  ·L161
-- @pytest.mark.parametrize test_an_archived_consumer_takes_only_where_it_is_kept(value, tmp_path)  ·L178
-- test_the_family_check_resolves_an_archived_key_and_reads_nothing_of_it(tmp_path)  ·L185: MD_0007 is raised by an archived repo, with a doc and an anchor that exist nowhere.
-- test_a_citation_naming_an_archived_consumer_fails_i15(tmp_path)  ·L199
-- test_a_view_of_an_archived_consumer_is_refused(tmp_path)  ·L212
-- test_every_invariant_has_a_case()  ·L221
-- test_the_invariant_list_is_the_one_that_runs()  ·L229
-- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L237
-- test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path)  ·L250: A settled entry stripped of every evidence row, with no formal pointer, fails on the
-- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L266
-- test_template_front_matter_validates()  ·L278
-- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L286
-- test_new_never_reuses_an_id(tmp_path)  ·L307
-- _stage_wrapped_request(tmp_path: Path) -> Path  ·L316: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
-- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L324
-- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L332
-- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L339
-- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L349: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
-- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L363: The variable promised a repo, so the variable is what the message names.
-- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L381
-- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L400
-- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L404
-- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L409: The fixture cites `research/toy notes.md`, whose name contains a space.
-- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L422: A consumer checkout is scanned through git, and every violation is listed.
-- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L451: MD_0006 is cited from two files in ToyRepo and is one row, not two.
-- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L465: Two citing lines without their status word fail together, one line each.
-- const TOY_PARAGRAPH  ·L484
-- _rewrite_toy(root: Path, paragraph: str) -> None  ·L488
-- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L495: An ID in a line's last characters carries its status word at the next line's start.
-- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L504
-- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L515
-- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L527
-- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L533: MD_0001 carries an orphan artifact; MD_0003 is clean.
-- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L545
-- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L552: A half-built Result of MD_0001 and a stale index fail only the full run.
-- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L572
-- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L578
-- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L587
-- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L597
-- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L608
+- list_toy_candidates(root: Path, candidates: list[str]) -> None  ·L148: Rewrite the fixture's `path: consumers/ToyRepo` as a list of candidates.
+- test_the_first_candidate_on_disk_is_the_consumer_path(tmp_path)  ·L158
+- test_a_list_with_no_candidate_on_disk_fails_naming_every_candidate(tmp_path)  ·L167
+- test_a_single_path_and_a_one_element_list_resolve_the_same(tmp_path)  ·L178
+- test_a_single_absent_path_names_no_other_candidate(tmp_path)  ·L187
+- @pytest.mark.parametrize test_a_malformed_consumer_path_is_refused(value, tmp_path)  ·L206
+- const SHELVED  ·L216
+- archive_a_consumer(root: Path) -> None  ·L219: List `Shelved` as archived, and let MD_0007 be raised there with its anchor kept.
+- test_an_archived_consumer_parses_without_a_path(tmp_path)  ·L230
+- @pytest.mark.parametrize test_an_archived_consumer_takes_only_where_it_is_kept(value, tmp_path)  ·L248
+- test_the_family_check_resolves_an_archived_key_and_reads_nothing_of_it(tmp_path)  ·L255: MD_0007 is raised by an archived repo, with a doc and an anchor that exist nowhere.
+- test_a_citation_naming_an_archived_consumer_fails_i15(tmp_path)  ·L269
+- test_a_view_of_an_archived_consumer_is_refused(tmp_path)  ·L282
+- test_every_invariant_has_a_case()  ·L291
+- test_the_invariant_list_is_the_one_that_runs()  ·L299
+- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L307
+- test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path)  ·L320: A settled entry stripped of every evidence row, with no formal pointer, fails on the
+- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L336
+- test_template_front_matter_validates()  ·L348
+- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L356
+- test_new_never_reuses_an_id(tmp_path)  ·L377
+- _stage_wrapped_request(tmp_path: Path) -> Path  ·L386: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
+- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L394
+- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L402
+- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L409
+- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L419: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
+- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L433: The variable promised a repo, so the variable is what the message names.
+- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L451
+- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L470
+- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L474
+- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L479: The fixture cites `research/toy notes.md`, whose name contains a space.
+- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L492: A consumer checkout is scanned through git, and every violation is listed.
+- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L521: MD_0006 is cited from two files in ToyRepo and is one row, not two.
+- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L535: Two citing lines without their status word fail together, one line each.
+- const TOY_PARAGRAPH  ·L554
+- _rewrite_toy(root: Path, paragraph: str) -> None  ·L558
+- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L565: An ID in a line's last characters carries its status word at the next line's start.
+- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L574
+- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L585
+- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L597
+- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L603: MD_0001 carries an orphan artifact; MD_0003 is clean.
+- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L615
+- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L622: A half-built Result of MD_0001 and a stale index fail only the full run.
+- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L642
+- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L648
+- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L657
+- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L667
+- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L678
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._

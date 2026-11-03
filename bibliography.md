@@ -31,6 +31,7 @@ another.
 | Memory and conditioning in regulatory network models | Simulation surveys of memory types (UCS-based, pairing, transfer, associative, consolidation) under stimulus-clamp training protocols, in Boolean gene regulatory networks and in ODE pathway models, against random networks | input-driven dynamical systems, attractors and basins, Boolean networks | `BiswasManickaHoelLevin2021`, `BiswasClawsonLevin2022` |
 | Physiological adaptation in regeneration | Experimental record of planarians regenerating a head insensitive to a potassium-channel blocker, its time course, its loss in water, and the transcriptional and pharmacological data behind it | membrane-potential models, ion-channel conductances, regulatory network memory | `EmmonsBell2019` |
 | Averaging and slow-fast systems | First-order averaging over one fast angle with angle-dependent frequency on the time scale 1/epsilon; averaged slow drift along a normally hyperbolic manifold of periodic orbits, generalising the Pontryagin-Rodygin theorem | Gronwall estimates, near-identity transformations, Floquet theory, invariant manifolds | `SandersVerhulstMurdock2007`, `RinkVoWechselberger2025` |
+| Scalar conservation laws and entropy solutions | The entropy-inequality definition of a bounded generalized solution, L^1 stability on characteristic cones, uniqueness, and existence as the almost-everywhere limit of vanishing viscosity; the L^1 error of the viscosity method of order the square root of viscosity times time, times the total variation of the data | Burgers equation, parabolic regularization, functions of bounded variation, L^1 contraction | `Kruzhkov1970`, `Kuznetsov1976` |
 
 ## Entries
 
@@ -220,4 +221,20 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** averaged slow drift along a normally hyperbolic manifold of periodic orbits, O(epsilon) on the time scale 1/epsilon
 - **Mathlib:** `dist_le_of_approx_trajectories_ODE` (v4.33.1); normally hyperbolic manifolds, Floquet theory, averaging: none found, searched 2026-10-25
+- **Ledger:** none yet
+
+### [Kruzhkov1970] First order quasilinear equations in several independent variables
+- **Authors:** Kruzhkov, S. N.
+- **Source:** Mat. Sb. 81(123):2, 228-255 (1970); English translation Math. USSR-Sbornik 10:2, 217-243 (1970). DOI 10.1070/SM1970v010n02ABEH002156. §2 Def. 1 (2.1), (2.2); §3 Thm 1 (3.1), (3.15), Thm 2; §4 conditions 1)-4), (4.6), (4.22), Thm 4, Thm 5; §5 remark 4°. Copy read: the English translation, https://www.mathnet.ru/eng/sm3372
+- **Kind:** paper
+- **Used for:** existence, uniqueness and L^1 stability of bounded entropy solutions of a scalar conservation law, existence obtained as the vanishing-viscosity limit
+- **Mathlib:** `MeasureTheory.tendsto_integral_of_dominated_convergence` (v4.33.1); entropy solutions, conservation laws, vanishing viscosity: none found, searched 2026-11-03
+- **Ledger:** none yet
+
+### [Kuznetsov1976] Accuracy of some approximate methods for computing the weak solutions of a first-order quasi-linear equation
+- **Authors:** Kuznetsov, N. N.
+- **Source:** Zh. Vychisl. Mat. Mat. Fiz. 16:6, 1489-1502 (1976); English translation USSR Comput. Math. Math. Phys. 16:6, 105-119 (1976). DOI 10.1016/0041-5553(76)90046-X. §1 (2), (3), (7); §2 Lemma 2 (9), Thm 3 (11). Copy read: the Russian original, https://www.mathnet.ru/eng/zvmmf6040; the English translation not read
+- **Kind:** paper
+- **Used for:** L^1 error of the vanishing-viscosity approximation of a scalar conservation law, of order the square root of viscosity times time, times the total variation of the data
+- **Mathlib:** `eVariationOn`, `BoundedVariationOn` (v4.33.1); entropy solutions and their error estimates: none found, searched 2026-11-03
 - **Ledger:** none yet
