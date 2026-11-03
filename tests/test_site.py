@@ -160,9 +160,37 @@ def test_every_page_carries_the_prefilled_private_issue_link(family, tmp_path):
         assert "labels=comment" in page and "body=Entry%3A%20MD_0001" in page
 
 
+def test_the_public_build_names_citing_repos_only_and_drops_the_request(family, tmp_path):
+    """A consumer's document path, its anchor and the request token stay in the private view."""
+    entry = family / "good_public/ledger/MD_0001.md"
+    edit(entry, "cited_by: []", "cited_by: ['Repo:docs/a.md §2', 'Repo:docs/b.md §3']")
+    edit(entry, "request: null", "request: 'MDR:2026-09-04-three-basin#C1'")
+    public = (build(family / "good_public", tmp_path, name="pub") / "MD_0001.html").read_text(encoding="utf-8")
+    private = (build(family / "good_private", tmp_path, name="priv") / "MD_0001.html").read_text(encoding="utf-8")
+    for detail in ("docs/a.md", "§2", "MDR:2026-09-04-three-basin#C1"):
+        assert detail not in public, detail
+        assert detail in private, detail
+    assert public.count("<li><code>Repo</code></li>") == 1
+
+
+def test_a_merged_entry_shows_where_it_merged_instead_of_empty_provenance(family, tmp_path):
+    """`merged` may omit raised_by and stipulated_by (the schema); the page points at the survivor."""
+    entry = family / "good_public/ledger/MD_0003.md"
+    edit(entry, "status: cited", "status: merged")
+    edit(entry, "merged_into: null", "merged_into: MD_0001")
+    edit(entry, "  raised_by:\n    repo: math-dept\n    domain: the toy source's own setting\n"
+         "    doc: null\n    anchor: null\n    application: null\n", "  raised_by: null\n")
+    edit(entry, "  stipulated_by:\n    who: claude\n    date: 2026-09-01\n    model: null\n    request: null\n",
+         "  stipulated_by: null\n")
+    page = (build(family / "good_public", tmp_path) / "MD_0003.html").read_text(encoding="utf-8")
+    assert "raised by</dt><dd>None" not in page and "<dt>stipulated</dt>" not in page
+    assert 'Merged into <a class="idref" href="MD_0001.html">MD_0001</a>' in page
+
+
 def test_giscus_waits_for_its_values(family, tmp_path):
     page = (build(family / "good_public", tmp_path) / "MD_0001.html").read_text(encoding="utf-8")
-    assert "Public discussion opens when the site is published." in page and "giscus.app" not in page
+    assert "Public discussion is not open yet." in page and "giscus.app" not in page
+    assert "when the site is published" not in page
 
 
 def test_giscus_appears_once_filled_and_on_the_public_build_only(family, tmp_path):
@@ -238,3 +266,19 @@ def test_this_repo_builds_clean(capsys):
     """The `make check` line: every entry of this ledger renders, with the committed settings."""
     assert site.main(["--repo", str(REPO_ROOT), "--check"]) == 0
     assert "[public build]" in capsys.readouterr().out
+
+
+def test_the_conventions_make_check_row_names_every_recipe_line():
+    """docs/CONVENTIONS.md's `make check` row lists every line the Makefile's `check:` target runs."""
+    makefile = (REPO_ROOT / "Makefile").read_text(encoding="utf-8").splitlines()
+    recipe = []
+    for line in makefile[makefile.index("check:") + 1:]:
+        if not line.startswith("\t"):
+            break
+        recipe.append(line.strip())
+    assert recipe, "the Makefile's check: target runs nothing"
+    conventions = (REPO_ROOT / "docs/CONVENTIONS.md").read_text(encoding="utf-8").splitlines()
+    rows = [line for line in conventions if line.startswith("| `make check` |")]
+    assert len(rows) == 1, f"docs/CONVENTIONS.md has {len(rows)} `make check` rows, not one"
+    missing = [command for command in recipe if f"`{command}`" not in rows[0]]
+    assert not missing, f"docs/CONVENTIONS.md's `make check` row lacks {missing}"

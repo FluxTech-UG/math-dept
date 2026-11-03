@@ -442,17 +442,17 @@ _The family this package reads: both ledgers, the inbox, and the listed consumer
 
 ### mdept/figures.py
 _Draw the entry figures, `figures/MD_####.svg`, from the counterexample scripts that can._
-- const FIGURE_FLAG  ·L38
-- const FIGURES_DIR  ·L39
-- const COUNTEREXAMPLES_DIR  ·L40
-- const TIMEOUT_S  ·L42
-- const FIGURE_SIZE  ·L44
-- drawing_scripts(root: Path) -> dict[str, Path]  ·L47: Entry ID to the one script under `counterexamples/` whose text carries `--svg`.
-- figure_path(root: Path, entry_id: str) -> Path  ·L67
-- _script_env() -> dict  ·L71: The environment a drawing script runs in: this `mdept` first on its import path.
-- draw_all(root: Path, timeout: float=TIMEOUT_S) -> list[dict]  ·L83: Run every drawing script; one record per script: id, script, ok, and what went wrong.
-- svg_main(draw, argv: list[str] | None=None) -> None  ·L116: The `__main__` body of a counterexample script that draws its witness.
-- main(argv: list[str] | None=None) -> int  ·L142
+- const FIGURE_FLAG  ·L39
+- const FIGURES_DIR  ·L40
+- const COUNTEREXAMPLES_DIR  ·L41
+- const TIMEOUT_S  ·L43
+- const FIGURE_SIZE  ·L45
+- drawing_scripts(root: Path) -> dict[str, Path]  ·L48: Entry ID to the one script under `counterexamples/` whose text carries `--svg`.
+- figure_path(root: Path, entry_id: str) -> Path  ·L68
+- _script_env() -> dict  ·L72: The environment a drawing script runs in: this `mdept` first on its import path.
+- draw_all(root: Path, timeout: float=TIMEOUT_S) -> list[dict]  ·L84: Run every drawing script; one record per script: id, script, ok, and what went wrong.
+- svg_main(draw, argv: list[str] | None=None) -> None  ·L117: The `__main__` body of a counterexample script that draws its witness.
+- main(argv: list[str] | None=None) -> int  ·L143
 
 ### mdept/index.py
 _The generated views: `ledger/INDEX.md` and `ledger.json`._
@@ -746,79 +746,79 @@ _Settle one ledger entry: the one way a lead sets `status` and `provenance.settl
 
 ### mdept/site.py
 _The reading site: one HTML page per ledger entry, and an index, built from the ledger._
-- const CONFIG_NAME  ·L54
-- const PLACEHOLDER  ·L56
-- const GISCUS_KEYS  ·L57
-- const GITHUB_KEYS  ·L58
-- const COMMENT_KEYS  ·L59
-- const KATEX_VERSION  ·L61
-- const KATEX_BASE  ·L62
-- const GISCUS_CLIENT  ·L63
-- const STYLESHEET  ·L65
-- const INDEX_PAGE  ·L66
-- const MARKER  ·L68
-- const ISSUE_TITLE_WIDTH  ·L70
-- const RELATION_WORDS  ·L74
-- const REFUTED_BY  ·L82
-- const SECTION_ORDER  ·L85
-- const REQUIRED_SECTIONS  ·L87
-- @dataclass class SiteConfig  ·L94: The settings in `site.toml`. `giscus` is None until every value is filled.
-  - blob_url(self, private: bool, rel: str) -> str  ·L104
-  - @property issue_repo(self) -> str  ·L109: The private repo as `owner/name`, the form `gh --repo` takes.
-  - @property new_issue_url(self) -> str  ·L114
-- default_config_path() -> Path  ·L118
-- _table(data: dict, name: str, keys: tuple[str, ...], path: Path) -> dict  ·L122
-- load_config(path: Path | None=None) -> SiteConfig  ·L137: Read and validate `site.toml`. A half-filled giscus table is an error.
-- @dataclass class Ledger  ·L169: The entries one build shows, and how an ID resolves in it.
-  - @property private(self) -> bool  ·L180
-  - is_private_entry(self, entry) -> bool  ·L183
-  - held(self, entry_id: str) -> bool  ·L186
-  - root_of(self, entry) -> Path  ·L189
-- load_ledger(root: Path) -> Ledger  ·L193
-- _links(entry) -> dict[str, list[str]]  ·L224: The entry's link fields the graph draws (`provenance.connects` is prose, not an edge).
-- @dataclass class Neighbour  ·L230
-- neighbourhood(ledger: Ledger, entry, cfg: SiteConfig) -> list[Neighbour]  ·L237: Every entry one link away, and every counterexample script, in the page entry's words.
-- plain_words_state(entry) -> tuple[str, str | None]  ·L264: ('pending', None), ('unreviewed', None) or ('reviewed', date) for the plain-words section.
-- const GRAPH_WIDTH  ·L280
-- const NODE_HEIGHT  ·L281
-- const ROW  ·L282
-- const CENTRE_WIDTH  ·L283
-- const SIDE_X  ·L284
-- const SIDE_WIDTH  ·L285
-- const NODE_CHAR_WIDTH  ·L287
-- graph_svg(entry, neighbours: list[Neighbour]) -> str  ·L290: The neighbourhood as inline SVG: the entry on the left, one row per neighbour on the right.
-- _fit(text: str, width: float) -> str  ·L317: `text` cut to what a node of `width` holds at the graph's font size, marked when cut.
-- _node(x: float, y: float, width: float, relation: str, ident: str, detail: str, css: str, href: str | None) -> str  ·L323: One box: a small upper line (the relation, or the page entry's status), the ID below it.
-- _id_link(ledger: Ledger, entry_id: str) -> str  ·L341
-- _render_section(ledger: Ledger, entry, name: str, text: str) -> str  ·L349
-- _head(title: str, math: bool) -> list[str]  ·L358
-- const MATH_SCRIPT  ·L378
-- _site_name(ledger: Ledger) -> str  ·L394
-- _banner(ledger: Ledger) -> str  ·L398
-- const FOOTER  ·L404
-- _badge(status: str) -> str  ·L408
-- _plain_words_badge(state: str, date: str | None) -> str  ·L412
-- _issue_link(cfg: SiteConfig, entry) -> str  ·L418
-- _giscus(cfg: SiteConfig, entry) -> str  ·L430
-- _comments(ledger: Ledger, cfg: SiteConfig, entry) -> list[str]  ·L444
-- _files(ledger: Ledger, cfg: SiteConfig, entry) -> list[str]  ·L460
-- _provenance(ledger: Ledger, entry) -> list[str]  ·L480
-- _credit(record: dict, keys: tuple[str, ...]) -> str  ·L499
-- _cited_by(entry) -> list[str]  ·L503
-- figure_source(ledger: Ledger, entry) -> Path | None  ·L514
-- render_entry(ledger: Ledger, cfg: SiteConfig, entry) -> str  ·L524
-- _slug(name: str) -> str  ·L584
-- const INDEX_SCRIPT  ·L591
-- render_index(ledger: Ledger, cfg: SiteConfig) -> str  ·L623
-- const STYLESHEET_TEXT  ·L672
-- class _TagBalance(HTMLParser)  ·L766: Records the first unbalanced tag and every internal link target.
-  - __init__(self)  ·L771
-  - handle_starttag(self, tag, attrs)  ·L777
-  - handle_startendtag(self, tag, attrs)  ·L784
-  - handle_endtag(self, tag)  ·L789
-- _verify(out: Path) -> None  ·L801: Every page balanced, every link inside the site pointing at a file the build wrote.
-- build(root: Path, out: Path, cfg: SiteConfig) -> dict  ·L818: Write the site into `out` (which is cleared first only if an earlier build made it).
-- main(argv: list[str] | None=None) -> int  ·L843
+- const CONFIG_NAME  ·L57
+- const PLACEHOLDER  ·L59
+- const GISCUS_KEYS  ·L60
+- const GITHUB_KEYS  ·L61
+- const COMMENT_KEYS  ·L62
+- const KATEX_VERSION  ·L64
+- const KATEX_BASE  ·L65
+- const GISCUS_CLIENT  ·L66
+- const STYLESHEET  ·L68
+- const INDEX_PAGE  ·L69
+- const MARKER  ·L71
+- const ISSUE_TITLE_WIDTH  ·L73
+- const RELATION_WORDS  ·L77
+- const REFUTED_BY  ·L85
+- const SECTION_ORDER  ·L88
+- const REQUIRED_SECTIONS  ·L90
+- @dataclass class SiteConfig  ·L97: The settings in `site.toml`. `giscus` is None until every value is filled.
+  - blob_url(self, private: bool, rel: str) -> str  ·L107
+  - @property issue_repo(self) -> str  ·L112: The private repo as `owner/name`, the form `gh --repo` takes.
+  - @property new_issue_url(self) -> str  ·L117
+- default_config_path() -> Path  ·L121
+- _table(data: dict, name: str, keys: tuple[str, ...], path: Path) -> dict  ·L125
+- load_config(path: Path | None=None) -> SiteConfig  ·L140: Read and validate `site.toml`. A half-filled giscus table is an error.
+- @dataclass class Ledger  ·L168: The entries one build shows, and how an ID resolves in it.
+  - @property private(self) -> bool  ·L179
+  - is_private_entry(self, entry) -> bool  ·L182
+  - held(self, entry_id: str) -> bool  ·L185
+  - root_of(self, entry) -> Path  ·L188
+- load_ledger(root: Path) -> Ledger  ·L192
+- _links(entry) -> dict[str, list[str]]  ·L223: The entry's link fields the graph draws (`provenance.connects` is prose, not an edge).
+- @dataclass class Neighbour  ·L229
+- neighbourhood(ledger: Ledger, entry, cfg: SiteConfig) -> list[Neighbour]  ·L236: Every entry one link away, and every counterexample script, in the page entry's words.
+- plain_words_state(entry) -> tuple[str, str | None]  ·L263: ('pending', None), ('unreviewed', None) or ('reviewed', date) for the plain-words section.
+- const GRAPH_WIDTH  ·L279
+- const NODE_HEIGHT  ·L280
+- const ROW  ·L281
+- const CENTRE_WIDTH  ·L282
+- const SIDE_X  ·L283
+- const SIDE_WIDTH  ·L284
+- const NODE_CHAR_WIDTH  ·L286
+- graph_svg(entry, neighbours: list[Neighbour]) -> str  ·L289: The neighbourhood as inline SVG: the entry on the left, one row per neighbour on the right.
+- _fit(text: str, width: float) -> str  ·L316: `text` cut to what a node of `width` holds at the graph's font size, marked when cut.
+- _node(x: float, y: float, width: float, relation: str, ident: str, detail: str, css: str, href: str | None) -> str  ·L322: One box: a small upper line (the relation, or the page entry's status), the ID below it.
+- _id_link(ledger: Ledger, entry_id: str) -> str  ·L340
+- _render_section(ledger: Ledger, entry, name: str, text: str) -> str  ·L348
+- _head(title: str, math: bool) -> list[str]  ·L357
+- const MATH_SCRIPT  ·L377
+- _site_name(ledger: Ledger) -> str  ·L393
+- _banner(ledger: Ledger) -> str  ·L397
+- const FOOTER  ·L403
+- _badge(status: str) -> str  ·L407
+- _plain_words_badge(state: str, date: str | None) -> str  ·L411
+- _issue_link(cfg: SiteConfig, entry) -> str  ·L417
+- _giscus(cfg: SiteConfig, entry) -> str  ·L429
+- _comments(ledger: Ledger, cfg: SiteConfig, entry) -> list[str]  ·L443
+- _files(ledger: Ledger, cfg: SiteConfig, entry) -> list[str]  ·L458
+- _provenance(ledger: Ledger, entry) -> list[str]  ·L478: Who raised, stipulated and settled the entry. The public build leaves out the application's
+- _credit(record: dict, keys: tuple[str, ...]) -> str  ·L516
+- _cited_by(ledger: Ledger, entry) -> list[str]  ·L520: The consumer documents that cite the entry. The public build names the citing repos only,
+- figure_source(ledger: Ledger, entry) -> Path | None  ·L542
+- render_entry(ledger: Ledger, cfg: SiteConfig, entry) -> str  ·L552
+- _slug(name: str) -> str  ·L612
+- const INDEX_SCRIPT  ·L619
+- render_index(ledger: Ledger, cfg: SiteConfig) -> str  ·L651
+- const STYLESHEET_TEXT  ·L700
+- class _TagBalance(HTMLParser)  ·L794: Records the first unbalanced tag and every internal link target.
+  - __init__(self)  ·L799
+  - handle_starttag(self, tag, attrs)  ·L805
+  - handle_startendtag(self, tag, attrs)  ·L812
+  - handle_endtag(self, tag)  ·L817
+- _verify(out: Path) -> None  ·L829: Every page balanced, every link inside the site pointing at a file the build wrote.
+- build(root: Path, out: Path, cfg: SiteConfig) -> dict  ·L846: Write the site into `out` (which is cleared first only if an earlier build made it).
+- main(argv: list[str] | None=None) -> int  ·L871
 
 ### mdept/symbolic.py
 _Sympy helpers for stage S1: settle a claim exactly before anyone opens Lean._
@@ -1234,16 +1234,19 @@ _`python -m mdept.site`: the reading site, one page per entry plus the index._
 - test_an_entry_with_no_links_says_so(family, tmp_path)  ·L139
 - test_the_private_build_shows_both_ledgers_and_marks_the_unreleased(family, tmp_path)  ·L147
 - test_every_page_carries_the_prefilled_private_issue_link(family, tmp_path)  ·L156
-- test_giscus_waits_for_its_values(family, tmp_path)  ·L163
-- test_giscus_appears_once_filled_and_on_the_public_build_only(family, tmp_path)  ·L168
-- test_a_half_filled_giscus_table_is_refused(tmp_path)  ·L177
-- test_a_figure_is_copied_and_shown(family, tmp_path)  ·L185
-- test_a_figure_that_is_not_svg_fails(family, tmp_path)  ·L195
-- test_the_build_never_clears_a_folder_it_did_not_write(family, tmp_path)  ·L202
-- test_the_build_is_deterministic(family, tmp_path)  ·L211
-- test_check_fails_on_an_unclosed_formula_and_names_where(family, tmp_path, capsys)  ·L218
-- test_a_link_to_a_file_the_build_did_not_write_fails(tmp_path)  ·L229
-- test_this_repo_builds_clean(capsys)  ·L237: The `make check` line: every entry of this ledger renders, with the committed settings.
+- test_the_public_build_names_citing_repos_only_and_drops_the_request(family, tmp_path)  ·L163: A consumer's document path, its anchor and the request token stay in the private view.
+- test_a_merged_entry_shows_where_it_merged_instead_of_empty_provenance(family, tmp_path)  ·L176: `merged` may omit raised_by and stipulated_by (the schema); the page points at the survivor.
+- test_giscus_waits_for_its_values(family, tmp_path)  ·L190
+- test_giscus_appears_once_filled_and_on_the_public_build_only(family, tmp_path)  ·L196
+- test_a_half_filled_giscus_table_is_refused(tmp_path)  ·L205
+- test_a_figure_is_copied_and_shown(family, tmp_path)  ·L213
+- test_a_figure_that_is_not_svg_fails(family, tmp_path)  ·L223
+- test_the_build_never_clears_a_folder_it_did_not_write(family, tmp_path)  ·L230
+- test_the_build_is_deterministic(family, tmp_path)  ·L239
+- test_check_fails_on_an_unclosed_formula_and_names_where(family, tmp_path, capsys)  ·L246
+- test_a_link_to_a_file_the_build_did_not_write_fails(tmp_path)  ·L257
+- test_this_repo_builds_clean(capsys)  ·L265: The `make check` line: every entry of this ledger renders, with the committed settings.
+- test_the_conventions_make_check_row_names_every_recipe_line()  ·L271: docs/CONVENTIONS.md's `make check` row lists every line the Makefile's `check:` target runs.
 
 ### tests/test_sorry_scope.py
 _Guard: the `sorry` fence and the entry-file naming rules, without Lean._

@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A Lean 4 + Mathlib ledger of stipulated statements: proven, conjectured, or refuted, with a Python validator and refutation toolkit"
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "John Patrick Therrien" }]
 keywords = ["lean4", "mathlib", "formal-verification", "counterexamples", "sympy"]
 classifiers = [

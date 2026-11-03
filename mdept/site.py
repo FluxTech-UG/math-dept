@@ -17,6 +17,8 @@ Two builds, chosen by the repo `--repo` names:
 
 - The public build (from `math-dept`) shows the public ledger only. An ID it holds no
   entry for is unreleased (`family.held`), and its pages name it as such without a link.
+  Its provenance is abstract: the repos that cite an entry by name, never a consumer's
+  document path, anchor or request token.
 - The private build (from `math-dept-private`) shows both ledgers, read through
   `family.load_family`: the private `ledger.json` lists only the private entries. It
   adds the private provenance fields and marks every unreleased entry.
@@ -41,6 +43,7 @@ import re
 import shutil
 import sys
 import tempfile
+import tomllib
 import urllib.parse
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -139,10 +142,6 @@ def load_config(path: Path | None = None) -> SiteConfig:
     path = Path(path) if path is not None else default_config_path()
     if not path.is_file():
         raise ConfigError(f"{path} is missing; the site settings live in the public repo's {CONFIG_NAME}")
-    try:
-        import tomllib
-    except ModuleNotFoundError as exc:  # Python 3.10
-        raise ConfigError("reading site.toml needs Python 3.11 or later (tomllib)") from exc
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     unknown = sorted(set(data) - {"github", "comments", "giscus"})
     if unknown:
@@ -449,8 +448,7 @@ def _comments(ledger: Ledger, cfg: SiteConfig, entry) -> list[str]:
              "repo; the notes are filed into the department's working queue.</p>"]
     if not ledger.private:
         if cfg.giscus is None:
-            lines.append('<p class="pending-discussion">Public discussion opens when the site is '
-                         "published.</p>")
+            lines.append('<p class="pending-discussion">Public discussion is not open yet.</p>')
         else:
             lines.append(_giscus(cfg, entry))
     lines.append("</section>")
@@ -478,18 +476,37 @@ def _files(ledger: Ledger, cfg: SiteConfig, entry) -> list[str]:
 
 
 def _provenance(ledger: Ledger, entry) -> list[str]:
-    raised = entry.at("provenance.raised_by") or {}
-    rows = [("raised by", f"{raised.get('repo')}: {raised.get('domain')}")]
-    if ledger.private:
-        for key in ("doc", "anchor", "application"):
-            if raised.get(key):
-                rows.append((key, str(raised[key])))
-    stipulated = entry.at("provenance.stipulated_by") or {}
-    rows.append(("stipulated", _credit(stipulated, ("who", "date", "model", "request"))))
-    settled = entry.at("provenance.settled_by")
+    """Who raised, stipulated and settled the entry. The public build leaves out the application's
+    document, anchor and rationale and the request token: those stay in the private view.
+
+    A `merged` entry may omit raised_by and stipulated_by (the schema), so its section points at
+    the entry it merged into, which carries them, and keeps only the settled row of the merge."""
+    prov = entry.front["provenance"]
+    out = ['<section id="provenance"><h2>Provenance</h2>']
+    rows = []
+    if entry.status == "merged":
+        target = entry.front["merged_into"]
+        if target is None:
+            raise CheckError(f"site: {entry.rel}: field 'merged_into': a merged entry names the entry "
+                             "it merged into")
+        out.append(f"<p>Merged into {_id_link(ledger, target)}, which carries the provenance.</p>")
+    else:
+        raised = prov["raised_by"]
+        rows.append(("raised by", f"{raised['repo']}: {raised['domain']}"))
+        if ledger.private:
+            for key in ("doc", "anchor", "application"):
+                if raised[key]:
+                    rows.append((key, str(raised[key])))
+        shown = schema.STIPULATED_BY_KEYS if ledger.private else tuple(
+            k for k in schema.STIPULATED_BY_KEYS if k != "request")
+        rows.append(("stipulated", _credit(prov["stipulated_by"], shown)))
+    settled = prov["settled_by"]
     if settled:
         rows.append(("settled", _credit(settled, ("who", "date", "how", "checked_by", "model"))))
-    out = ['<section id="provenance"><h2>Provenance</h2><dl class="prov">']
+    if not rows:
+        out.append("</section>")
+        return out
+    out.append('<dl class="prov">')
     for key, value in rows:
         out.append(f"<dt>{html.escape(key)}</dt><dd>{html.escape(value)}</dd>")
     out.append("</dl></section>")
@@ -500,12 +517,23 @@ def _credit(record: dict, keys: tuple[str, ...]) -> str:
     return ", ".join(f"{k.replace('_', ' ')} {record[k]}" for k in keys if record.get(k))
 
 
-def _cited_by(entry) -> list[str]:
-    cited = entry.front.get("cited_by") or []
+def _cited_by(ledger: Ledger, entry) -> list[str]:
+    """The consumer documents that cite the entry. The public build names the citing repos only,
+    once each: a consumer's document path and anchor stay in the private view."""
+    cited = entry.front["cited_by"]
     out = ['<section id="cited"><h2>Cited by</h2>']
     if not cited:
         out.append("<p>No consumer document cites this entry yet.</p>")
     else:
+        if not ledger.private:
+            repos = []
+            for citation in cited:
+                parts = schema.split_cited_by(citation)
+                if parts is None:
+                    raise CheckError(f"site: {entry.rel}: field 'cited_by': {citation!r} is not of the "
+                                     "form 'Repo:path §n'")
+                repos.append(parts[0])
+            cited = list(dict.fromkeys(repos))
         out.append("<ul>" + "".join(f"<li><code>{html.escape(c)}</code></li>" for c in cited) + "</ul>")
     out.append("</section>")
     return out
@@ -575,7 +603,7 @@ def render_entry(ledger: Ledger, cfg: SiteConfig, entry) -> str:
                    f"{_render_section(ledger, entry, name, text)}</section>")
     out += _files(ledger, cfg, entry)
     out += _provenance(ledger, entry)
-    out += _cited_by(entry)
+    out += _cited_by(ledger, entry)
     out += _comments(ledger, cfg, entry)
     out += ["</main>", FOOTER, MATH_SCRIPT, "</body>", "</html>"]
     return "\n".join(out) + "\n"

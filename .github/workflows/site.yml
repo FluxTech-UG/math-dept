@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # tomllib, which reads site.toml, needs Python 3.11 or later.
+      # A version within pyproject.toml's requires-python.
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"

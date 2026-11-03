@@ -7,7 +7,8 @@ Run:
 
 A counterexample script that can draw its witness carries the flag `--svg` in its text:
 `python counterexamples/MD_0025_slug.py --svg figures/MD_0025.svg` writes one small SVG
-and exits, and without the flag the script does what it always did. This command runs
+and exits, and without the flag the script returns at once and draws nothing (its
+`refute()` is run by `mdept.refute`, which imports it). This command runs
 every such script in the repo's `counterexamples/` (the ID read off the file name),
 each in the foreground under its own timeout, and reports which wrote its file. The
 figures are committed: the site build copies them and never runs a script, so the
@@ -116,8 +117,8 @@ def draw_all(root: Path, timeout: float = TIMEOUT_S) -> list[dict]:
 def svg_main(draw, argv: list[str] | None = None) -> None:
     """The `__main__` body of a counterexample script that draws its witness.
 
-    Without `--svg` it returns at once, so running the script plainly does what it did
-    before. With `--svg PATH` it draws on one axes through `draw(ax)` and writes PATH.
+    Without `--svg` it returns at once and draws nothing. With `--svg PATH` it draws on one
+    axes through `draw(ax)` and writes PATH.
     """
     parser = argparse.ArgumentParser(description="Draw this counterexample's figure.")
     parser.add_argument(FIGURE_FLAG, dest="svg", metavar="PATH", help="write the figure as SVG here")

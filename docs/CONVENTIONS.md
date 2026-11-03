@@ -152,11 +152,14 @@ now, and dated attempts live in the private `triage/` record.
 
 | Command | Runs | Use it |
 |---|---|---|
-| `make check` | `python -m mdept.check`, `python -m mdept.index --check`, `python -m mdept.bench --check`, `python -m mdept.audit sorry`, `python scripts/gen_root.py --check`, `repo-outline --check` | before every commit |
+| `make check` | `python -m mdept.check`, `python -m mdept.index --check`, `python -m mdept.bench --check`, `python -m mdept.site --repo . --check`, `python -m mdept.audit sorry`, `python scripts/gen_root.py --check`, `repo-outline --check` | before every commit |
 | `make regen` | `python scripts/gen_root.py --write`, `python -m mdept.index`, `repo-outline --write` | after adding or moving an entry, a Lean file, or a symbol |
 | `make lean` | `python -m mdept.audit all --json --write audit/latest.json` | after any Lean change, to refresh what `--lean` reads |
 | `make counterexamples` | `python -m mdept.refute --all` | to re-verify every witness |
 | `make test` | `python -m pytest -v` | before a milestone commit |
+| `make site` | `python -m mdept.site --repo . --out site` | to read the site locally; `site/` is gitignored and the `site` workflow publishes it to GitHub Pages on every push to `main` |
+| `make site-check` | `python -m mdept.site --repo . --check` | after editing an entry body or `mdept/site.py`, the site's part of `make check` alone |
+| `make figures` | `python -m mdept.figures --repo .` | after adding or changing a counterexample script that carries `--svg`; commit the redrawn `figures/` |
 | `python -m mdept.query "<question>"` | both ledgers ranked by words, the hits above the score floor as cards; `-k N` hits, `--exact` (substrings as typed), `--topic`, `--status`, `--consumer`, `--resolve MDR:...`, `--json`; one `MD_####` prints that entry's card | step 0 of the protocol, from any repo in the family |
 | `python -m mdept.bench` | the search benchmark over `bench/queries.yaml`: recall@1, recall@5, mean reciprocal rank, no-answer rows; `--check` fails when the mined split's recall@5 falls below its floor or a held-out split misses its target, `--misses` lists every missed row, `--file`, `--json` | after a change to the ranker, the synonyms, or an entry's `aka` or `phrasings` |
 | `python -m mdept.view --consumer NAME --write` | the consumer's own `docs/MATH.md`; `--check` fails on drift, `--out` previews elsewhere | after any status change that reaches a consumer |
