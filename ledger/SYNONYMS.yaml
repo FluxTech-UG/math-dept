@@ -1,0 +1,52 @@
+# The family's synonym list for `python -m mdept.query`: a phrase a consumer types,
+# and the phrase the ledger uses for the same thing. A query carrying the consumer
+# phrase is ranked as if it carried either one (`mdept.words.expand`). Abstract
+# mathematics only: this file is public. Every ledger phrase is one the ledger's
+# own entries use; `tests/test_search.py` checks that on the real ledger.
+pairs:
+  # Periodic orbits and their linearisation.
+  - {consumer: floquet matrix, ledger: monodromy}
+  - {consumer: period map jacobian, ledger: monodromy}
+  - {consumer: poincare map, ledger: period map}
+  - {consumer: stroboscopic map, ledger: period map}
+  - {consumer: limit cycle, ledger: periodic orbit}
+  - {consumer: first integral, ledger: conserved functional}
+  - {consumer: conserved quantity, ledger: conserved functional}
+  - {consumer: floquet exponent, ledger: multiplier}
+  - {consumer: saddle node, ledger: fold}
+  - {consumer: turning point, ledger: fold}
+  # Time stepping and its sensitivities.
+  - {consumer: step size control, ledger: adaptive step}
+  - {consumer: conservation error, ledger: drift}
+  - {consumer: spectral derivative, ledger: fourier derivative}
+  - {consumer: fft derivative, ledger: fourier derivative}
+  - {consumer: lebesgue measure zero, ledger: lebesgue null}
+  - {consumer: discontinuous right hand side, ledger: piecewise smooth}
+  - {consumer: event detection, ledger: switching surface}
+  # Linear algebra and spectra.
+  - {consumer: approximate eigenvalue, ledger: ritz value}
+  - {consumer: eigenvalue inclusion, ledger: bauer fike}
+  - {consumer: transient growth, ledger: pseudospectrum}
+  - {consumer: arnoldi, ledger: krylov subspace}
+  - {consumer: eigenvalue sensitivity, ledger: eigenvalue perturbation}
+  # Realisations, passivity and relaxation spectra.
+  - {consumer: realization, ledger: realisation}
+  - {consumer: positive real, ledger: passive}
+  - {consumer: prony series, ledger: relaxation bank}
+  - {consumer: pade approximation, ledger: rational approximation}
+  - {consumer: model reduction, ledger: truncation}
+  - {consumer: johnson champoux allard, ledger: jcal}
+  - {consumer: unit cell problem, ledger: periodic cell}
+  # Waves.
+  - {consumer: mathieu instability, ledger: stop band}
+  - {consumer: harmonic generation, ledger: frequency conversion}
+  - {consumer: fermi pasta ulam, ledger: recurrence}
+  # Thermodynamics, information and learning.
+  - {consumer: heat bath, ledger: reservoir}
+  - {consumer: second law, ledger: entropy production}
+  - {consumer: kl divergence, ledger: relative entropy}
+  - {consumer: kullback leibler, ledger: relative entropy}
+  - {consumer: information matrix, ledger: fisher}
+  - {consumer: multinomial logistic regression, ledger: softmax regression}
+  - {consumer: classical conditioning, ledger: associative conditioning}
+  - {consumer: phase wrapping, ledger: winding}

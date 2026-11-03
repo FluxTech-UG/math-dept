@@ -297,6 +297,33 @@ _Three guards over the Lean side, and the JSON contract the ledger reads._
 - _require_audit_shape(path: Path, data: dict) -> None  ·L264: Check the shape, not only the version number it claims.
 - main(argv: list[str] | None=None) -> int  ·L292
 
+### mdept/bench.py
+_The search benchmark: does `mdept.query` find the entry a consumer means, from the consumer's words?_
+- const BENCH_PATH  ·L39
+- const ROW_KEYS  ·L40
+- const REQUIRED_ROW_KEYS  ·L41
+- const FORMS  ·L43
+- const HELD_OUT_RECALL_TARGET  ·L45
+- const TOP  ·L46
+- load(path: Path) -> list[dict]  ·L49: The bench rows, checked for shape. Each row gains `line`, its 1-based position in the list.
+- run(family, rows: list[dict]) -> dict  ·L85: Every row through the ranked search; the per-row outcome and the scores per split and form.
+- _scores(outcomes: list[dict]) -> dict  ·L109
+- gate(result: dict) -> tuple[bool, str]  ·L132: (passes, why): soft while there is no held-out row, then the held-out recall@5 against its target.
+- render(result: dict, misses: bool) -> list[str]  ·L143
+- main(argv: list[str] | None=None) -> int  ·L159
+
+### mdept/card.py
+_The entry card: the second reading tier, between a catalog line and the entry file._
+- const CARD_EVIDENCE_KINDS  ·L19
+- const LABEL_WIDTH  ·L21
+- hypotheses(section: str) -> list[str]  ·L24: The Hypotheses section as one line per `- ` item (continuation lines joined).
+- card(entry, family, rows=None) -> dict  ·L40: One entry as card data. `rows` are the family's edges (`graph.edges`), computed when absent.
+- _link_text(link: dict) -> str  ·L77
+- _files_text(data: dict) -> str  ·L84
+- _hypothesis_label(text: str, n: int) -> tuple[str, str]  ·L88: ('H1', rest) when the item opens with its own label, else (f'H{n}', text).
+- render_entry(data: dict, markdown: bool=False, width: int | None=None) -> list[str]  ·L96: The card as text lines for a terminal, or (`markdown`) as bullets for a generated page.
+- _markdown(data: dict, fit) -> list[str]  ·L135
+
 ### mdept/catalog.py
 _The ledger catalog: one line per entry, under a fixed token budget, for a reader who does not yet know the ID._
 - const CATALOG_PATH  ·L29
@@ -558,20 +585,37 @@ _Read the markdown surfaces: ledger entries, bibliography, requests, role lines.
 
 ### mdept/query.py
 _Search both ledgers, and resolve a request token, from anywhere in the family._
-- const STATEMENT_WIDTH  ·L41
-- searchable(entry) -> dict[str, str]  ·L44: The fields a query reads, as {field name: text}.
-- hits(entry, terms: list[str]) -> int  ·L60: How many times these terms occur across the searchable fields.
-- one_line(text: str, width: int=STATEMENT_WIDTH) -> str  ·L68: A block of prose or LaTeX collapsed to one line, cut to `width`.
-- citation_words(status: str) -> list[str]  ·L74: The status words I15 requires on a line citing an entry at this status.
-- as_record(entry, term_hits: int) -> dict  ·L79: One entry, as the JSON shape every other view is derived from.
-- _consumer_of(entry) -> set[str]  ·L98
-- search(family, terms: list[str], topic: str | None=None, status: str | None=None, consumer: str | None=None) -> dict  ·L110: The answer to one query, as the JSON shape.
-- resolve(family, token: str) -> dict  ·L160: What a request token became: pending, declined, or the entries it seeded.
-- _candidate_outcome(request, candidate: str, backlinks: dict, by_id: dict)  ·L196
-- render_search(answer: dict) -> list[str]  ·L214
-- render_entry(record: dict, also: list[str] | None=None) -> list[str]  ·L235
-- render_resolve(answer: dict) -> list[str]  ·L253
-- main(argv: list[str] | None=None) -> int  ·L266
+- const STATEMENT_WIDTH  ·L57
+- const FIELD_WEIGHTS  ·L60
+- const BM25_K1  ·L62
+- const BM25_B  ·L63
+- const SCORE_FLOOR  ·L69
+- const DEFAULT_K  ·L71
+- const HIT_WIDTH  ·L73
+- searchable(entry) -> dict[str, str]  ·L76: The fields a query reads, as {field name: text}.
+- ranked_fields(entry) -> dict[str, str]  ·L95: What the ranked search reads: `searchable`, plus the neutral domain line of the provenance.
+- hits(entry, terms: list[str]) -> int  ·L105: How many times these terms occur across the searchable fields.
+- one_line(text: str, width: int=STATEMENT_WIDTH) -> str  ·L113: A block of prose or LaTeX collapsed to one line, cut to `width`.
+- citation_words(status: str) -> list[str]  ·L119: The status words I15 requires on a line citing an entry at this status.
+- as_record(entry, term_hits: int) -> dict  ·L124: One entry, as the JSON shape every other view is derived from.
+- _consumer_of(entry) -> set[str]  ·L143
+- check_filters(family, topic: str | None, status: str | None, consumer: str | None) -> None  ·L155: Every filter checked against something real before a search runs.
+- admits(entry, topic: str | None, status: str | None, consumer: str | None) -> bool  ·L179: Whether an entry passes the filters (each None filter passes everything).
+- search(family, terms: list[str], topic: str | None=None, status: str | None=None, consumer: str | None=None) -> dict  ·L188: The exact-substring answer to one query, as the JSON shape (`check_filters` first).
+- class Ranker  ·L213: BM25 over the weighted fields of a set of entries.
+  - __init__(self, entries)  ·L221
+  - idf(self, token: str) -> float  ·L241
+  - ideal(self, token: str) -> float  ·L245: The most one token can add to a score: its IDF at saturation.
+  - score(self, entry_id: str, token: str) -> float  ·L249
+  - share(self, entry_id: str, groups) -> float  ·L256: The entry's score as a share of the query's attainable score, in [0, 1].
+- rank(family, terms: list[str], k: int=DEFAULT_K, topic: str | None=None, status: str | None=None, consumer: str | None=None, ranker: Ranker | None=None, pairs=None) -> dict  ·L272: The ranked answer to a query in words, as the JSON shape: up to `k` hits at or above the floor.
+- resolve(family, token: str) -> dict  ·L320: What a request token became: pending, declined, or the entries it seeded.
+- _candidate_outcome(request, candidate: str, backlinks: dict, by_id: dict)  ·L356
+- render_search(answer: dict) -> list[str]  ·L374
+- render_one(data: dict, record: dict, also: list[str] | None=None) -> list[str]  ·L395: One entry asked for by ID: its full card, then where it sits (topics, raised by, named by).
+- render_rank(answer: dict) -> list[str]  ·L407: The ranked answer: the floor line, then each hit's card (cut to `HIT_WIDTH`) with its score.
+- render_resolve(answer: dict) -> list[str]  ·L427
+- main(argv: list[str] | None=None) -> int  ·L440
 
 ### mdept/refute.py
 _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
@@ -721,38 +765,38 @@ _Sympy helpers for stage S1: settle a claim exactly before anyone opens Lean._
 
 ### mdept/view.py
 _Generate a consumer's local view of the department: its `docs/MATH.md`._
-- const HEADER_NOTE  ·L38
-- header(consumer) -> list[str]  ·L41
-- collect(family, consumer) -> dict  ·L54: Everything the view reports, as the JSON shape the markdown is built from.
-- _anchor_state(entry, consumer) -> tuple[int | None, str]  ·L71: (line, condition) for this entry's anchor in the consumer's document.
-- _raised_record(entry, consumer, cited_lines: dict) -> dict  ·L98
-- _citations(entries: list, consumer) -> list[dict]  ·L116
-- _request_tokens(family, consumer) -> list[dict]  ·L148
-- _raised_at(record: dict) -> str  ·L192: The one line that says where the entry was raised, and whether it still is.
-- render(payload: dict, consumer) -> str  ·L207
-- generate(family, name: str) -> tuple[str, Path, dict]  ·L265: (rendered text, the default output path, the JSON payload) for one consumer.
-- main(argv: list[str] | None=None) -> int  ·L277
+- const HEADER_NOTE  ·L41
+- header(consumer) -> list[str]  ·L44
+- collect(family, consumer) -> dict  ·L61: Everything the view reports, as the JSON shape the markdown is built from.
+- _anchor_state(entry, consumer) -> tuple[int | None, str]  ·L80: (line, condition) for this entry's anchor in the consumer's document.
+- _raised_record(entry, consumer, cited_lines: dict) -> dict  ·L107
+- _citations(entries: list, consumer) -> list[dict]  ·L125
+- _request_tokens(family, consumer) -> list[dict]  ·L157
+- _raised_at(record: dict) -> str  ·L201: The one line that says where the entry was raised, and whether it still is.
+- render(payload: dict, consumer) -> str  ·L216
+- generate(family, name: str) -> tuple[str, Path, dict]  ·L269: (rendered text, the default output path, the JSON payload) for one consumer.
+- main(argv: list[str] | None=None) -> int  ·L281
 
 ### mdept/words.py
 _How prose and LaTeX become search words, and how a consumer's words reach the ledger's._
-- const SYNONYMS_PATH  ·L31
-- const SYNONYM_KEYS  ·L32
-- const LATEX_WORDS  ·L37
-- const LATEX_SILENT  ·L82
-- const STOPWORDS  ·L97
-- const _MACRO_RE  ·L107
-- const _SPACING_RE  ·L108
-- const _TOKEN_RE  ·L109
-- const _UNCHANGED  ·L111
-- latex_to_words(text: str) -> str  ·L114: `text` with every LaTeX macro replaced by its words, by nothing, or by its own name.
-- stem(word: str) -> str  ·L126: A plural folded to its singular: `eigenvalues` to `eigenvalue`, `series` stays one form.
-- tokens(text: str) -> list[str]  ·L137: The search tokens of a piece of prose or LaTeX, in order.
-- const _UNWRAP_RE  ·L149
-- display(text: str) -> str  ·L152: A Statement on one line for a reader: whitespace collapsed, `$`, `**` and `\text{}` wrappers gone.
-- cut(text: str, width: int) -> str  ·L164: `text` on one line, cut to `width` characters with an ellipsis when longer.
-- load_synonyms(path: Path) -> list[tuple[tuple[str, ...], tuple[str, ...]]]  ·L173: The synonym pairs as (consumer tokens, ledger tokens), checked for shape.
-- synonyms_of(family) -> list[tuple[tuple[str, ...], tuple[str, ...]]]  ·L210: The family's synonym pairs, read from the public repo.
-- expand(query: list[str], pairs) -> list[tuple[int, list[tuple[str, ...]]]]  ·L218: The query as groups: (how many query tokens the group stands for, its alternatives).
+- const SYNONYMS_PATH  ·L32
+- const SYNONYM_KEYS  ·L33
+- const LATEX_WORDS  ·L38
+- const LATEX_SILENT  ·L83
+- const STOPWORDS  ·L98
+- const _MACRO_RE  ·L108
+- const _SPACING_RE  ·L109
+- const _TOKEN_RE  ·L110
+- const _UNCHANGED  ·L112
+- latex_to_words(text: str) -> str  ·L115: `text` with every LaTeX macro replaced by its words, by nothing, or by its own name.
+- stem(word: str) -> str  ·L127: `word` with a plural, `-ing` or `-ed` ending folded: `eigenvalues`, `learning`, `learned` to their root.
+- tokens(text: str) -> list[str]  ·L150: The search tokens of a piece of prose or LaTeX, in order.
+- const _UNWRAP_RE  ·L162
+- display(text: str) -> str  ·L165: A Statement on one line for a reader: whitespace collapsed, `$`, `**` and `\text{}` wrappers gone.
+- cut(text: str, width: int) -> str  ·L177: `text` on one line, cut to `width` characters with an ellipsis when longer.
+- load_synonyms(path: Path) -> list[tuple[tuple[str, ...], tuple[str, ...]]]  ·L186: The synonym pairs as (consumer tokens, ledger tokens), checked for shape.
+- synonyms_of(family) -> list[tuple[tuple[str, ...], tuple[str, ...]]]  ·L223: The family's synonym pairs, read from the public repo.
+- expand(query: list[str], pairs) -> list[tuple[int, list[tuple[str, ...]]]]  ·L231: The query as groups: (how many query tokens the group stands for, its alternatives).
 
 ### scripts/gen_prove_queue.py
 _Emit a cc-run batch file, one step per open request candidate._
@@ -824,6 +868,23 @@ _Guard: every audited declaration rests on the standard axioms._
 - test_allowlist_parses()  ·L35
 - test_axiom_audit_passes()  ·L40
 - test_cached_audit_is_fresh_when_present()  ·L57
+
+### tests/test_bench.py
+_`python -m mdept.bench`: the bench file's shape, the scores, and the gate that stays soft until held-out rows exist._
+- const FIXTURES  ·L12
+- const BASES  ·L13
+- const REPO_ROOT  ·L14
+- stage(tmp_path: Path) -> Path  ·L17
+- write(path: Path, rows: str) -> Path  ·L24
+- const MINED  ·L30
+- @pytest.mark.parametrize test_a_malformed_row_is_refused_with_its_place(tmp_path, row, message)  ·L49
+- test_the_repo_bench_file_loads_and_names_only_ledger_ids()  ·L55: The public bench names IDs only; every row parses, and its prose carries no request token.
+- test_the_scores_count_recall_and_the_no_answer_rows(tmp_path)  ·L66
+- test_a_wrong_expected_id_is_a_miss(tmp_path)  ·L75
+- test_a_row_naming_only_ids_the_family_lacks_is_reported_not_scored(tmp_path)  ·L85
+- test_the_gate_is_soft_without_held_out_rows(tmp_path, capsys)  ·L98
+- test_the_gate_fails_a_held_out_split_below_its_target(tmp_path, capsys)  ·L106
+- test_the_gate_passes_a_held_out_split_at_its_target(tmp_path)  ·L116
 
 ### tests/test_catalog.py
 _`ledger/CATALOG.md` and `ledger/EDGES.tsv`: the catalog under its budget, the edge list, both drift-checked._
@@ -1070,6 +1131,42 @@ _Guard: MathDept.lean imports exactly the modules on disk._
 - const REPO_ROOT  ·L12
 - test_root_is_fresh()  ·L15
 - test_generated_root_carries_the_header()  ·L26
+
+### tests/test_search.py
+_The ranked search and the entry card: `python -m mdept.query "<words>"` and `mdept.card`._
+- const FIXTURES  ·L18
+- const BASES  ·L19
+- stage(tmp_path: Path) -> Path  ·L22
+- edit(path: Path, old: str, new: str) -> None  ·L29
+- @pytest.fixture root(tmp_path)  ·L36
+- load(root: Path)  ·L40
+- hit_ids(answer) -> list[str]  ·L44
+- test_latex_macros_read_as_words()  ·L51
+- test_an_entry_id_stays_one_token_and_plurals_fold()  ·L57
+- test_ing_and_ed_endings_fold_to_one_root()  ·L62
+- test_a_synonym_phrase_becomes_one_group_with_two_alternatives()  ·L68
+- test_a_synonym_phrase_without_a_search_word_fails(tmp_path)  ·L76
+- test_a_synonym_list_with_a_repeated_phrase_fails(tmp_path)  ·L83
+- test_a_missing_synonym_list_fails(root)  ·L92
+- test_the_ranked_search_finds_the_entry_from_its_title_words(root)  ·L101
+- test_an_aka_hit_outranks_a_notes_hit_the_count_ranking_put_first(root)  ·L107: Two plain mentions in the notes beat one name in `aka` by raw count; BM25 weighs `aka` 3.
+- test_phrasings_and_plain_words_are_searched(root)  ·L119
+- test_a_consumer_phrase_reaches_the_ledger_phrase_through_the_synonyms(root)  ·L132
+- test_nothing_clears_the_floor_for_words_the_ledger_never_uses(root)  ·L139
+- test_a_query_of_stopwords_only_is_refused(root)  ·L146
+- test_the_top_k_cap_holds(root)  ·L151
+- test_scores_are_shares_in_zero_one_and_sorted(root)  ·L158
+- test_a_filter_restricts_the_ranked_search(root)  ·L165
+- test_the_cli_prints_cards_and_the_floor_line(root, capsys)  ·L172
+- test_the_cli_exact_mode_is_the_substring_search(root, capsys)  ·L180
+- test_the_card_carries_statement_hypotheses_links_and_citations(root)  ·L189
+- test_the_card_names_the_lean_declaration_and_the_settling_files(root)  ·L204
+- test_the_text_card_prints_one_line_per_hypothesis_and_per_link(root)  ·L215
+- test_a_width_cuts_the_statement_on_a_hit_card(root)  ·L225
+- test_a_link_to_an_id_neither_ledger_holds_prints_as_held(tmp_path, monkeypatch)  ·L231
+- test_the_consumer_view_renders_the_card(root)  ·L242
+- const REPO_ROOT  ·L253
+- test_every_ledger_phrase_of_the_repo_synonym_list_is_ledger_vocabulary()  ·L256: A ledger phrase no entry uses would expand a query into words that match nothing.
 
 ### tests/test_settle.py
 _`python -m mdept.settle` writes an entry's settlement and nothing else._

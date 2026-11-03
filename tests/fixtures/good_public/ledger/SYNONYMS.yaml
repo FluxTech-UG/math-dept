@@ -1,0 +1,6 @@
+# The fixture family's synonym list: a consumer's phrase to the ledger's.
+pairs:
+  - consumer: additive identity
+    ledger: adding zero
+  - consumer: power of two
+    ledger: toy bound

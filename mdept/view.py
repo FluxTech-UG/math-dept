@@ -13,9 +13,11 @@ the middle of a change does not take. The view puts the answer in the repo that
 needs it, as a generated file: `--write` rewrites it, `--check` fails on drift,
 and nothing in it is typed by hand.
 
-Three things go in, and nothing else: the entries this repo raised, every
-citation of an entry from this repo with the line it sits on, and every `MDR:`
-request token found in the repo with what it has become. The output is
+Three things go in, and nothing else: the entries this repo raised, each as
+its card (`mdept.card`, the same one `mdept.query` prints) with where it was
+raised and cited, every citation of an entry from this repo with the line it
+sits on, and every `MDR:` request token found in the repo with what it has
+become. The output is
 deterministic, with no timestamp, so `--check` is a real guard rather than a
 diff against the clock.
 
@@ -32,7 +34,8 @@ import sys
 from pathlib import Path
 
 from . import CheckError, ConfigError
-from . import anchors, parse, schema
+from . import anchors, catalog, graph, parse, schema
+from . import card as card_mod
 from . import family as family_mod
 
 HEADER_NOTE = "do not edit"
@@ -48,6 +51,10 @@ def header(consumer) -> list[str]:
         "carry its status word on the citing line. An `MDR:` token records an exposure and",
         "licenses nothing: no verdict, number or design decision may rest on one.",
         "",
+        "To find an entry this page does not list, ask in your own words with",
+        f"`python -m mdept.query \"<words>\"`, or read the one-line catalog `{catalog.CATALOG_PATH}` in",
+        "the private math repo.",
+        "",
     ]
 
 
@@ -59,10 +66,12 @@ def collect(family, consumer) -> dict:
     cited_lines: dict[str, list[str]] = {}
     for citation in citations:
         cited_lines.setdefault(citation["id"], []).append(f"{citation['path']}:{citation['line']}")
+    rows = graph.edges(entries)
     return {
         "consumer": consumer.name,
         "path": consumer.view,
-        "raised": [_raised_record(entry, consumer, cited_lines) for entry in raised],
+        "raised": [dict(_raised_record(entry, consumer, cited_lines), card=card_mod.card(entry, family, rows))
+                   for entry in raised],
         "cited": citations,
         "requests": _request_tokens(family, consumer),
     }
@@ -214,19 +223,14 @@ def render(payload: dict, consumer) -> str:
         lines.append(f"### {record['id']} `{record['status']}` {record['title']}")
         lines.append("")
         lines.append("- **Raised at.** " + _raised_at(record))
-        if record["citation_words"]:
-            lines.append(
-                "- **Cite with.** one of " + ", ".join(f"`{w}`" for w in record["citation_words"])
-            )
         lines.append(
             "- **Cited at.** "
             + (", ".join(f"`{loc}`" for loc in record["cited_at"]) or "nowhere in this repo yet")
         )
-        # The statement is last on purpose: it is one long line of LaTeX, and a
-        # reader scanning this file is looking for the status and the places
-        # first. Putting it above them pushes everything scannable off screen.
-        if record["statement"]:
-            lines.append(f"- **Statement.** {record['statement']}")
+        # The card comes after the places on purpose: its Statement is one long
+        # line of LaTeX, and a reader scanning this file is looking for the
+        # status and the places first.
+        lines += card_mod.render_entry(record["card"], markdown=True)
         lines.append("")
 
     lines += ["## Cited here", ""]

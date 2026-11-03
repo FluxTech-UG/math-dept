@@ -1,0 +1,63 @@
+# The search benchmark (`python -m mdept.bench`): a query in a consumer's words, and the
+# entries it should find in the top five. Keys: q, expected (IDs; empty only for a
+# no-answer row), form (math-words, engineering-words, latex, candidate-title,
+# restatement, no-answer), held_out (true for a row written by a context that never saw
+# the entry; absent means the mined split), source and note (free text).
+#
+# These rows are the mined split: each was written from the request its entry came in
+# with, in other words than the entry's title. It measures how well the search finds a
+# statement from the words it was filed in, so its recall is a floor, not a target. The
+# held-out split is added by a context that reads only the consumers' documents.
+# Abstract mathematics only: this file is public.
+rows:
+  - {q: closed form for the gain coupling viscous and thermal diffusion in one channel cross-section, expected: [MD_0011], form: math-words}
+  - {q: limit of the cross gain as the Prandtl number tends to one, expected: [MD_0012, MD_0016], form: math-words}
+  - {q: value of the cross diffusivity gain at unit Prandtl number in terms of F and its derivative, expected: [MD_0016], form: math-words}
+  - {q: high frequency asymptotics of the cross term in a porous channel and which geometric lengths appear, expected: [MD_0015], form: math-words}
+  - {q: static limit of the gain as an energy pairing of two Poisson solutions, expected: [MD_0017], form: math-words}
+  - {q: does the step size controller add a term of the same order to the gradient of an adaptive solve, expected: [MD_0020, MD_0027], form: math-words}
+  - {q: stable step size map and a nondegenerate error estimate give the controller term which order, expected: [MD_0027, MD_0020], form: math-words}
+  - {q: is the numerical solution differentiable when the adaptive solver's accept and reject decisions change, expected: [MD_0021], form: math-words}
+  - {q: treat adaptive time stepping as a smooth reparametrization of time and differentiate through it, expected: [MD_0022, MD_0025, MD_0029], form: math-words}
+  - {q: a continuous extension glued with C1 matching makes the reparametrized adaptive solver differentiable, expected: [MD_0025, MD_0029], form: math-words}
+  - {q: convergence order of the sensitivity of a periodic orbit computed on a frozen time grid, expected: [MD_0023, MD_0026], form: math-words}
+  - {q: the error in the period map sensitivity scales with the resolvent squared, expected: [MD_0026], form: math-words}
+  - {q: are linear conserved quantities kept exactly by Runge-Kutta with adaptive steps and a projection after each step, expected: [MD_0033], form: math-words}
+  - {q: how far does a linear invariant drift when each step conserves it only up to a tolerance, expected: [MD_0034, MD_0038], form: math-words}
+  - {q: sharp bound on how much one step changes a linear functional that the vector field does not conserve, expected: [MD_0038], form: math-words}
+  - {q: does the embedded Runge-Kutta error estimate respect the conservation law, expected: [MD_0036], form: math-words}
+  - {q: the spectral derivative of a periodic grid function sums to zero even after dealiasing, expected: [MD_0035], form: math-words}
+  - {q: products dealiased with the three-halves rule conserve the total sum, expected: [MD_0039], form: math-words}
+  - {q: the alternating sign sum of an FFT derivative is zero, expected: [MD_0041], form: engineering-words}
+  - {q: which weight vectors are annihilated by the Fourier differentiation matrix, expected: [MD_0042], form: math-words}
+  - {q: a conserved quantity gives a left eigenvector with eigenvalue one of the Floquet matrix, expected: [MD_0043], form: math-words}
+  - {q: removing the known unit multipliers by projecting out their left eigenvectors, expected: [MD_0044], form: math-words}
+  - {q: Newton shooting residual stays orthogonal to the conserved directions, expected: [MD_0045], form: math-words}
+  - {q: is a discrete diffusion operator with a damping term away from the gaps positive definite, expected: [MD_0046], form: math-words}
+  - {q: advection with a velocity that varies in space and do all eigenvalues stay in the left half plane, expected: [MD_0049], form: math-words}
+  - {q: an approximate eigenvalue with a small residual lies in an epsilon pseudospectrum, expected: [MD_0051], form: math-words}
+  - {q: for a non-normal matrix does a small residual guarantee an eigenvalue nearby, expected: [MD_0052], form: math-words}
+  - {q: is a time-varying system with nonnegative coefficients passive in balanced form, expected: [MD_0070], form: math-words}
+  - {q: rate condition needed for passivity when coefficients vary in time and the state is weighted, expected: [MD_0071], form: math-words}
+  - {q: the sum of left times right eigenvector contributions equals the eigenvalue, expected: [MD_0073], form: math-words}
+  - {q: is the coupled gas and solid heat exchange function a Stieltjes function, expected: [MD_0077], form: math-words}
+  - {q: at a fold of periodic orbits in an autonomous system is the trivial multiplier double, expected: [MD_0083], form: math-words}
+  - {q: hysteresis below linear onset when the cubic gain beats the quadratic damping, expected: [MD_0084], form: engineering-words}
+  - {q: a cascade of two relaxation stages realises the correction exactly with fast convergence, expected: [MD_0094], form: engineering-words}
+  - {q: fewest nodes a Boolean network needs to learn classical conditioning, expected: [MD_0097, MD_0101], form: math-words}
+  - {q: with odd timing windows two internal nodes are enough for associative learning, expected: [MD_0101], form: math-words}
+  - {q: a Boolean network that settles to a single fixed point cannot learn associations over long gaps, expected: [MD_0102], form: math-words}
+  - {q: feedforward Boolean networks without cycles cannot be conditioned, expected: [MD_0103], form: math-words}
+  - {q: without input the set of reachable states is a single orbit of the map, expected: [MD_0104], form: math-words}
+  - {q: when the input maps commute the number of reachable configurations grows polynomially, expected: [MD_0105], form: math-words}
+  - {q: the orbit of a linear map stays inside a Krylov space restricted by the invariants, expected: [MD_0107], form: math-words}
+  - {q: walking along an orbit is no faster than random search for an unstructured target, expected: [MD_0108], form: math-words}
+  - {q: '$\sum_{j} (-1)^j (Dg)_j = 0$ for the Fourier derivative', expected: [MD_0041], form: latex}
+  - {q: '$\nabla G(x^\ast)^{\top} D\Phi(x^\ast) = \nabla G(x^\ast)^{\top}$', expected: [MD_0043], form: latex}
+  - {q: '$\chi_M(z) = (z-1)^r \chi_{M|_W}(z)$ deflation', expected: [MD_0044], form: latex}
+  - {q: global regularity of three dimensional Navier-Stokes solutions, expected: [], form: no-answer}
+  - {q: the Riemann hypothesis and the zeros of the zeta function, expected: [], form: no-answer}
+  - {q: Banach-Tarski decomposition of the ball, expected: [], form: no-answer}
+  - {q: four colour theorem for planar maps, expected: [], form: no-answer}
+  - {q: Fermat's last theorem for exponent three, expected: [], form: no-answer}
+  - {q: Collatz conjecture stopping times, expected: [], form: no-answer}

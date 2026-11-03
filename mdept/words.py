@@ -10,7 +10,8 @@ nothing, and any other macro becomes its own name (`\\nabla` reads as nabla).
 A token is lower case, either an entry ID (`md_0007`, kept whole so an ID in a
 query still finds its entry) or a run of letters and digits. Single letters are
 dropped (they are the variables of every statement and select nothing), English
-stopwords are dropped, and a plural is folded to its singular by `stem`.
+stopwords are dropped, and `stem` folds a plural and an `-ing` or `-ed` ending
+(`conditioning`, `conditioned` and `conditions` all read as `condition`).
 
 `ledger/SYNONYMS.yaml` in the public repo is the family's one synonym list: each
 pair maps a phrase a consumer types to the phrase the ledger uses. A query that
@@ -124,13 +125,25 @@ def latex_to_words(text: str) -> str:
 
 
 def stem(word: str) -> str:
-    """A plural folded to its singular: `eigenvalues` to `eigenvalue`, `series` stays one form."""
+    """`word` with a plural, `-ing` or `-ed` ending folded: `eigenvalues`, `learning`, `learned` to their root.
+
+    A light suffix stripper, not Porter: the plural first, then `-ing` or `-ed`
+    when at least four letters remain, then a doubled final consonant undoubled
+    (`mapping` to `map`). Query and ledger go through the same function, so a
+    root that is not an English word (`deflat`) still matches itself.
+    """
     if word in _UNCHANGED:
         return word
     if len(word) > 4 and word.endswith("ies"):
-        return word[:-3] + "y"
-    if len(word) > 3 and word.endswith("s") and not word.endswith(("ss", "us", "is")):
-        return word[:-1]
+        word = word[:-3] + "y"
+    elif len(word) > 3 and word.endswith("s") and not word.endswith(("ss", "us", "is")):
+        word = word[:-1]
+    for suffix in ("ing", "ed"):
+        if word.endswith(suffix) and len(word) - len(suffix) >= 4:
+            word = word[: -len(suffix)]
+            if len(word) > 2 and word[-1] == word[-2] and word[-1] not in "lsz" and word[-1] not in "aeiou":
+                word = word[:-1]
+            break
     return word
 
 
