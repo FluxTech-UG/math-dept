@@ -6,13 +6,15 @@ declaration, the files that settle it (Lean, informal proof, counterexample),
 the entries it links to and that link to it, and where it is cited.
 `render_entry()` is the one rendering of that data, as aligned text for
 `mdept.query` (a hit, or one entry by ID) or as markdown bullets for the
-consumer view `mdept.view`. A linked ID that neither ledger on this machine
-holds prints as `family.HELD`, which is what it is from a public checkout.
+consumer view `mdept.view`. A linked ID the public ledger lacks prints as
+`family.HELD` from a public checkout with no private ledger on disk, which is
+what it is from there; with the private ledger loaded, an ID in neither ledger
+fails I8 (`family.held`).
 """
 
 from __future__ import annotations
 
-from . import graph, schema, words
+from . import CheckError, graph, schema, words
 from . import family as family_mod
 
 #: The evidence kinds a card names as files, beside the Lean file.
@@ -51,6 +53,8 @@ def card(entry, family, rows=None) -> dict:
     links = []
     for direction, kind, other in graph.neighbours(rows, entry.id):
         found = by_id.get(other)
+        if found is None and not family_mod.held(family.private is not None, by_id.get, other):
+            raise CheckError(f"I8 links: {entry.rel}: field '{kind}': {other} is in neither ledger")
         links.append({
             "direction": direction,
             "kind": kind,

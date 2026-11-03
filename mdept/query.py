@@ -61,11 +61,11 @@ FIELD_WEIGHTS = {"aka": 3, "phrasings": 3, "title": 2, "plain": 2}
 #: BM25's term-frequency saturation and length normalisation, at their usual values.
 BM25_K1 = 1.2
 BM25_B = 0.75
-#: The share of the query's attainable score a hit must reach to be offered. Set on
-#: `bench/queries.yaml` (3 November 2026, before the aka and phrasings backfill): 0.3
-#: keeps mined recall@5 at 0.84 and holds 2 of 6 no-answer rows; 0.4 holds 5 of 6 at
-#: recall@5 0.76. The lower floor wins because a missed entry is a statement stipulated
-#: twice, while a weak hit costs a glance at its score.
+#: The share of the query's attainable score a hit must reach to be offered. On
+#: `bench/queries.yaml` it keeps mined recall@5 at 1.0, on the family and on the public
+#: ledger alone, and holds 2 of 6 no-answer rows on the family (5 of 6 on the public
+#: ledger alone). It sits low because a missed entry is a statement stipulated twice,
+#: while a weak hit costs a glance at its score.
 SCORE_FLOOR = 0.3
 #: How many hits print as cards.
 DEFAULT_K = 8
@@ -106,14 +106,8 @@ def hits(entry, terms: list[str]) -> int:
     """How many times these terms occur across the searchable fields."""
     if not terms:
         return 0
-    haystack = " \n".join(searchable(entry).values()).lower()
-    return sum(haystack.count(term.lower()) for term in terms)
-
-
-def one_line(text: str, width: int = STATEMENT_WIDTH) -> str:
-    """A block of prose or LaTeX collapsed to one line, cut to `width`."""
-    flat = " ".join(str(text).split())
-    return flat if len(flat) <= width else flat[: width - 1].rstrip() + "…"
+    haystack = " \n".join(searchable(entry).values())
+    return sum(haystack.count(term) for term in terms)
 
 
 def citation_words(status: str) -> list[str]:
@@ -261,7 +255,7 @@ class Ranker:
         that says the ledger's phrase satisfies the consumer's phrase in full.
         """
         reached = attainable = 0.0
-        for _count, alternatives in groups:
+        for alternatives in groups:
             cap = min(sum(self.ideal(t) for t in alt) for alt in alternatives)
             best = max(sum(self.score(entry_id, t) for t in alt) for alt in alternatives)
             reached += min(best, cap)
@@ -300,7 +294,7 @@ def rank(family, terms: list[str], k: int = DEFAULT_K, topic: str | None = None,
     return {
         "query": {
             "terms": terms,
-            "groups": [[list(alt) for alt in alternatives] for _count, alternatives in groups],
+            "groups": [[list(alt) for alt in alternatives] for alternatives in groups],
             "topic": topic,
             "status": status,
             "consumer": consumer,
@@ -385,10 +379,10 @@ def render_search(answer: dict) -> list[str]:
         hit = f"  ({record['hits']} hit{plural})" if record["hits"] else ""
         lines.append(f"{record['id']}  {record['status']:<16}{record['title']}{hit}")
         if record["statement"]:
-            lines.append(f"    statement  {one_line(record['statement'])}")
+            lines.append(f"    statement  {words.cut(record['statement'], STATEMENT_WIDTH)}")
         cited = "; ".join(record["cited_by"]) or "nothing cites it yet"
-        words = f"  [cite with: {' | '.join(record['citation_words'])}]" if record["citation_words"] else ""
-        lines.append(f"    cited by   {cited}{words}")
+        cite_with = f"  [cite with: {' | '.join(record['citation_words'])}]" if record["citation_words"] else ""
+        lines.append(f"    cited by   {cited}{cite_with}")
     return lines
 
 

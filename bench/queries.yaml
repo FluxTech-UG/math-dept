@@ -6,8 +6,9 @@
 #
 # These rows are the mined split: each was written from the request its entry came in
 # with, in other words than the entry's title. It measures how well the search finds a
-# statement from the words it was filed in, so its recall is a floor, not a target. The
-# held-out split is added by a context that reads only the consumers' documents.
+# statement from the words it was filed in, and `--check` holds its recall@5 to
+# `MINED_RECALL_FLOOR` in `mdept/bench.py`. A held-out row is written by a context that
+# reads only the consumers' documents.
 # Abstract mathematics only: this file is public.
 rows:
   - {q: closed form for the gain coupling viscous and thermal diffusion in one channel cross-section, expected: [MD_0011], form: math-words}

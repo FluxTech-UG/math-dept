@@ -10,10 +10,12 @@ the module path changes, from `MathDeptPrivate.Results.MD_0007` to
 `MathDept.Results.MD_0007`, and every private Lean file that names the old
 module (its `import` line, and any mention of the module in its comments) is
 rewritten to the new one in the same move, so the private library still builds.
-The same holds for prose: a markdown pointer `MathDeptPrivate/<Dir>/MD_0007.lean`
-to a released entry's Lean file, in the released entry itself or in any ledger
-entry or informal proof of either repo, becomes `MathDept/<Dir>/MD_0007.lean`
-in the same move, so no released text points at a file that left.
+The same holds for prose: a markdown pointer to a Lean file the release moves
+(`MathDeptPrivate/<Dir>/MD_0007.lean`, an entry's `formal.file`), in a released
+entry itself or in any ledger entry or informal proof of either repo, becomes
+that file's public path (`MathDept/<Dir>/MD_0007.lean`) in the same move, so no
+text points at a file that left. A pointer to a private Lean file that stays
+(a draft no `formal.file` names) is left as written.
 
 What is dropped, and why: `raised_by.doc`, `raised_by.anchor` and
 `raised_by.application` describe a consumer's internal document and its
@@ -76,7 +78,7 @@ _IMPORT_LINE_RE = re.compile(r"^import\b(.*)$", re.MULTILINE)
 
 #: A prose pointer to a Lean file of the private library, named by its entry ID.
 #: A path that continues another path (`../x/MathDeptPrivate/...`) is not one.
-_PROSE_POINTER_RE = re.compile(
+PROSE_POINTER_RE = re.compile(
     rf"(?<![\w/.-]){re.escape(PRIVATE_LIB_PREFIX)}(?P<rest>(?:[A-Za-z0-9_]+/)*(?P<id>MD_\d{{4}})\.lean)"
 )
 #: The markdown surfaces of both repos whose prose pointers follow a released Lean file.
@@ -220,20 +222,24 @@ def plan_rewrites(private: Path, moves: list, batch_modules) -> list[tuple[Path,
     return rewrites
 
 
-def rewrite_prose(text: str, ids) -> str:
-    """`text` with every prose pointer to the private Lean file of an entry in `ids` made public."""
-    return _PROSE_POINTER_RE.sub(
-        lambda m: PUBLIC_LIB_PREFIX + m.group("rest") if m.group("id") in ids else m.group(0), text)
+def lean_replacements(moves, private: Path, public: Path) -> dict[str, str]:
+    """{private repo-relative path: public repo-relative path} for every Lean file the moves carry."""
+    return {source.relative_to(private).as_posix(): destination.relative_to(public).as_posix()
+            for source, destination in moves if source.suffix == ".lean"}
 
 
-def plan_prose_rewrites(roots, ids, moves, entries) -> list[tuple[Path, Path, str, str]]:
+def rewrite_prose(text: str, replacements: dict[str, str]) -> str:
+    """`text` with every prose pointer to a moving Lean file (a key of `replacements`) made its public path."""
+    return PROSE_POINTER_RE.sub(lambda m: replacements.get(m.group(0), m.group(0)), text)
+
+
+def plan_prose_rewrites(roots, replacements, moves, entries) -> list[tuple[Path, Path, str, str]]:
     """Every ledger entry and informal proof, in either repo, whose prose points at a moving Lean file.
 
     Returns the `plan_rewrites` shape. The moving entries' own ledger files are
     left out: they are rewritten when the release renders them (`rewrite_prose`
     over the body), and their originals are already kept for the rollback.
     """
-    ids = frozenset(ids)
     moving = {source.resolve(): destination for source, destination in moves}
     rendered = {entry.path.resolve() for entry in entries}
     rewrites = []
@@ -246,7 +252,7 @@ def plan_prose_rewrites(roots, ids, moves, entries) -> list[tuple[Path, Path, st
                 if parse.is_ledger_view(path.name) or path.resolve() in rendered:
                     continue
                 text = path.read_text(encoding="utf-8")
-                new = rewrite_prose(text, ids)
+                new = rewrite_prose(text, replacements)
                 if new != text:
                     rewrites.append((moving.get(path.resolve(), path), path, text, new))
     return rewrites
@@ -276,9 +282,10 @@ def release(entry_ids, public: Path, private: Path, dry_run: bool = False) -> di
     batch_modules = frozenset(module_of(e.at("formal.file")) for e in entries if e.at("formal.file"))
     moves = [move for entry in entries for move in plan_moves(private, public, entry, batch_modules)]
     rewrites = plan_rewrites(private, moves, batch_modules)
-    rewrites += plan_prose_rewrites((public, private), ids, moves, entries)
+    replacements = lean_replacements(moves, private, public)
+    rewrites += plan_prose_rewrites((public, private), replacements, moves, entries)
     fronts = {entry.id: abstract_provenance(entry.front) for entry in entries}
-    bodies = {entry.id: rewrite_prose(entry.body, ids) for entry in entries}
+    bodies = {entry.id: rewrite_prose(entry.body, replacements) for entry in entries}
     plan = {
         "entries": ids,
         "moves": [(str(s), str(d)) for s, d in moves],

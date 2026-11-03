@@ -16,11 +16,11 @@ is reported by line as unresolvable and kept out of the scores.
 
 Two splits. A mined row (the default) is written from the request a statement
 came in with, so it measures how well the search finds a statement from the
-words it was filed in; its recall is a floor, not a target. A row with
-`held_out: true` is written by a context that never saw the entry, from the
-consumer's document alone, and it is the split the gate holds to
-`HELD_OUT_RECALL_TARGET`. While the file holds no held-out row `--check` prints
-the report and passes.
+words it was filed in; the gate holds its recall@5 to `MINED_RECALL_FLOOR`, so a
+change to the ranker, the synonyms or an entry's words that loses a statement
+fails `--check`. A row with `held_out: true` is written by a context that never
+saw the entry, from the consumer's document alone, and when the file holds
+such rows the gate also holds their recall@5 to `HELD_OUT_RECALL_TARGET`.
 """
 
 from __future__ import annotations
@@ -41,7 +41,11 @@ ROW_KEYS = ("q", "expected", "form", "held_out", "source", "note")
 REQUIRED_ROW_KEYS = ("q", "expected", "form")
 #: How a query is phrased. `no-answer` rows carry no expected ID, and only they do.
 FORMS = ("math-words", "engineering-words", "latex", "candidate-title", "restatement", "no-answer")
-#: The held-out split's recall@5 the gate requires once the file holds held-out rows.
+#: The mined split's recall@5 the gate requires. The bench measures 1.0 on the family
+#: and on the public ledger alone, so the floor lets a row or two slip past rank five
+#: and fails a change that loses more.
+MINED_RECALL_FLOOR = 0.95
+#: The held-out split's recall@5 the gate requires when the file holds held-out rows.
 HELD_OUT_RECALL_TARGET = 0.85
 TOP = 5
 
@@ -130,14 +134,22 @@ def _scores(outcomes: list[dict]) -> dict:
 
 
 def gate(result: dict) -> tuple[bool, str]:
-    """(passes, why): soft while there is no held-out row, then the held-out recall@5 against its target."""
+    """(passes, why): the mined recall@5 against its floor, then the held-out recall@5 against its target when held-out rows exist.
+
+    A mined split with no answerable row in this family fails: there is nothing
+    to hold the floor to, and a gate that passes on nothing guards nothing.
+    """
+    recall = result["splits"].get("mined", {}).get("recall@5")
+    if recall is None or recall < MINED_RECALL_FLOOR:
+        return False, f"mined recall@5 {recall} is below the floor {MINED_RECALL_FLOOR}"
+    why = f"mined recall@5 {recall} meets the floor {MINED_RECALL_FLOOR}"
     held_out = result["splits"].get("held-out")
     if held_out is None:
-        return True, "no held-out rows yet: the report is printed and the gate passes"
-    recall = held_out.get("recall@5")
-    if recall is None or recall < HELD_OUT_RECALL_TARGET:
-        return False, f"held-out recall@5 {recall} is below the target {HELD_OUT_RECALL_TARGET}"
-    return True, f"held-out recall@5 {recall} meets the target {HELD_OUT_RECALL_TARGET}"
+        return True, why
+    held_recall = held_out.get("recall@5")
+    if held_recall is None or held_recall < HELD_OUT_RECALL_TARGET:
+        return False, f"held-out recall@5 {held_recall} is below the target {HELD_OUT_RECALL_TARGET}"
+    return True, f"{why}; held-out recall@5 {held_recall} meets the target {HELD_OUT_RECALL_TARGET}"
 
 
 def render(result: dict, misses: bool) -> list[str]:
@@ -160,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m mdept.bench", description=__doc__.splitlines()[0])
     parser.add_argument("--root", default=None, help="a math repo root (default: nearest ancestor with ledger/)")
     parser.add_argument("--file", default=None, help=f"the bench file (default: <root>/{BENCH_PATH})")
-    parser.add_argument("--check", action="store_true", help="fail when the held-out split misses its target")
+    parser.add_argument("--check", action="store_true", help="fail when the mined split misses its floor or the held-out split its target")
     parser.add_argument("--misses", action="store_true", help="list every missed row")
     parser.add_argument("--json", action="store_true", help="emit the machine view on stdout")
     args = parser.parse_args(argv)

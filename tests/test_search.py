@@ -52,6 +52,7 @@ def test_latex_macros_read_as_words():
     assert words.tokens(r"$\nu \le \alpha$") == ["nu", "most", "alpha"]
     assert words.tokens(r"$\text{Let } \mathbb{R}^2 \ni x$") == ["2", "ni"]
     assert words.tokens(r"$\nabla G$") == ["nabla", "gradient"]
+    assert words.tokens("Poincaré Fréchet Hölder") == words.tokens("Poincare Frechet Holder")
 
 
 def test_an_entry_id_stays_one_token_and_plurals_fold():
@@ -68,8 +69,8 @@ def test_ing_and_ed_endings_fold_to_one_root():
 def test_a_synonym_phrase_becomes_one_group_with_two_alternatives():
     pairs = [(("floquet", "matrix"), ("monodromy",))]
     assert words.expand(["floquet", "matrix", "eigenvalue"], pairs) == [
-        (2, [("floquet", "matrix"), ("monodromy",)]),
-        (1, [("eigenvalue",)]),
+        [("floquet", "matrix"), ("monodromy",)],
+        [("eigenvalue",)],
     ]
 
 
@@ -237,6 +238,14 @@ def test_a_link_to_an_id_neither_ledger_holds_prints_as_held(tmp_path, monkeypat
     found = card.card(public.by_id()["MD_0004"], public)
     assert found["links"] == [{"direction": "out", "kind": "revises", "id": "MD_0006",
                                "status": family_mod.HELD, "title": None}]
+
+
+def test_a_link_to_an_id_in_neither_ledger_fails_from_the_private_side(root):
+    """The private side resolves through both ledgers, so nothing is held from there."""
+    edit(root / "good_private" / "ledger" / "MD_0006.md", "revises: null", "revises: MD_0099")
+    family = load(root)
+    with pytest.raises(CheckError, match="I8 links: .*MD_0099"):
+        card.card(family.by_id()["MD_0006"], family)
 
 
 def test_the_consumer_view_renders_the_card(root):

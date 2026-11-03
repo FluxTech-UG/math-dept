@@ -66,6 +66,7 @@ from . import anchors
 from . import audit as audit_mod
 from . import config, parse, schema
 from . import family as family_mod
+from . import release as release_mod
 
 #: Surfaces I12 scans for MD_#### and MDR: tokens.
 REFERENCE_SURFACES = (
@@ -697,6 +698,7 @@ def i12_dangling_references(ctx: Context) -> None:
         text = path.read_text(encoding="utf-8")
         _dangling_ids(ctx, path, text)
         if not ctx.private:
+            _released_lean_pointers(ctx, path, text)
             continue
         stems = {r.stem: r for r in ctx.requests}
         for stem, candidate in sorted(parse.request_tokens(text)):
@@ -707,6 +709,20 @@ def i12_dangling_references(ctx: Context) -> None:
             if candidate not in request.candidates():
                 fail("I12 dangling", ctx.rel(path), "<MDR token>",
                      f"{request.rel} has no '### {candidate}' heading")
+
+
+def _released_lean_pointers(ctx: Context, path: Path, text: str) -> None:
+    """Public run: a prose pointer into the private library at a Lean file this repo holds fails.
+
+    The file was released and the pointer did not follow it. A pointer to a
+    private Lean file this repo lacks names a file that is still private, and passes.
+    """
+    for match in release_mod.PROSE_POINTER_RE.finditer(parse.strip_html_comments(text)):
+        pointer = match.group(0)
+        public = release_mod.publicize(pointer)
+        if (ctx.root / public).is_file():
+            fail("I12 dangling", ctx.rel(path), "<Lean pointer>",
+                 f"{pointer} was released; the file is {public}")
 
 
 def _dangling_ids(ctx: Context, path: Path, text: str) -> None:

@@ -156,7 +156,7 @@ now, and dated attempts live in the private `triage/` record.
 | `make counterexamples` | `python -m mdept.refute --all` | to re-verify every witness |
 | `make test` | `python -m pytest -v` | before a milestone commit |
 | `python -m mdept.query "<question>"` | both ledgers ranked by words, the hits above the score floor as cards; `-k N` hits, `--exact` (substrings as typed), `--topic`, `--status`, `--consumer`, `--resolve MDR:...`, `--json`; one `MD_####` prints that entry's card | step 0 of the protocol, from any repo in the family |
-| `python -m mdept.bench` | the search benchmark over `bench/queries.yaml`: recall@1, recall@5, mean reciprocal rank, no-answer rows; `--check` fails when the held-out split misses its target, `--misses` lists every missed row, `--file`, `--json` | after a change to the ranker, the synonyms, or an entry's `aka` or `phrasings` |
+| `python -m mdept.bench` | the search benchmark over `bench/queries.yaml`: recall@1, recall@5, mean reciprocal rank, no-answer rows; `--check` fails when the mined split's recall@5 falls below its floor or a held-out split misses its target, `--misses` lists every missed row, `--file`, `--json` | after a change to the ranker, the synonyms, or an entry's `aka` or `phrasings` |
 | `python -m mdept.view --consumer NAME --write` | the consumer's own `docs/MATH.md`; `--check` fails on drift, `--out` previews elsewhere | after any status change that reaches a consumer |
 
 `python -m mdept.check` also takes `--run-counterexamples`, `--lean` and `--family`. A
@@ -203,7 +203,10 @@ filenames stay in sync; I12 every `MD_####` and `MDR:` token resolves. In the pu
 repo, I8 and I12 read a well-formed ID absent from the public ledger as unreleased and
 held in the private ledger; in the private repo an ID in neither ledger fails, and its
 full run walks the public sibling's entries (I8, I9a) and reference surfaces (I12) too,
-so a public link to such an ID or to a merged private entry fails there.
+so a public link to such an ID or to a merged private entry fails there. In the public
+repo I12 also fails a prose pointer into the private library
+(`MathDeptPrivate/Results/MD_0007.lean`) at a Lean file the public repo holds: the file
+was released, and the failure names its public path.
 
 **Flow.** I13 inbox lifecycle and Outcome completeness; I14 requests back-link to the
 IDs they seeded; I15 every line of a listed file that names an entry carries its status

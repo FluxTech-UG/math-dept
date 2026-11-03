@@ -1,5 +1,6 @@
-"""`python -m mdept.bench`: the bench file's shape, the scores, and the gate that stays soft until held-out rows exist."""
+"""`python -m mdept.bench`: the bench file's shape, the scores, and the gate on the mined floor and the held-out target."""
 
+import re
 import shutil
 from pathlib import Path
 
@@ -95,12 +96,27 @@ def test_a_row_naming_only_ids_the_family_lacks_is_reported_not_scored(tmp_path)
 # --- the gate -------------------------------------------------------------------------
 
 
-def test_the_gate_is_soft_without_held_out_rows(tmp_path, capsys):
-    root = stage(tmp_path)
-    write(root / "good_private" / bench.BENCH_PATH,
-          "  - {q: adding zero on the left, expected: [MD_0004], form: math-words}\n")
-    assert bench.main(["--root", str(root / "good_private"), "--check"]) == 0
-    assert "no held-out rows yet" in capsys.readouterr().out
+def test_the_gate_fails_the_repo_bench_with_wrong_expected_ids(tmp_path, capsys):
+    """The repo's own bench file, each expected ID swapped for the next one the family holds, falls below the mined floor.
+
+    An ID the family does not hold stays as written: its row is unresolvable either way.
+    """
+    held = sorted(entry.id for entry in family_mod.load_family(REPO_ROOT).entries())
+    following = dict(zip(held, held[1:] + held[:1]))
+    text = (REPO_ROOT / bench.BENCH_PATH).read_text(encoding="utf-8")
+    wrong = re.sub(r"expected: \[([^\]]*)\]",
+                   lambda m: "expected: [" + re.sub(r"MD_\d{4}", lambda i: following.get(i.group(0), i.group(0)),
+                                                    m.group(1)) + "]",
+                   text)
+    assert wrong != text
+    copy = tmp_path / "queries.yaml"
+    copy.write_text(wrong, encoding="utf-8")
+    assert bench.main(["--root", str(REPO_ROOT), "--file", str(copy), "--check"]) == 1
+    assert re.search(r"mined recall@5 [0-9.]+ is below the floor 0\.95", capsys.readouterr().err)
+
+
+def test_the_gate_passes_the_repo_bench():
+    assert bench.main(["--root", str(REPO_ROOT), "--check"]) == 0
 
 
 def test_the_gate_fails_a_held_out_split_below_its_target(tmp_path, capsys):

@@ -144,6 +144,10 @@ preflight without moving anything. A release:
   (`MathDeptPrivate.Results.MD_0007` becomes `MathDept.Results.MD_0007`), so a
   dependent left behind keeps building; an entry whose Lean file imports a private
   module is released together with that module or after it, never before;
+- rewrites, in every ledger entry and informal proof of either repo, a prose pointer
+  to a Lean file the release moves (`MathDeptPrivate/Results/MD_0007.lean` becomes
+  `MathDept/Results/MD_0007.lean`); a pointer to a private Lean file that stays, such
+  as a draft no `formal.file` names, is left as written;
 - regenerates both Lean roots, using the public repo's `scripts/gen_root.py` (the one
   copy; the private repo has none), both ledger indexes and both `docs/MAP.md`;
 - re-runs the Lean audit in each repo whose Lean sources changed, so

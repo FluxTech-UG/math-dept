@@ -59,6 +59,7 @@ CASES = [
     Case("I10_unknown_source_tag", "good_public", "I10 cited source", PLAIN),
     Case("I11_extract_without_tag", "good_private", "I11 tag sync", PLAIN),
     Case("I12_dangling_token", "good_private", "I12 dangling", PLAIN),
+    Case("I12_private_pointer_made_public", "good_public", "I12 dangling", PLAIN),
     Case("I13_closed_state_in_inbox", "good_private", "I13 inbox", PLAIN),
     Case("I14_backlink_mismatch", "good_private", "I14 back-link", PLAIN),
     Case("I15_citation_missing_word", "good_private", "I15 citation", FAMILY),

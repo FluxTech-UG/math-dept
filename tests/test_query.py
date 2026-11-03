@@ -12,7 +12,7 @@ import pytest
 
 from mdept import CheckError, ConfigError
 from mdept import family as family_mod
-from mdept import query
+from mdept import query, words
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 BASES = ("good_public", "good_private")
@@ -53,6 +53,12 @@ def test_a_term_matches_the_statement_body(family):
     answer = query.search(family, ["2^n"])
     assert ids(answer) == ["MD_0004", "MD_0005", "MD_0006"]
     assert all(record["hits"] > 0 for record in answer["entries"])
+
+
+def test_an_exact_term_matches_as_typed(family):
+    """Two titles open on "Adding"; the same word in capitals is another substring and finds nothing."""
+    assert {"MD_0001", "MD_0007"} <= set(ids(query.search(family, ["Adding"])))
+    assert ids(query.search(family, ["ADDING"])) == []
 
 
 def test_a_filter_selects_and_terms_only_rank(family):
@@ -107,10 +113,10 @@ def test_a_settled_entry_asks_for_no_word(family):
     assert record["citation_words"] == []
 
 
-def test_one_line_cuts_a_long_statement_and_keeps_a_short_one():
-    assert query.one_line("a  b\n c") == "a b c"
-    assert query.one_line("x" * 200).endswith("…")
-    assert len(query.one_line("x" * 200)) == query.STATEMENT_WIDTH
+def test_a_statement_line_cuts_a_long_statement_and_keeps_a_short_one():
+    assert words.cut("a  b\n c", query.STATEMENT_WIDTH) == "a b c"
+    assert words.cut("x" * 200, query.STATEMENT_WIDTH).endswith("…")
+    assert len(words.cut("x" * 200, query.STATEMENT_WIDTH)) == query.STATEMENT_WIDTH
 
 
 # --- resolve ---------------------------------------------------------------

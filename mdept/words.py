@@ -7,8 +7,9 @@ source, and a keyword ranker reads `\\le` as noise unless something says it mean
 words, a macro that only formats (`\\text`, `\\mathrm`, `\\left`) becomes
 nothing, and any other macro becomes its own name (`\\nabla` reads as nabla).
 
-A token is lower case, either an entry ID (`md_0007`, kept whole so an ID in a
-query still finds its entry) or a run of letters and digits. Single letters are
+A token is lower case with its accents dropped (`Hölder` reads as `holder`), and
+it is either an entry ID (`md_0007`, kept whole so an ID in a query still finds
+its entry) or a run of ASCII letters and digits. Single letters are
 dropped (they are the variables of every statement and select nothing), English
 stopwords are dropped, and `stem` folds a plural and an `-ing` or `-ed` ending
 (`conditioning`, `conditioned` and `conditions` all read as `condition`).
@@ -22,6 +23,7 @@ carries the consumer phrase is matched as if it carried either phrase
 from __future__ import annotations
 
 import re
+import unicodedata
 from pathlib import Path
 
 import yaml
@@ -149,8 +151,10 @@ def stem(word: str) -> str:
 
 def tokens(text: str) -> list[str]:
     """The search tokens of a piece of prose or LaTeX, in order."""
+    decomposed = unicodedata.normalize("NFKD", latex_to_words(text))
+    plain = "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
     out = []
-    for raw in _TOKEN_RE.findall(latex_to_words(text).lower()):
+    for raw in _TOKEN_RE.findall(plain.lower()):
         if raw in STOPWORDS or (len(raw) == 1 and not raw.isdigit()):
             continue
         out.append(stem(raw))
@@ -228,8 +232,8 @@ def synonyms_of(family) -> list[tuple[tuple[str, ...], tuple[str, ...]]]:
     return load_synonyms(public.root / SYNONYMS_PATH)
 
 
-def expand(query: list[str], pairs) -> list[tuple[int, list[tuple[str, ...]]]]:
-    """The query as groups: (how many query tokens the group stands for, its alternatives).
+def expand(query: list[str], pairs) -> list[list[tuple[str, ...]]]:
+    """The query as groups, each the list of its alternative token phrases.
 
     Every query token is its own group with one alternative. Where a pair's
     consumer phrase occurs in the query as consecutive tokens, those tokens become
@@ -237,16 +241,16 @@ def expand(query: list[str], pairs) -> list[tuple[int, list[tuple[str, ...]]]]:
     an entry that says either one scores for it. Longer phrases are matched first
     and a token joins at most one group.
     """
-    groups: list[tuple[int, list[tuple[str, ...]]]] = []
+    groups: list[list[tuple[str, ...]]] = []
     i = 0
     ordered = sorted(pairs, key=lambda pair: -len(pair[0]))
     while i < len(query):
         for consumer, ledger in ordered:
             if tuple(query[i:i + len(consumer)]) == consumer:
-                groups.append((len(consumer), [consumer, ledger]))
+                groups.append([consumer, ledger])
                 i += len(consumer)
                 break
         else:
-            groups.append((1, [(query[i],)]))
+            groups.append([(query[i],)])
             i += 1
     return groups

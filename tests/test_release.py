@@ -12,6 +12,7 @@ and keeps the suite runnable without a toolchain.
 """
 
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -829,6 +830,59 @@ def test_a_dry_run_names_the_prose_rewrites_and_touches_nothing(tmp_path, monkey
     assert str(public / "ledger" / "MD_0004.md") in plan["rewrites"]
     assert str(private / "ledger" / "MD_0005.md") in plan["rewrites"]
     assert snapshot(public, private) == before
+
+
+PUBLIC_LEAN_POINTER_RE = re.compile(r"(?<![\w/.-])MathDept/(?:[A-Za-z0-9_]+/)*MD_\d{4}\.lean")
+
+
+def test_a_pointer_to_a_lean_draft_that_stays_private_is_left_as_written(tmp_path, monkeypatch):
+    """A proven-informal entry with no `formal.file` whose note names a private draft.
+
+    Only the Lean files the release moves are rewritten, so every public Lean path a
+    released entry names exists once it lands, and the draft's pointer keeps naming
+    the file where it still is.
+    """
+    public, private = prepare(tmp_path, monkeypatch)
+    new = DEPENDENT
+    draft = f"MathDeptPrivate/Conjectures/{new}.lean"
+    front, _, body = parse.load_front_matter(private / "ledger" / f"{ENTRY}.md")
+    front["id"] = new
+    front["title"] = "A toy informal entry"
+    front["status"] = "proven-informal"
+    front["formal"] = {"decl": None, "file": None}
+    front["statement_hash"] = None
+    front["provenance"]["settled_by"] = dict(front["provenance"]["settled_by"],
+                                             how="informal-proof", checked_by="2026-11-03")
+    front["evidence"] = [{"kind": "triage", "path": f"triage/{new}.md"},
+                         {"kind": "proof", "path": f"proofs/{new}.md"}]
+    record = (private / "triage" / f"{ENTRY}.md").read_text(encoding="utf-8")
+    (private / "triage" / f"{new}.md").write_text(record.replace(ENTRY, new), encoding="utf-8")
+    (private / "proofs").mkdir(exist_ok=True)
+    (private / "proofs" / f"{new}.md").write_text(
+        f"# {new}: proof\n<!-- role: record | status: current 2026-11-03 | entry: {new} -->\n\n"
+        "## Proof\n\nInduction on n.\n\n## Formalization blockers\n\nNone.\n", encoding="utf-8")
+    body = body.replace("## Current notes\n",
+                        f"## Current notes\n\nClause (i) is formalized in Lean (`{draft}`, no `sorry`).\n", 1)
+    dumped = yaml.dump(front, sort_keys=False, allow_unicode=True).rstrip("\n")
+    (private / "ledger" / f"{new}.md").write_text(f"---\n{dumped}\n---\n{body}", encoding="utf-8")
+    (private / draft).parent.mkdir(parents=True, exist_ok=True)
+    (private / draft).write_text(
+        f"import Mathlib.Data.Nat.Basic\n\nnamespace MathDept.{new}\n\n"
+        "theorem statement_i (n : Nat) : n + 0 = n := by\n  simp\n\n"
+        f"end MathDept.{new}\n", encoding="utf-8")
+    release._regenerate(private)
+    audit_of_disk(private)
+    check.run(private)
+
+    release.release(new, public, private)
+
+    released = (public / "ledger" / f"{new}.md").read_text(encoding="utf-8")
+    named = PUBLIC_LEAN_POINTER_RE.findall(released)
+    assert [path for path in named if not (public / path).is_file()] == [], (
+        f"the released entry names public Lean files that do not exist: {named}")
+    assert f"`{draft}`" in released
+    assert (private / draft).is_file()
+    check.run(public)
 
 
 def test_a_rollback_restores_the_prose_pointers(tmp_path, monkeypatch):
