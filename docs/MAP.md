@@ -499,19 +499,19 @@ _The generated views: `ledger/INDEX.md`, `ledger.json`, `ledger/CATALOG.md` and 
 - _between_column(entry, is_held) -> str  ·L143
 - _status_summary(entries: list) -> list[str]  ·L153
 - _topic_index(entries: list) -> list[str]  ·L165
-- _all_entries(entries: list, is_held) -> list[str]  ·L182
-- _partial_section(entries: list, resolve) -> list[str]  ·L198
-- _by_consumer(entries: list) -> list[str]  ·L207: Which repo raised and which repo cites each entry, one row per entry.
-- _requests(requests: list) -> list[str]  ·L236
-- _report(entries: list, requests: list, resolve) -> list[str]  ·L247
-- _held_section(entries: list, is_held) -> list[str]  ·L257: Section 8, present only when an entry names a held ID (public repo only).
-- render_index(entries: list, requests: list, kind: str, resolve, is_held) -> str  ·L272
-- render_json(entries: list, requests: list, is_held) -> str  ·L297
-- render(root: Path) -> dict[str, str]  ·L329: Every generated view, as {repo-relative path: content}.
-- _strays(root: Path, rendered: dict[str, str]) -> list[str]  ·L354: Catalog topic files on disk that the render no longer produces.
-- drift(root: Path, rendered: dict[str, str] | None=None) -> list[str]  ·L361: The generated paths that are missing, stale, or left over, sorted. Empty when the views are fresh.
-- write(root: Path) -> list[str]  ·L370: Write every view and delete a left-over catalog topic file. Returns the paths that changed.
-- main(argv: list[str] | None=None) -> int  ·L387
+- _all_entries(entries: list, is_held) -> list[str]  ·L180
+- _partial_section(entries: list, resolve) -> list[str]  ·L196
+- _by_consumer(entries: list) -> list[str]  ·L205: Which repo raised and which repo cites each entry, one row per entry.
+- _requests(requests: list) -> list[str]  ·L234
+- _report(entries: list, requests: list, resolve) -> list[str]  ·L245
+- _held_section(entries: list, is_held) -> list[str]  ·L255: Section 8, present only when an entry names a held ID (public repo only).
+- render_index(entries: list, requests: list, kind: str, resolve, is_held) -> str  ·L270
+- render_json(entries: list, requests: list, is_held) -> str  ·L295
+- render(root: Path) -> dict[str, str]  ·L327: Every generated view, as {repo-relative path: content}.
+- _strays(root: Path, rendered: dict[str, str]) -> list[str]  ·L352: Catalog topic files on disk that the render no longer produces.
+- drift(root: Path, rendered: dict[str, str] | None=None) -> list[str]  ·L359: The generated paths that are missing, stale, or left over, sorted. Empty when the views are fresh.
+- write(root: Path) -> list[str]  ·L368: Write every view and delete a left-over catalog topic file. Returns the paths that changed.
+- main(argv: list[str] | None=None) -> int  ·L385
 
 ### mdept/new.py
 _Allocate the next ID and write the entry file._
@@ -1000,21 +1000,22 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L479: The fixture cites `research/toy notes.md`, whose name contains a space.
 - test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L492: A consumer checkout is scanned through git, and every violation is listed.
 - test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L521: MD_0006 is cited from two files in ToyRepo and is one row, not two.
-- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L535: Two citing lines without their status word fail together, one line each.
-- const TOY_PARAGRAPH  ·L554
-- _rewrite_toy(root: Path, paragraph: str) -> None  ·L558
-- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L565: An ID in a line's last characters carries its status word at the next line's start.
-- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L574
-- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L585
-- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L597
-- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L603: MD_0001 carries an orphan artifact; MD_0003 is clean.
-- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L615
-- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L622: A half-built Result of MD_0001 and a stale index fail only the full run.
-- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L642
-- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L648
-- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L657
-- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L667
-- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L678
+- test_the_topic_index_is_topic_entries_and_neighbours(tmp_path)  ·L532: Three columns: the topic, its entries, the topics they also file under.
+- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L546: Two citing lines without their status word fail together, one line each.
+- const TOY_PARAGRAPH  ·L565
+- _rewrite_toy(root: Path, paragraph: str) -> None  ·L569
+- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L576: An ID in a line's last characters carries its status word at the next line's start.
+- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L585
+- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L596
+- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L608
+- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L614: MD_0001 carries an orphan artifact; MD_0003 is clean.
+- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L626
+- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L633: A half-built Result of MD_0001 and a stale index fail only the full run.
+- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L653
+- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L659
+- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L668
+- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L678
+- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L689
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._

@@ -529,6 +529,17 @@ def test_a_consumer_column_lists_each_entry_once(tmp_path):
     assert consumer_section[0].count("MD_0006") == 2, "once as raised, once as cited"
 
 
+def test_the_topic_index_is_topic_entries_and_neighbours(tmp_path):
+    """Three columns: the topic, its entries, the topics they also file under."""
+    root = stage(tmp_path) / "good_public"
+    lines = index.render(root)[index.INDEX_PATH].splitlines()
+    header = lines.index("## 2. Topic Index") + 2
+    assert lines[header] == "| Topic | Entries | Connects to |"
+    assert lines[header + 1] == "|---|---|---|"
+    rows = lines[header + 2:lines.index("", header)]
+    assert rows and all(row.count("|") == 4 for row in rows)
+
+
 # --- I15 collects every violation -------------------------------------------
 
 

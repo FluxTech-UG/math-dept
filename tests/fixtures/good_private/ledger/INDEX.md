@@ -23,10 +23,10 @@
 
 ## 2. Topic Index
 
-| Topic | Entries | Connects to | Key tags |
-|---|---|---|---|
-| arithmetic | MD_0007 | toy | . |
-| toy | MD_0005 MD_0006 MD_0007 | arithmetic | [Test2026] |
+| Topic | Entries | Connects to |
+|---|---|---|
+| arithmetic | MD_0007 | toy |
+| toy | MD_0005 MD_0006 MD_0007 | arithmetic |
 
 ## 3. All entries
 

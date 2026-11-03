@@ -163,7 +163,7 @@ def _status_summary(entries: list) -> list[str]:
 
 
 def _topic_index(entries: list) -> list[str]:
-    lines = ["## 2. Topic Index", "", "| Topic | Entries | Connects to | Key tags |", "|---|---|---|---|"]
+    lines = ["## 2. Topic Index", "", "| Topic | Entries | Connects to |", "|---|---|---|"]
     topics: dict[str, list] = {}
     for entry in entries:
         for topic in entry.front["topics"]:
@@ -171,10 +171,8 @@ def _topic_index(entries: list) -> list[str]:
     for topic in sorted(topics):
         members = topics[topic]
         neighbours = sorted({t for e in members for t in e.front["topics"] if t != topic})
-        tags = sorted({e.front["source"] for e in members if e.front["source"]})
         lines.append(
-            f"| {escape(topic)} | {' '.join(e.id for e in members)} | "
-            f"{' '.join(neighbours) or '.'} | {' '.join(tags) or '.'} |"
+            f"| {escape(topic)} | {' '.join(e.id for e in members)} | {' '.join(neighbours) or '.'} |"
         )
     return lines
 
