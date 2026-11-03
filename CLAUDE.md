@@ -60,6 +60,8 @@ the hypotheses it actually uses.
 | `docs/MAP.md` | Generated file map (`repo-outline`). Read it to find a symbol. |
 | `mdept/anchors.py` | The anchor grammar: what a provenance anchor may say and how it resolves. |
 | `mdept/family.py` | Where the department is, seen from anywhere: both ledgers and the listed consumers. |
+| `site.toml` | The reading site's settings for both builds: GitHub coordinates, the comment label, the giscus values. |
+| `figures/` | `MD_0007.svg`, drawn by the entry's counterexample script (`--svg`) and committed; the site shows it. |
 
 ## Writes stay inside this repo
 
@@ -155,11 +157,13 @@ never be the evidence that settles one.
 
 | Command | What it runs |
 |---|---|
-| `make check` | The validator, the generated-view drift guards, the search bench gate, and the `sorry` fence. Counterexamples and the Lean audit are their own targets. |
+| `make check` | The validator, the generated-view drift guards, the search bench gate, the site check, and the `sorry` fence. Counterexamples and the Lean audit are their own targets. |
 | `make regen` | Rewrites the generated views: `ledger/INDEX.md`, `ledger/CATALOG.md`, `ledger/EDGES.tsv`, `ledger.json`, `MathDept.lean`, `docs/MAP.md`. |
 | `make lean` | `lake build`, then the axiom audit, cached to `audit/latest.json`. |
 | `make counterexamples` | Loads and verifies every script in `counterexamples/`. |
 | `make test` | The pytest suite, which is the one command that covers all guards. |
+| `make site` | Builds the reading site into `site/` (gitignored); the `site` workflow publishes it to GitHub Pages on every push to `main`. |
+| `make figures` | Redraws `figures/MD_####.svg` from every counterexample script that carries `--svg`; commit the result. |
 
 Underneath those:
 
@@ -171,6 +175,14 @@ Underneath those:
 - `python -m mdept.bench [--check] [--misses]` scores the search on `bench/queries.yaml`.
 - `python -m mdept.view --consumer NAME --write|--check [--out PATH]` generates that
   consumer's own `docs/MATH.md`: what it raised, where it cites, what is still pending.
+- `python -m mdept.site --repo R --out DIR|--check` builds the reading site: from this
+  repo the public ledger, from `math-dept-private` both ledgers with the private fields.
+  An entry without `## In plain words` shows a pending placeholder; with one, it is badged
+  unreviewed until `plain_words_checked` carries the date John cleared it. `--check`
+  fails on an unclosed `$`, a dangling link inside the site, or a non-SVG figure.
+- `python -m mdept.comments` (run in `math-dept-private`) files every `comment`-labelled
+  issue of the private tracker into `inbox/comments/` once; `--from-json` reads a saved
+  listing instead of calling `gh`.
 - `python -m mdept.check [--run-counterexamples] [--family] [--lean]` validates the
   ledger. `--lean` reads the cached audit JSON and fails if it is stale against the Lean
   sources. `--family` resolves sibling repos through the private repo's `repos.yaml`, so

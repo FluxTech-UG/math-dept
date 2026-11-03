@@ -17,6 +17,9 @@ Modules, each also runnable as `python -m mdept.<module>`:
 - `refute`  the `Witness` contract and the counterexample runner
 - `symbolic` sympy helpers for identity and inequality refutation
 - `search`  random search over a sampler, producing numeric leads
+- `site`    the reading site: one HTML page per entry and an index (`markup` renders bodies)
+- `comments` the tracker's comment issues, filed into the private inbox
+- `figures` entry figures drawn by the counterexample scripts that carry `--svg`
 
 Nothing here calls Lean. The Lean side writes `audit/latest.json`; the checker
 reads it.

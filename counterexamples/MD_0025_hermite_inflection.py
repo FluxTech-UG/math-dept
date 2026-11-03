@@ -103,3 +103,30 @@ def refute() -> Witness:
             "root in (theta-1) and yhat has an infinite difference quotient at theta = 1."
         ),
     )
+
+
+def _draw(ax) -> None:
+    """The t-component on the first step for three theta; at theta = 1 it meets T where it is flat."""
+    import numpy as np
+
+    _, _, _, ut = _first_interval()
+    t_of = sp.lambdify((_sg, _th), ut, "numpy")
+    sigma = np.linspace(0, 1, 201)
+    for theta, style in ((0.8, ":"), (1.0, "-"), (1.25, "--")):
+        ax.plot(sigma, t_of(sigma, theta), style, label=f"theta = {theta:g}")
+    level = float(_T)
+    ax.axhline(level, color="0.45", linewidth=0.8)
+    ax.text(0.98, level, "T = 1/9", ha="right", va="bottom", color="0.35")
+    ax.plot([1 / 3], [level], "o", color="C3")
+    ax.annotate("crossing at the stationary inflection:\ndt/dsigma = 0 at sigma = 1/3",
+                xy=(1 / 3, level), xytext=(0.42, 0.45), arrowprops={"arrowstyle": "->", "color": "C3"})
+    ax.set_xlabel("sigma, within the first step")
+    ax.set_ylabel("t-component of the extension")
+    ax.legend(loc="upper left", frameon=False)
+
+
+if __name__ == "__main__":
+    # `--svg <path>` draws the figure (`python -m mdept.figures` runs it); without it, nothing runs.
+    from mdept.figures import svg_main
+
+    svg_main(_draw)

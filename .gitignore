@@ -14,6 +14,9 @@ dist/
 # Session scratch
 cc-logs/
 
+# The reading site's local build (`make site`); GitHub Actions builds the published one
+/site/
+
 # The user's global gitignore excludes `.claude/` wholesale. This repo's
 # committed settings and skills live there, and git cannot re-include a file
 # whose parent directory is excluded, so the directory is re-included first and

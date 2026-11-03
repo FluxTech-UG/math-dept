@@ -21,7 +21,8 @@ dependencies = ["sympy>=1.12", "pyyaml>=6.0"]
 
 [project.optional-dependencies]
 search = ["numpy>=1.26"]
-test = ["pytest>=7.0", "math-dept[search]"]
+figures = ["matplotlib>=3.8"]
+test = ["pytest>=7.0", "math-dept[search,figures]"]
 
 [project.urls]
 Repository = "https://github.com/FluxTech-UG/math-dept"

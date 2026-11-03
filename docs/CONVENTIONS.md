@@ -140,7 +140,9 @@ an extract exists; I11 keeps bibliography tags and extract filenames in sync.
 ## Prose
 
 No em dashes. Use a period, a comma, a colon, or parentheses. I17 greps every markdown
-file for U+2014 and fails on the first hit.
+file for U+2014 and fails on the first hit. The one exception is quoted text: the private
+`inbox/comments/` holds tracker comments filed verbatim by `mdept.comments`, and neither
+I17 nor I12 reads it (`QUOTED_SURFACES` in `mdept/check.py`).
 
 LaTeX is written to be readable as source, since most readers of this repo read the
 markdown and not a renderer. State only the current state: an entry says what is known

@@ -68,3 +68,25 @@ def refute() -> Witness:
             "delta t max|beta_1| = 1/2."
         ),
     )
+
+
+def _draw(ax) -> None:
+    """On piece 0 (theta = t) the dense output's excursion beta_1(t) runs above the claimed bound t."""
+    import numpy as np
+
+    t = np.linspace(0, 1, 101)
+    ax.plot(t, _beta1(t), label="|l(u(t)) - l(y0)| = beta_1(t)")
+    ax.plot(t, t * abs(_beta1(1.0)), "--", label="claimed bound delta t max|beta_1| = t")
+    ax.plot([0.5, 0.5], [0.5, 0.75], "o", color="C3")
+    ax.annotate("t = 1/2: 3/4 > 1/2", xy=(0.5, 0.75), xytext=(0.55, 0.35),
+                arrowprops={"arrowstyle": "->", "color": "C3"})
+    ax.set_xlabel("t (piece 0, so theta = t)")
+    ax.set_ylabel("distance from y0")
+    ax.legend(loc="upper left", frameon=False)
+
+
+if __name__ == "__main__":
+    # `--svg <path>` draws the figure (`python -m mdept.figures` runs it); without it, nothing runs.
+    from mdept.figures import svg_main
+
+    svg_main(_draw)

@@ -1,0 +1,29 @@
+# The reading site's settings, read by `python -m mdept.site` (both builds) and
+# `python -m mdept.comments`. This file is the one home of these values: the private
+# repo has no copy and reads this one through its editable install of `mdept`.
+
+# Where the source files live on GitHub. Entry pages link each file (entry, proof,
+# counterexample, Lean module) to https://github.com/<owner>/<repo>/blob/<branch>/<path>,
+# the public repo for released entries, the private repo for unreleased ones.
+[github]
+owner = "FluxTech-UG"
+public_repo = "math-dept"
+private_repo = "math-dept-private"
+branch = "main"
+
+# The private comment route, on every entry page of both builds: a link that opens a new
+# issue in the private repo, titled "MD_####: <title>" and carrying this label.
+# `python -m mdept.comments` files every issue with this label into the private inbox.
+[comments]
+label = "comment"
+
+# The public discussion thread, on the public build only (giscus, backed by GitHub
+# Discussions on the public repo; one thread per entry ID). The values come from
+# https://giscus.app once Discussions and the giscus app are enabled on the repo.
+# While every value still starts with FILL, pages say the discussion opens when the
+# site is published; a mix of filled and FILL values fails the build.
+[giscus]
+repo = "FILL owner/name, e.g. FluxTech-UG/math-dept"
+repo_id = "FILL the data-repo-id giscus.app shows"
+category = "FILL the Discussions category name"
+category_id = "FILL the data-category-id giscus.app shows"
