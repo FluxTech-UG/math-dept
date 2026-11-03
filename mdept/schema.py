@@ -16,7 +16,7 @@ import datetime
 import re
 from pathlib import Path
 
-from . import CheckError
+from . import CheckError, config
 
 # --- vocabularies (closed) --------------------------------------------------
 
@@ -180,8 +180,18 @@ CITED_BY_RE = re.compile(
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
-#: The four body headings every entry carries, in order.
+#: The body headings every entry carries whatever `config.REQUIRE_PLAIN_WORDS` says, in order.
 BODY_HEADINGS = ("Statement", "Hypotheses", "Why it was raised", "Current notes")
+
+
+def required_headings() -> tuple[str, ...]:
+    """The body headings I3 requires on every entry, in order: the five sections, with
+    `## In plain words` after the Hypotheses, while `config.REQUIRE_PLAIN_WORDS` is on, and
+    `BODY_HEADINGS` while it is off. The flag is read at each call, so the set follows it."""
+    if not config.REQUIRE_PLAIN_WORDS:
+        return BODY_HEADINGS
+    return BODY_HEADINGS[:2] + (PLAIN_WORDS_HEADING,) + BODY_HEADINGS[2:]
+
 
 EM_DASH = "\u2014"
 
@@ -222,7 +232,8 @@ PLAIN_WORDS_STATUS_WINDOW = 6
 #: Phrases that report the work on an unsettled entry instead of its claim; each goes stale the
 #: day the entry settles, so I3 refuses them in a conjectured or open entry's section.
 PLAIN_WORDS_STALE_PHRASES = ("already settled", "already proved", "status waits", "status change",
-                             "fresh review", "first draft", "no attempt has been made", "no ladder stage")
+                             "fresh review", "first draft", "no attempt has been made", "no ladder stage",
+                             "no proof yet")
 
 _SENTENCE_END_RE = re.compile(r"(?<=[.!?])\s+")
 #: Stripped from both ends of a word before it is compared; a hyphen inside a word stays, so a

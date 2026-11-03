@@ -1,8 +1,9 @@
 name: site
 
-# Builds the reading site from the ledger (`python -m mdept.site`) and publishes it to
-# GitHub Pages. The build reads the entry files, site.toml and the committed figures/;
-# it runs no Lean and no counterexample script, so it needs only the package itself.
+# Validates the ledger (`python -m mdept.check`), then builds the reading site from it
+# (`python -m mdept.site`) and publishes it to GitHub Pages. The build reads the entry
+# files, site.toml and the committed figures/; neither step runs Lean or a counterexample
+# script, so both need only the package itself.
 # Pages must be set to "GitHub Actions" as its source in the repo settings.
 on:
   push:
@@ -33,6 +34,8 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - run: pip install -e .
+
+      - run: python -m mdept.check
 
       - run: python -m mdept.site --repo . --out build/site
 

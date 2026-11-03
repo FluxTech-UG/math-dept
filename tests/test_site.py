@@ -78,10 +78,10 @@ def test_the_public_build_writes_a_page_per_entry_and_the_index(family, tmp_path
     assert 'data-status-chip="refuted"' in index and '<option value="toy">toy (' in index
 
 
-def test_an_entry_without_plain_words_shows_the_placeholder(family, tmp_path):
+def test_an_entry_without_plain_words_fails_the_build(family, tmp_path):
     set_plain_words(family / "good_public/ledger/MD_0002.md", None)
-    page =(build(family / "good_public", tmp_path) / "MD_0002.html").read_text(encoding="utf-8")
-    assert 'class="badge pw-pending"' in page and "Plain words pending" in page
+    with pytest.raises(CheckError, match="In plain words"):
+        build(family / "good_public", tmp_path)
 
 
 def test_an_unchecked_plain_words_section_is_badged_unreviewed(family, tmp_path):

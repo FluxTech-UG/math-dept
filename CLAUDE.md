@@ -51,7 +51,7 @@ the hypotheses it actually uses.
 | `ledger/INDEX.md` | Generated. Grep the ID here first; it is the fastest route to an entry. |
 | `ledger/CATALOG.md` | Generated. Every entry in one line by topic: the whole ledger at a glance. `ledger/EDGES.tsv` is every link as a row. |
 | `ledger/SYNONYMS.yaml`, `bench/` | Hand-written search inputs: the phrase pairs `mdept.query` ranks with, and the queries `mdept.bench` scores it on. |
-| `ledger/TEMPLATE.md` | The entry template: closed key set plus the four body headings. |
+| `ledger/TEMPLATE.md` | The entry template: closed key set plus the five body headings. |
 | `bibliography.md` | Citations only, topic-indexed. Nothing is paraphrased here. |
 | `counterexamples/` | `MD_0007_slug.py` files, each defining `refute() -> Witness`. |
 | `proofs/` | Informal proofs, each with a Formalization blockers section. |
@@ -177,7 +177,8 @@ Underneath those:
   consumer's own `docs/MATH.md`: what it raised, where it cites, what is still pending.
 - `python -m mdept.site --repo R --out DIR|--check` builds the reading site: from this
   repo the public ledger, from `math-dept-private` both ledgers with the private fields.
-  An entry without `## In plain words` shows a pending placeholder; with one, it is badged
+  An entry without `## In plain words` fails the build while `config.REQUIRE_PLAIN_WORDS` is
+  on, and shows a pending placeholder only while the flag is off; with the section, it is badged
   unreviewed until `plain_words_checked` carries the date John cleared it. `--check`
   fails on an unclosed `$`, a dangling link inside the site, or a non-SVG figure.
 - `python -m mdept.comments` (run in `math-dept-private`) files every `comment`-labelled

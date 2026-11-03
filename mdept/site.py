@@ -29,7 +29,8 @@ comment label and the giscus values have one home.
 
 `--check` builds into a temporary directory and fails on anything a reader would meet
 as a broken page: a body the markup cannot render (an unclosed `$`), a missing
-Statement or Hypotheses, a `plain_words_checked` date with no section to have checked,
+Statement or Hypotheses, a missing `## In plain words` while `config.REQUIRE_PLAIN_WORDS`
+is on, a `plain_words_checked` date with no section to have checked,
 a figure that is not SVG, an unbalanced tag, or a link inside the site to a file the
 build did not write. The output carries no timestamp, so two builds of one ledger are
 byte-identical.
@@ -261,13 +262,19 @@ def neighbourhood(ledger: Ledger, entry, cfg: SiteConfig) -> list[Neighbour]:
 
 
 def plain_words_state(entry) -> tuple[str, str | None]:
-    """('pending', None), ('unreviewed', None) or ('reviewed', date) for the plain-words section."""
-    text = entry.sections().get(schema.PLAIN_WORDS_HEADING, "").strip()
+    """('unreviewed', None) or ('reviewed', date) for the plain-words section.
+
+    A missing or empty section raises while `config.REQUIRE_PLAIN_WORDS` is on; ('pending', None)
+    is the state of such an entry only while the flag is off."""
+    section = entry.sections().get(schema.PLAIN_WORDS_HEADING)
     checked = entry.front.get("plain_words_checked")
-    if not text:
+    if section is None or not section.strip():
         if checked is not None:
             raise CheckError(f"site: {entry.rel}: field 'plain_words_checked': {checked} names a review "
                              f"of a '## {schema.PLAIN_WORDS_HEADING}' section the entry does not carry")
+        if config.REQUIRE_PLAIN_WORDS:
+            raise CheckError(f"site: {entry.rel}: field '## {schema.PLAIN_WORDS_HEADING}': the section is "
+                             f"missing or empty, and every entry carries it (config.REQUIRE_PLAIN_WORDS)")
         return "pending", None
     if checked is None:
         return "unreviewed", None

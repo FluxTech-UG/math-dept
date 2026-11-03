@@ -61,9 +61,10 @@ statement_hash: "sha256 of the audited Lean type"
 ---
 ```
 
-The body is always the same four headings: **Statement** (LaTeX, every quantifier
-explicit), **Hypotheses** (numbered H1, H2, ...), **Why it was raised** (two to five
-lines), **Current notes** (the current state, with dated attempts kept elsewhere).
+The body is always the same five headings: **Statement** (LaTeX, every quantifier
+explicit), **Hypotheses** (numbered H1, H2, ...), **In plain words** (the entry's own
+claim for a reader who skips the Statement), **Why it was raised** (two to five lines),
+**Current notes** (the current state, with dated attempts kept elsewhere).
 
 ## Layout
 

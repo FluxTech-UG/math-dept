@@ -362,6 +362,14 @@ def test_the_stale_phrase_rule_reads_only_unsettled_entries():
     assert schema.plain_words_problems("MD_0004", "proven-informal", text) == []
 
 
+@pytest.mark.parametrize("text", [
+    "No proof yet covers four modes.",
+])
+def test_the_stale_phrase_rule_fires_on_each_phrase(text):
+    rules = [rule for rule, _ in schema.plain_words_problems("MD_0004", "conjectured", text)]
+    assert rules == ["stale-phrase"], text
+
+
 def test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path):
     """A settled entry stripped of every evidence row, with no formal pointer, fails on the
     general rule before any status-specific one, so the message names what is missing."""
@@ -394,8 +402,9 @@ def test_template_front_matter_validates():
     path = REPO_ROOT / "ledger" / "TEMPLATE.md"
     front, _, body = parse.load_front_matter(path)
     schema.validate_front(front, path, "public")
-    for heading in schema.BODY_HEADINGS:
+    for heading in schema.required_headings():
         assert heading in parse.body_sections(body)
+    assert schema.PLAIN_WORDS_HEADING in parse.body_sections(body)
 
 
 def test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path):

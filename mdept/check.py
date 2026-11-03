@@ -332,16 +332,13 @@ def i3_schema(ctx: Context) -> None:
     for entry in ctx.entries:
         schema.validate_front(entry.front, ctx.rel(entry.path), ctx.kind)
         headings = list(entry.sections())
-        for required in schema.BODY_HEADINGS:
-            if required not in headings:
+        required = schema.required_headings()
+        for heading in required:
+            if heading not in headings:
                 fail("I3 schema", ctx.rel(entry.path), "<body>",
-                     f"missing the '## {required}' section; the four sections are {list(schema.BODY_HEADINGS)}")
+                     f"every entry carries a '## {heading}' section; the required sections are {list(required)}")
         plain = entry.sections().get(schema.PLAIN_WORDS_HEADING)
         if plain is None:
-            if config.REQUIRE_PLAIN_WORDS:
-                fail("I3 schema", ctx.rel(entry.path), "<body>",
-                     f"every entry carries a '## {schema.PLAIN_WORDS_HEADING}' section stating its own claim "
-                     f"(config.REQUIRE_PLAIN_WORDS)")
             continue
         if not plain.strip():
             fail("I3 schema", ctx.rel(entry.path), "<body>",
