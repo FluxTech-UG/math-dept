@@ -49,6 +49,8 @@ the hypotheses it actually uses.
 | `docs/triage.md` | The math-side ladder (cheap stages first), its budgets, and close-out. |
 | `docs/CONVENTIONS.md` | The repo contract: front-matter schema, the invariants, the generated views. |
 | `ledger/INDEX.md` | Generated. Grep the ID here first; it is the fastest route to an entry. |
+| `ledger/CATALOG.md` | Generated. Every entry in one line by topic: the whole ledger at a glance. `ledger/EDGES.tsv` is every link as a row. |
+| `ledger/SYNONYMS.yaml`, `bench/` | Hand-written search inputs: the phrase pairs `mdept.query` ranks with, and the queries `mdept.bench` scores it on. |
 | `ledger/TEMPLATE.md` | The entry template: closed key set plus the four body headings. |
 | `bibliography.md` | Citations only, topic-indexed. Nothing is paraphrased here. |
 | `counterexamples/` | `MD_0007_slug.py` files, each defining `refute() -> Witness`. |
@@ -153,17 +155,20 @@ never be the evidence that settles one.
 
 | Command | What it runs |
 |---|---|
-| `make check` | The validator, the generated-view drift guards, and the `sorry` fence. Counterexamples and the Lean audit are their own targets. |
-| `make regen` | Rewrites the generated views: `ledger/INDEX.md`, `ledger.json`, `MathDept.lean`, `docs/MAP.md`. |
+| `make check` | The validator, the generated-view drift guards, the search bench gate, and the `sorry` fence. Counterexamples and the Lean audit are their own targets. |
+| `make regen` | Rewrites the generated views: `ledger/INDEX.md`, `ledger/CATALOG.md`, `ledger/EDGES.tsv`, `ledger.json`, `MathDept.lean`, `docs/MAP.md`. |
 | `make lean` | `lake build`, then the axiom audit, cached to `audit/latest.json`. |
 | `make counterexamples` | Loads and verifies every script in `counterexamples/`. |
 | `make test` | The pytest suite, which is the one command that covers all guards. |
 
 Underneath those:
 
-- `python -m mdept.query "<terms>" [--topic T] [--status S] [--consumer NAME]
-  [--resolve MDR:...] [--json]` searches both ledgers from any directory in the family
-  and reports what a request token became. It is step 0 of `docs/protocol.md`.
+- `python -m mdept.query "<question>" [-k N] [--exact] [--topic T] [--status S]
+  [--consumer NAME] [--resolve MDR:...] [--json]` ranks both ledgers against the words
+  from any directory in the family, prints the hits above the score floor as cards, and
+  reports what a request token became; `--exact` matches substrings as typed, and one
+  `MD_####` prints that entry's card. It is step 0 of `docs/protocol.md`.
+- `python -m mdept.bench [--check] [--misses]` scores the search on `bench/queries.yaml`.
 - `python -m mdept.view --consumer NAME --write|--check [--out PATH]` generates that
   consumer's own `docs/MATH.md`: what it raised, where it cites, what is still pending.
 - `python -m mdept.check [--run-counterexamples] [--family] [--lean]` validates the

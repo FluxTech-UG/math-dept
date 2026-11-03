@@ -1,5 +1,5 @@
 # Protocol: file a request, settle it, release it
-<!-- role: runbook | status: current 2026-09-17 | cited-by: CLAUDE.md -->
+<!-- role: runbook | status: current 2026-11-03 | cited-by: CLAUDE.md -->
 
 One loop with two halves. A session in a consumer repo files a request into the
 private inbox; a session in `math-dept-private` settles it and releases what belongs
@@ -20,9 +20,18 @@ python -m mdept.query --topic TOPIC --status open
 ```
 
 Both ledgers are searched, released and unreleased together, from whatever directory
-you are in. An entry that already covers the statement is cited by its `MD_####` ID,
-and the flow stops there. `python -m mdept.query MD_0007` prints that entry, the words
-a citing line must carry, and where it is already cited.
+you are in. Ask in your own words, not the ledger's: the query is ranked against each
+entry's title, informal names, phrasings, plain-words section and statement, and the
+synonym pairs in `ledger/SYNONYMS.yaml` carry a consumer's phrase to the ledger's. Each
+hit prints as a card with its score. A line saying nothing clears the floor means the
+ledger may not hold the statement: try other words, and then read the catalog before
+filing. `ledger/CATALOG.md` lists every entry in one line, grouped by topic, refuted and
+merged entries included; the private repo's catalog lists both ledgers. A LaTeX fragment
+or a path is searched as typed with `--exact`.
+
+An entry that already covers the statement is cited by its `MD_####` ID, and the flow
+stops there. `python -m mdept.query MD_0007` prints that entry's card, the words a
+citing line must carry, and where it is already cited.
 
 In the same pass, resolve every pending `MDR:` token in this repo:
 

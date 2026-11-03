@@ -69,12 +69,15 @@ lines), **Current notes** (the current state, with dated attempts kept elsewhere
 
 ```
 math-dept/
-  ledger/MD_0007.md        one statement per file; INDEX.md and ledger.json are generated
+  ledger/MD_0007.md        one statement per file
+  ledger/                  generated INDEX.md, CATALOG.md, EDGES.tsv; SYNONYMS.yaml for the search
+  ledger.json              generated: the ledger as data
   bibliography.md          topic-indexed citations, with a trust Kind on every source
   proofs/                  informal proofs, each naming its formalization blockers
   counterexamples/         MD_0007_slug.py, each defining refute() -> Witness
   MathDept/                Lean: Defs/, Results/, Conjectures/, Citations.lean, Smoke.lean
-  mdept/                   the Python package: schema, parse, check, index, audit, refute
+  mdept/                   the Python package: schema, parse, check, index, audit, refute, query
+  bench/                   queries.yaml: the search benchmark
   scripts/                 AxiomAudit.lean and the generated-root writer
   audit/                   the axiom allowlist and the cached audit JSON
   docs/                    protocol.md, triage.md, CONVENTIONS.md, MAP.md
@@ -116,11 +119,21 @@ status word and every mention of an entry known to the ledger, generated views f
 dates monotone, no em dashes, and `sorry` fenced to `Conjectures/`. Each failure names
 the offending path and field.
 
-**Read interface.** `python -m mdept.query "<terms>"` searches both ledgers, ranks by
-term hits, and prints each entry with its status, its statement and where it is cited;
-`--resolve MDR:<stem>` reports what a request became. `python -m mdept.view --consumer
-NAME --write` generates that consumer repo's own `docs/MATH.md` and `--check` fails on
-drift. Both take `--json`, and the human output is derived from that shape.
+**Read interface.** `python -m mdept.query "<a question in your own words>"` searches
+both ledgers. It ranks every entry by BM25 over its fields, the informal names (`aka`),
+phrasings, title and plain-words section weighted above the rest (`FIELD_WEIGHTS`), with
+the query widened by the synonym pairs in `ledger/SYNONYMS.yaml`. The hits at or above a
+score floor print as cards: status, statement, hypotheses, Lean name, links and where the
+entry is cited. When nothing clears the floor the answer says so in one line, which means
+the ledger may not hold the statement. `--exact` counts substrings as typed, for a LaTeX
+fragment or a path; `python -m mdept.query MD_0007` prints that entry's card;
+`--resolve MDR:<stem>` reports what a request became. `ledger/CATALOG.md` lists every
+entry in one line, grouped by topic, so the whole ledger reads at a glance; past its
+token budget it becomes a contents page over one `CATALOG-<topic>.md` per topic.
+`python -m mdept.bench` scores the search on `bench/queries.yaml`: queries in a
+consumer's words and the entries they should find. `python -m mdept.view --consumer NAME
+--write` generates that consumer repo's own `docs/MATH.md` and `--check` fails on drift.
+Query, bench and view take `--json`, and the human output is derived from that shape.
 
 **Refutation toolkit.** A counterexample is a Python file that defines
 `refute() -> Witness`. A `Witness` carries the entry ID, the exact point, and the claim as
@@ -148,7 +161,10 @@ as results. A `conjectured` or `open` entry is citable only as what it is, writt
 closed, and any text citing it says "refuted" in the same line.
 
 `ledger/INDEX.md` is generated from the entries: grep the ID there for its status, its
-kind, its formal declaration, and its links to neighboring statements.
+kind, its formal declaration, and its links to neighboring statements. `ledger/CATALOG.md`
+is generated beside it and holds one line per entry, for finding the entry a statement
+already has; `ledger/EDGES.tsv` is every link between entries and every citation, one
+tab-separated row each.
 
 ## Credit
 
