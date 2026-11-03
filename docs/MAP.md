@@ -639,30 +639,34 @@ _The refutation contract: a `Witness`, and the runner over `counterexamples/`._
 
 ### mdept/release.py
 _Move settled entries from the private repo into this public one._
-- const MOVABLE_STATUSES  ·L62
-- const PRIVATE_LIB_PREFIX  ·L64
-- const PUBLIC_LIB_PREFIX  ·L65
-- const PRIVATE_MODULE_PREFIX  ·L67
-- const _IMPORT_LINE_RE  ·L71
-- private_imports(text: str) -> list[str]  ·L74: Every private module a Lean file's `import` lines name, comments cut away.
-- publicize(rel: str) -> str  ·L82: A private repo-relative path rewritten to its public counterpart.
-- module_of(rel: str) -> str  ·L93: The Lean module a repo-relative `.lean` path compiles to.
-- _load_entry(root: Path, entry_id: str)  ·L98
-- abstract_provenance(front: dict) -> dict  ·L106: Return a copy of the front matter with every private-only field removed.
-- plan_moves(private: Path, public: Path, entry, batch_modules=frozenset()) -> list[tuple[Path, Path]]  ·L152: Every (source, destination) pair releasing `entry` performs.
-- plan_rewrites(private: Path, moves: list, batch_modules) -> list[tuple[Path, Path, str, str]]  ·L183: Every Lean file whose text names a module moving in this batch.
-- release(entry_ids, public: Path, private: Path, dry_run: bool=False) -> dict  ·L211: Release one entry (an ID) or a batch (a list of IDs), all or nothing.
-- render_entry(front: dict, body: str) -> str  ·L296: The public entry file: the abstracted front matter over the unchanged body.
-- preflight(entries: list, fronts: dict, moves: list, public: Path) -> None  ·L302: Refuse a release that cannot land, before anything moves.
-- _roll_back(completed: list, originals: dict) -> None  ·L357: Undo every move that happened, newest first, then restore every rewritten file.
-- _read_audit_bytes(root: Path) -> bytes | None  ·L368
-- _restore_audits(cached: dict) -> None  ·L373: Put each repo's cached audit back exactly as it was before the release.
-- _regenerate(root: Path) -> None  ·L384: Rewrite `root`'s Lean root, generated ledger views and file map (what `make regen` does).
-- _require_outline() -> None  ·L404: Refuse when `repo-outline`, which rewrites `docs/MAP.md`, is not on PATH.
-- _outline(root: Path) -> None  ·L413: Rewrite `docs/MAP.md`, which lists the counterexample scripts a release moves.
-- _audit(root: Path) -> None  ·L422: Re-run the Lean audit and rewrite `audit/latest.json` (what `make lean` does in `root`).
-- _verify(root: Path, needs_lean: bool) -> dict  ·L435
-- main(argv: list[str] | None=None) -> int  ·L449
+- const MOVABLE_STATUSES  ·L66
+- const PRIVATE_LIB_PREFIX  ·L68
+- const PUBLIC_LIB_PREFIX  ·L69
+- const PRIVATE_MODULE_PREFIX  ·L71
+- const _IMPORT_LINE_RE  ·L75
+- const _PROSE_POINTER_RE  ·L79
+- const PROSE_SURFACES  ·L83
+- private_imports(text: str) -> list[str]  ·L86: Every private module a Lean file's `import` lines name, comments cut away.
+- publicize(rel: str) -> str  ·L94: A private repo-relative path rewritten to its public counterpart.
+- module_of(rel: str) -> str  ·L105: The Lean module a repo-relative `.lean` path compiles to.
+- _load_entry(root: Path, entry_id: str)  ·L110
+- abstract_provenance(front: dict) -> dict  ·L118: Return a copy of the front matter with every private-only field removed.
+- plan_moves(private: Path, public: Path, entry, batch_modules=frozenset()) -> list[tuple[Path, Path]]  ·L164: Every (source, destination) pair releasing `entry` performs.
+- plan_rewrites(private: Path, moves: list, batch_modules) -> list[tuple[Path, Path, str, str]]  ·L195: Every Lean file whose text names a module moving in this batch.
+- rewrite_prose(text: str, ids) -> str  ·L223: `text` with every prose pointer to the private Lean file of an entry in `ids` made public.
+- plan_prose_rewrites(roots, ids, moves, entries) -> list[tuple[Path, Path, str, str]]  ·L229: Every ledger entry and informal proof, in either repo, whose prose points at a moving Lean file.
+- release(entry_ids, public: Path, private: Path, dry_run: bool=False) -> dict  ·L255: Release one entry (an ID) or a batch (a list of IDs), all or nothing.
+- render_entry(front: dict, body: str) -> str  ·L344: The public entry file: the abstracted front matter over the unchanged body.
+- preflight(entries: list, fronts: dict, moves: list, public: Path) -> None  ·L350: Refuse a release that cannot land, before anything moves.
+- _roll_back(completed: list, originals: dict) -> None  ·L405: Undo every move that happened, newest first, then restore every rewritten file.
+- _read_audit_bytes(root: Path) -> bytes | None  ·L416
+- _restore_audits(cached: dict) -> None  ·L421: Put each repo's cached audit back exactly as it was before the release.
+- _regenerate(root: Path) -> None  ·L432: Rewrite `root`'s Lean root, generated ledger views and file map (what `make regen` does).
+- _require_outline() -> None  ·L452: Refuse when `repo-outline`, which rewrites `docs/MAP.md`, is not on PATH.
+- _outline(root: Path) -> None  ·L461: Rewrite `docs/MAP.md`, which lists the counterexample scripts a release moves.
+- _audit(root: Path) -> None  ·L470: Re-run the Lean audit and rewrite `audit/latest.json` (what `make lean` does in `root`).
+- _verify(root: Path, needs_lean: bool) -> dict  ·L483
+- main(argv: list[str] | None=None) -> int  ·L497
 
 ### mdept/schema.py
 _The closed front-matter schema for a ledger entry._
@@ -1125,6 +1129,14 @@ _Releasing an entry is all or nothing._
 - test_a_batch_refuses_a_repeated_id(tmp_path, monkeypatch)  ·L759
 - test_the_cli_takes_several_ids(tmp_path, monkeypatch, capsys)  ·L765
 - test_release_refuses_without_repo_outline(tmp_path, monkeypatch)  ·L775
+- const PROSE_PRIVATE  ·L784
+- const PROSE_PUBLIC  ·L785
+- const OTHER_PRIVATE  ·L786
+- _add_note(path: Path, sentence: str) -> None  ·L789
+- _stage_prose_pointers(public: Path, private: Path) -> None  ·L795: The moving entry, a public entry and a private entry each name the moving Lean file in prose.
+- test_a_release_rewrites_prose_pointers_to_the_moved_lean_file(tmp_path, monkeypatch)  ·L805
+- test_a_dry_run_names_the_prose_rewrites_and_touches_nothing(tmp_path, monkeypatch)  ·L824
+- test_a_rollback_restores_the_prose_pointers(tmp_path, monkeypatch)  ·L834
 
 ### tests/test_root_fresh.py
 _Guard: MathDept.lean imports exactly the modules on disk._

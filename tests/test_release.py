@@ -777,3 +777,71 @@ def test_release_refuses_without_repo_outline(tmp_path, monkeypatch):
     monkeypatch.setattr(shutil, "which", lambda name: None)
     with pytest.raises(ConfigError, match="repo-outline is not on PATH"):
         REAL_OUTLINE(root / "good_public")
+
+
+# --- prose pointers to a released Lean file follow it --------------------------
+
+PROSE_PRIVATE = f"`{LEAN_PRIVATE}`"
+PROSE_PUBLIC = f"`{LEAN_PUBLIC}`"
+OTHER_PRIVATE = "`MathDeptPrivate/Results/MD_0006.lean`"
+
+
+def _add_note(path: Path, sentence: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    assert "## Current notes\n" in text
+    path.write_text(text.replace("## Current notes\n", f"## Current notes\n\n{sentence}\n", 1), encoding="utf-8")
+
+
+def _stage_prose_pointers(public: Path, private: Path) -> None:
+    """The moving entry, a public entry and a private entry each name the moving Lean file in prose."""
+    _add_note(private / "ledger" / f"{ENTRY}.md", f"The formal proof is {PROSE_PRIVATE}.")
+    _add_note(public / "ledger" / "MD_0004.md",
+              f"Compare {PROSE_PRIVATE}, and the unreleased {OTHER_PRIVATE}.")
+    _add_note(private / "ledger" / "MD_0005.md", f"The left identity is {PROSE_PRIVATE}.")
+    for repo in (public, private):
+        release._regenerate(repo)
+
+
+def test_a_release_rewrites_prose_pointers_to_the_moved_lean_file(tmp_path, monkeypatch):
+    public, private = prepare(tmp_path, monkeypatch)
+    _stage_prose_pointers(public, private)
+
+    plan = release.release(ENTRY, public, private)
+
+    moved = (public / "ledger" / f"{ENTRY}.md").read_text(encoding="utf-8")
+    assert f"The formal proof is {PROSE_PUBLIC}." in moved and LEAN_PRIVATE not in moved
+    other_public = (public / "ledger" / "MD_0004.md").read_text(encoding="utf-8")
+    assert f"Compare {PROSE_PUBLIC}, and the unreleased {OTHER_PRIVATE}." in other_public
+    other_private = (private / "ledger" / "MD_0005.md").read_text(encoding="utf-8")
+    assert f"The left identity is {PROSE_PUBLIC}." in other_private
+    for path in (public / "ledger" / f"{ENTRY}.md", public / "ledger" / "MD_0004.md",
+                 private / "ledger" / "MD_0005.md"):
+        assert str(path) in plan["rewrites"]
+    check.run(private)
+    check.run(public)
+
+
+def test_a_dry_run_names_the_prose_rewrites_and_touches_nothing(tmp_path, monkeypatch):
+    public, private = prepare(tmp_path, monkeypatch)
+    _stage_prose_pointers(public, private)
+    before = snapshot(public, private)
+    plan = release.release(ENTRY, public, private, dry_run=True)
+    assert str(public / "ledger" / "MD_0004.md") in plan["rewrites"]
+    assert str(private / "ledger" / "MD_0005.md") in plan["rewrites"]
+    assert snapshot(public, private) == before
+
+
+def test_a_rollback_restores_the_prose_pointers(tmp_path, monkeypatch):
+    public, private = prepare(tmp_path, monkeypatch)
+    _stage_prose_pointers(public, private)
+    before = snapshot(public, private)
+
+    def refuse(root, needs_lean):
+        raise CheckError("I9a contradiction: injected failure after the moves")
+
+    monkeypatch.setattr(release, "_verify", refuse)
+    with pytest.raises(CheckError, match="rolled back"):
+        release.release(ENTRY, public, private)
+    after = snapshot(public, private)
+    assert after == before, sorted(str(p) for p in set(before) ^ set(after) | {
+        p for p in before if p in after and before[p] != after[p]})
