@@ -156,7 +156,7 @@ IDs that entries here link to or name in their text or proof, and that this repo
 | MD_0055 | unreleased, held in the private ledger | MD_0052 <body> |
 | MD_0064 | unreleased, held in the private ledger | MD_0049 provenance.connects |
 | MD_0065 | unreleased, held in the private ledger | MD_0094 <proof> |
-| MD_0086 | unreleased, held in the private ledger | MD_0071 <body> |
+| MD_0086 | unreleased, held in the private ledger | MD_0070 <body>, MD_0071 <body> |
 | MD_0087 | unreleased, held in the private ledger | MD_0077 <body> |
 | MD_0088 | unreleased, held in the private ledger | MD_0084 <body> |
 | MD_0089 | unreleased, held in the private ledger | MD_0083 <body> |

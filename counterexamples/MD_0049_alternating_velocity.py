@@ -11,7 +11,7 @@ indices 0, 3 of odd difference.
 
 Conclusion fails. The characteristic polynomial of A = -(alpha K + diag(u) D + diag(h)) is
 (200 l^2 - 398 l - 299)(200 l^2 + 802 l + 301)/40000, whose first factor has the positive real
-root 199/200 + sqrt(99401)/200 (about 1.57). The predicate (all eigenvalues have negative real
+root 199/200 + sqrt(99401)/200 (about 2.57). The predicate (all eigenvalues have negative real
 part) is decided exactly: Routh-Hurwitz on the exact characteristic polynomial.
 """
 from fractions import Fraction

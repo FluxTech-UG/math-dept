@@ -1,6 +1,12 @@
 {
   "entries": [
     {
+      "aka": [
+        "cross-diffusivity gain collapse",
+        "single-geometry gain identity",
+        "Rott bracket from channel functions",
+        "cross problem substitution"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -26,6 +32,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0011.md",
+      "phrasings": [
+        "Can the cross term of an oscillating channel flow be written from the viscous and thermal channel functions alone?",
+        "Is Rott's bracket exact for a pore of any cross-section shape?",
+        "Do I have to solve the thermal problem driven by the viscous profile, or does it follow from the two simple problems?",
+        "Does the gain function need a third geometric parameter when both diffusion problems share one cross-section?",
+        "My closure built from two independent channel functions disagrees with Rott's form; does the medium lack a single shared cross-section?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -61,6 +75,11 @@
       ]
     },
     {
+      "aka": [
+        "unit-Prandtl gain limit, sign error",
+        "Prandtl-one removable singularity",
+        "logarithmic diffusivity derivative limit"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -88,6 +107,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0012.md",
+      "phrasings": [
+        "What is the value of the cross-diffusivity gain function when the Prandtl number equals one?",
+        "Is the singularity at Prandtl number one in the gain bracket removable?",
+        "Does the derivative term in the unit-Prandtl gain value carry a plus or a minus sign?",
+        "My gain at Prandtl number one disagrees with a modal sum by a large factor; is the derivative sign wrong?",
+        "Can a closure march across equal viscous and thermal diffusivity without a special case?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -123,6 +150,12 @@
       ]
     },
     {
+      "aka": [
+        "third characteristic length",
+        "velocity-weighted wall length",
+        "thin-layer cross term asymptotics",
+        "betweenness of characteristic lengths"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -155,6 +188,15 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0015.md",
+      "phrasings": [
+        "How does the gain function behave at high frequency when the boundary layers are thin compared with the pore?",
+        "Does the high-frequency cross term need a third characteristic length besides the viscous and thermal lengths?",
+        "Does the velocity-weighted wall length always lie between the viscous and thermal characteristic lengths?",
+        "Can I interpolate the high-frequency gain with the geometric mean of the two characteristic lengths?",
+        "On a straight uniform pore, do all characteristic lengths reduce to twice the volume over the wall area?",
+        "What is the Prandtl-number coefficient of the high-frequency cross term, and is it finite at Prandtl number one?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -190,6 +232,11 @@
       ]
     },
     {
+      "aka": [
+        "unit-Prandtl gain value",
+        "corrected Prandtl-one limit",
+        "equal-diffusivity cross term"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -213,6 +260,14 @@
       "kind": "identity",
       "merged_into": null,
       "path": "ledger/MD_0016.md",
+      "phrasings": [
+        "What is the cross-diffusivity gain function at Prandtl number exactly one?",
+        "Is the gain function finite when viscous and thermal diffusivity are equal?",
+        "What is the closed form of the unit-Prandtl gain for parallel plates and for a circular tube?",
+        "Do I need a guard against division by zero at Prandtl number one in the gain closure?",
+        "Is the averaged channel function holomorphic in the diffusivity on the right half plane?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -248,6 +303,12 @@
       ]
     },
     {
+      "aka": [
+        "static gain shape factor",
+        "Poisson bilinear form gain",
+        "low-frequency gain coefficient",
+        "disc versus square witness"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -279,6 +340,15 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0017.md",
+      "phrasings": [
+        "How does the cross-diffusivity gain function behave as the frequency goes to zero?",
+        "Is the low-frequency gain determined by the static viscous and thermal permeabilities alone?",
+        "What is the ratio of the mean squared Poisson potential to its squared mean for a disc and for a square?",
+        "Does the gain function have a term linear in frequency at low frequency?",
+        "Which extra geometric parameter does a static gain closure need beyond the permeabilities?",
+        "Two pores with equal static permeability give different low-frequency gain in my solver; is that expected?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -314,6 +384,12 @@
       ]
     },
     {
+      "aka": [
+        "controller term in adaptive gradients",
+        "differentiating through step-size control",
+        "frozen grid versus full derivative",
+        "expanding step-size map witness"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -339,6 +415,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0020.md",
+      "phrasings": [
+        "Does differentiating an adaptive Runge-Kutta solve through its step-size controller give the right parameter sensitivity?",
+        "Is the controller term in the gradient of an adaptive ODE solve as small as the discretization error?",
+        "Can I hold the adaptive time grid fixed when computing parameter derivatives of an ODE solution?",
+        "My gradient through an adaptive integrator blows up as the tolerance shrinks; why?",
+        "What property of the step-size controller keeps the step-size derivatives bounded as the tolerance goes to zero?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -372,6 +456,11 @@
       ]
     },
     {
+      "aka": [
+        "measure of the decision switching set",
+        "fat Cantor decision set",
+        "piecewise smooth adaptive solve"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -393,6 +482,13 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0021.md",
+      "phrasings": [
+        "Is the set of parameters where an adaptive solver's accept and reject decisions switch always of measure zero?",
+        "Is the output of an adaptive ODE solver smooth in the parameter away from the decision switches?",
+        "Can a smooth but non-analytic right-hand side make step rejections switch on a set of positive measure?",
+        "How large is the jump in an adaptive solve's output when the accept or reject pattern changes?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -426,6 +522,11 @@
       ]
     },
     {
+      "aka": [
+        "adaptivity as time reparametrization",
+        "dense output kink at node",
+        "fixed-step pseudo-time adaptivity"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -449,6 +550,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0022.md",
+      "phrasings": [
+        "Is the end state of a fixed-step solve in a reparametrized time variable smooth in the parameter?",
+        "Does the gradient jump when a step node lands exactly on the final time?",
+        "Can adaptivity written as a smooth time change give a differentiable solver with no controller state?",
+        "Which continuous extension makes the stopping point at the final time differentiable in the parameter?",
+        "My gradient has a kink where the number of steps changes; is the dense output to blame?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -482,6 +591,11 @@
       ]
     },
     {
+      "aka": [
+        "periodic orbit sensitivity error bound",
+        "discrete period map fixed point",
+        "resolvent factor near marginal stability"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -503,6 +617,13 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0023.md",
+      "phrasings": [
+        "How accurate is the parameter derivative of a periodic orbit computed as a fixed point of a discrete period map?",
+        "Does the sensitivity error of a numerical periodic solution scale with one over the monodromy's distance from one?",
+        "How does closeness to marginal stability degrade the gradient of a computed limit cycle?",
+        "My limit-cycle gradient loses accuracy much faster than expected as a Floquet multiplier approaches one; why?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -536,6 +657,11 @@
       ]
     },
     {
+      "aka": [
+        "slope-matched dense output differentiability",
+        "stationary inflection at end crossing",
+        "cube-root end-time crossing"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -559,6 +685,13 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0025.md",
+      "phrasings": [
+        "Does a Hermite dense output make the end state of a reparametrized fixed-step solve continuously differentiable in the parameter?",
+        "Can the interpolated time have zero slope exactly where it crosses the final time?",
+        "Why does a large step break differentiability of the stopping point even with slopes matched at the nodes?",
+        "What step-size condition makes the crossing of the final time transversal?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -594,6 +727,11 @@
       ]
     },
     {
+      "aka": [
+        "squared resolvent sensitivity bound",
+        "nonlinear periodic orbit sensitivity error",
+        "cubed resolvent near marginal stability"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -615,6 +753,13 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0026.md",
+      "phrasings": [
+        "Is the sensitivity error of a computed periodic orbit bounded by the squared resolvent norm of the monodromy?",
+        "How does a nonlinear right-hand side worsen the gradient error of a periodic solution near marginal stability?",
+        "Which power of the resolvent norm controls the sensitivity error of the discrete period map fixed point?",
+        "Does the shift of the discrete fixed point feed into the error of its parameter derivative?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -650,6 +795,11 @@
       ]
     },
     {
+      "aka": [
+        "adaptive grid controller term order",
+        "differentiating through step-size control",
+        "grid-motion term in adaptive gradients"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -671,6 +821,15 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0027.md",
+      "phrasings": [
+        "Is the parameter derivative of an adaptive ODE solve close to the derivative taken on the frozen grid?",
+        "Does the step-size controller add a term of the same order as the discretization error to parameter gradients?",
+        "Can I ignore how the adaptive grid moves when differentiating a Runge-Kutta solution with respect to a parameter?",
+        "Why can the controller term blow up even when the error estimate is bounded above and below?",
+        "A stable step-size update and a nondegenerate error estimate do not bound the grid-motion term in the sensitivity.",
+        "What does the error estimate need so that differentiating through accept and reject decisions keeps the method's order?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -706,6 +865,11 @@
       ]
     },
     {
+      "aka": [
+        "time reparametrization at fixed step",
+        "reparametrized adaptive solve differentiability",
+        "Hermite end-time crossing slope"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -729,6 +893,15 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0029.md",
+      "phrasings": [
+        "If I integrate in a rescaled time variable at a fixed step, is the solution at the end time differentiable in the parameter?",
+        "Does a small enough step guarantee the interpolated time increases strictly within every step?",
+        "Can the Hermite interpolant of the time component turn back and cross the end time more than once?",
+        "What step bound makes the end-time crossing of a continuous extension unique and transversal?",
+        "Is a Lipschitz bound on the speed function near the exact trajectory enough to choose the step?",
+        "Smooth alternative to adaptive step control by rescaling time with a positive state-dependent speed."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -764,6 +937,11 @@
       ]
     },
     {
+      "aka": [
+        "Runge-Kutta preserves linear invariants",
+        "linear first integral conservation",
+        "exact linear ledger under adaptive steps"
+      ],
       "between": {
         "above_of": [
           "MD_0036"
@@ -786,6 +964,15 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0033.md",
+      "phrasings": [
+        "Does an adaptive Runge-Kutta solver conserve a linear invariant exactly, including at interpolated output points?",
+        "If the right-hand side never changes the total, does the total stay constant across accepted steps?",
+        "Does first-same-as-last stage reuse or a projection after each step break a linear conservation law?",
+        "Is dense output between steps guaranteed to keep the same linear conserved quantity?",
+        "Rejected trial steps and step-size changes cannot spoil exact conservation of a linear functional.",
+        "Why does any Runge-Kutta method conserve total mass exactly in exact arithmetic?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -821,6 +1008,11 @@
       ]
     },
     {
+      "aka": [
+        "elapsed-time drift bound, refuted",
+        "dense output drift overshoot",
+        "approximate invariant drift bound"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -842,6 +1034,14 @@
       "kind": "bound",
       "merged_into": null,
       "path": "ledger/MD_0034.md",
+      "phrasings": [
+        "If the right-hand side breaks a linear conservation law by at most delta, how far can the invariant drift by time t?",
+        "Is the drift of a nearly conserved quantity bounded by delta times the elapsed time at interpolated points?",
+        "Can dense output inside a step drift more than an elapsed-time bound allows?",
+        "Bound the ledger residual over a window from a measured per-evaluation residual of the right-hand side.",
+        "Why does a drift bound proportional to elapsed time fail for Runge-Kutta interpolants?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -877,6 +1077,11 @@
       ]
     },
     {
+      "aka": [
+        "spectral derivative sums to zero",
+        "zero mean of FFT derivative",
+        "flux form conserves the grid total"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -897,6 +1102,14 @@
       "kind": "identity",
       "merged_into": null,
       "path": "ledger/MD_0035.md",
+      "phrasings": [
+        "Does the FFT derivative of a periodic grid function always sum to zero over the grid?",
+        "Is the grid total of a flux-form term computed with a spectral derivative exactly zero?",
+        "Does zeroing the Nyquist mode matter for the spectral derivative having zero mean?",
+        "The rectangle-rule integral of a pseudospectral derivative on a periodic grid vanishes.",
+        "Does a dealiased product differentiated spectrally still have zero grid sum?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -931,6 +1144,11 @@
       ]
     },
     {
+      "aka": [
+        "error estimate blind to invariants",
+        "embedded estimate is invariant-free",
+        "local error has no ledger component"
+      ],
       "between": {
         "above_of": [],
         "below_of": [
@@ -949,6 +1167,13 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0036.md",
+      "phrasings": [
+        "Does the embedded error estimate of a Runge-Kutta pair see errors in a conserved linear quantity?",
+        "Can the adaptive step controller detect drift in a linear invariant?",
+        "Is the difference between the two solutions of an embedded pair annihilated by a linear first integral?",
+        "Why does conservation error never cause a rejected step in an adaptive solver?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -984,6 +1209,11 @@
       ]
     },
     {
+      "aka": [
+        "drift bound for approximate invariants",
+        "per-step ledger drift bound",
+        "nearly conserved quantity drift bound"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1000,6 +1230,14 @@
       "kind": "bound",
       "merged_into": null,
       "path": "ledger/MD_0038.md",
+      "phrasings": [
+        "How far can a nearly conserved linear quantity drift under an adaptive Runge-Kutta solve with dense output?",
+        "Bound on invariant drift when the right-hand side violates conservation by at most delta per evaluation.",
+        "Does the drift bound count time up to the read point or to the end of its step?",
+        "Is the per-step drift bound for an approximate linear first integral sharp?",
+        "Turn a measured per-evaluation conservation residual into a guaranteed bound on the ledger residual over a window."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [
           "MD_0033"
@@ -1037,6 +1275,11 @@
       ]
     },
     {
+      "aka": [
+        "dealiased product rule sums to zero",
+        "discrete integration by parts, dealiased",
+        "3/2-rule product-rule conservation"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1057,6 +1300,14 @@
       "kind": "identity",
       "merged_into": null,
       "path": "ledger/MD_0039.md",
+      "phrasings": [
+        "Does a times the derivative of b plus b times the derivative of a sum to zero after dealiasing?",
+        "Is the product-rule form of a convective flux conservative with 3/2-rule dealiased pseudospectral products?",
+        "Does discrete integration by parts hold for 3/2-rule dealiased spectral products on a periodic grid?",
+        "Why must the Nyquist wavenumber be zeroed for the expanded product rule to conserve the total?",
+        "The grid total of a product-rule expanded nonlinear term with zero-padding dealiasing vanishes."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1091,6 +1342,11 @@
       ]
     },
     {
+      "aka": [
+        "alternating sum of spectral derivative",
+        "Nyquist conservation law",
+        "checkerboard invariant of Fourier derivative"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1111,6 +1367,14 @@
       "kind": "identity",
       "merged_into": null,
       "path": "ledger/MD_0041.md",
+      "phrasings": [
+        "Does the alternating-sign sum of an FFT derivative over an even periodic grid vanish?",
+        "Is the checkerboard, plus minus plus minus, total conserved by a flux-form spectral discretization?",
+        "Does a pseudospectral flux-form equation have a second conserved linear quantity besides the total?",
+        "Why does zeroing the Nyquist mode give the discretization an extra conservation law?",
+        "Extra conserved quantities of a Fourier spectral discretization with no counterpart in the continuous equation."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [
           "MD_0035"
@@ -1147,6 +1411,11 @@
       ]
     },
     {
+      "aka": [
+        "left null space of Fourier derivative",
+        "only two linear conservation laws",
+        "annihilator of spectral differentiation"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1167,6 +1436,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0042.md",
+      "phrasings": [
+        "Which weighted grid sums are conserved by every flux-form term built on a spectral derivative?",
+        "Is the left null space of the Fourier differentiation matrix spanned by the constants and the alternating vector?",
+        "How many independent linear conservation laws does a pseudospectral flux-form equation have?",
+        "Are there conserved linear functionals of a spectral discretization besides the total and the checkerboard sum?",
+        "Exactly two weight vectors, up to combination, make every spectral derivative sum to zero."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [
           "MD_0035"
@@ -1203,6 +1480,11 @@
       ]
     },
     {
+      "aka": [
+        "conserved quantity gives unit multiplier",
+        "monodromy left eigenvector, eigenvalue one",
+        "first integrals and Floquet multipliers"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1222,6 +1504,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0043.md",
+      "phrasings": [
+        "Does every conserved quantity of a periodic orbit give a Floquet multiplier equal to one?",
+        "Is the gradient of a first integral a left eigenvector of the monodromy matrix?",
+        "How many unit multipliers do r independent conservation laws force at a fixed point of a map?",
+        "Why does the monodromy matrix have eigenvalue one when the system conserves a quantity?",
+        "Conserved functionals and the eigenvalue-one eigenspace of the derivative of a period map."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1256,6 +1546,11 @@
       ]
     },
     {
+      "aka": [
+        "deflation of unit multipliers",
+        "removing trivial Floquet multipliers",
+        "conserved quantity deflation"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1275,6 +1570,15 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0044.md",
+      "phrasings": [
+        "How do I deflate the eigenvalue one multipliers that conserved quantities put on a monodromy matrix?",
+        "Does projecting out left eigenvectors with eigenvalue one change any of the other eigenvalues?",
+        "If a matrix fixes some row vectors from the left, does its characteristic polynomial split off a power of z minus 1?",
+        "Does the choice of projection onto the deflated subspace change the remaining spectrum?",
+        "Why does the projected matrix PMP show zeros where the unit multipliers used to be?",
+        "Conserved functionals pin Floquet multipliers at one, how do I remove exactly those before judging stability?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1309,6 +1613,10 @@
       ]
     },
     {
+      "aka": [
+        "shooting residual in the deflated subspace",
+        "residual orthogonal to conserved gradient"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1328,6 +1636,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0045.md",
+      "phrasings": [
+        "Is the shooting residual of a periodic orbit search orthogonal to the gradient of a conserved quantity?",
+        "If a map conserves a linear functional, does the fixed point residual always lie in its kernel?",
+        "How large is the component of the shooting residual along a conserved quantity's gradient?",
+        "Can I project the Newton residual onto the deflated subspace without throwing away first order information?",
+        "For a curved invariant, is the residual's leak out of the deflated subspace quadratically small?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1362,6 +1678,11 @@
       ]
     },
     {
+      "aka": [
+        "spectral diffusion with partial absorption",
+        "opposite parity sink condition",
+        "Nyquist sawtooth null mode"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1381,6 +1702,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0046.md",
+      "phrasings": [
+        "Is a Fourier spectral diffusion matrix plus a partial absorption term positive definite?",
+        "Why does absorption at grid points of only one parity leave the spectral second derivative singular?",
+        "With the Nyquist mode zeroed, does the spectral derivative have an alternating sawtooth null vector?",
+        "Which grid points must carry a sink so that every mode of spectral diffusion decays strictly?",
+        "Is a principal submatrix of the Fourier spectral Laplacian invertible after deleting one even and one odd index?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1415,6 +1744,10 @@
       ]
     },
     {
+      "aka": [
+        "alternating velocity counterexample",
+        "variable velocity spectral instability"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1439,6 +1772,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0049.md",
+      "phrasings": [
+        "Does a spectral advection diffusion operator with absorption stay stable when the velocity varies in space?",
+        "Can a grid-scale alternating velocity produce a growing eigenvalue despite diffusion and absorption?",
+        "Is Fourier collocation of variable-coefficient advection guaranteed to keep its spectrum in the left half-plane?",
+        "Counterexample to stability of spectral diffusion plus variable advection plus a partial sink.",
+        "Why can a velocity field that flips sign between neighbouring grid points destabilise a Fourier spectral discretisation?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [
           "MD_0064"
@@ -1475,6 +1816,11 @@
       ]
     },
     {
+      "aka": [
+        "residual pseudospectrum certificate",
+        "backward error of an eigenpair",
+        "Ritz value backward stability"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1494,6 +1840,15 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0051.md",
+      "phrasings": [
+        "What does a small eigenvector residual guarantee when the matrix is not normal?",
+        "Is a Ritz value with a small residual an exact eigenvalue of a nearby matrix?",
+        "Does a small residual put the approximate eigenvalue inside the pseudospectrum?",
+        "Is the backward error of an approximate eigenpair bounded by its residual norm?",
+        "How can I certify an Arnoldi eigenvalue estimate for a non-normal matrix?",
+        "Which rank one perturbation makes an approximate eigenvector exact?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1528,6 +1883,10 @@
       ]
     },
     {
+      "aka": [
+        "residual eigenvalue bound fails",
+        "Jordan block residual counterexample"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1554,6 +1913,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0052.md",
+      "phrasings": [
+        "Does a small residual guarantee an eigenvalue near the Ritz value when the matrix is not normal?",
+        "Can a Jordan block have a tiny eigenvector residual far from any of its eigenvalues?",
+        "Is the residual norm an eigenvalue error bound for a matrix that is not diagonalisable?",
+        "If the residual is smaller than the distance to the unit circle, must an eigenvalue lie within the residual?",
+        "Why can Krylov residuals alone not locate the multipliers of a non-normal period map?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1588,6 +1955,11 @@
       ]
     },
     {
+      "aka": [
+        "balanced passive realisation",
+        "square root gain splitting",
+        "passivity of time-varying relaxation modes"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1619,6 +1991,15 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0070.md",
+      "phrasings": [
+        "Is a sum of first-order relaxation modes with time-varying coefficients passive?",
+        "How should the gain be split between input and output so a time-varying filter cannot create energy?",
+        "Energy identity for a diagonal linear system with time-varying nonnegative rates and gains.",
+        "Does passivity of a time-varying relaxation realisation need smooth or slowly varying coefficients?",
+        "Can a time-varying sum of exponential memory kernels inject energy if its rates and weights stay nonnegative?",
+        "Passive state space realisation of a relaxation spectrum whose coefficients change in time."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1653,6 +2034,10 @@
       ]
     },
     {
+      "aka": [
+        "rate condition for weighted realisations",
+        "output weighted versus input weighted passivity"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1678,6 +2063,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0071.md",
+      "phrasings": [
+        "Is the rate condition on time-varying weights necessary for passivity of an output-weighted relaxation realisation?",
+        "Does an input-weighted relaxation filter need its weights to change slowly to stay passive?",
+        "Can a two-state time-varying system violate the per-state rate condition and still be passive?",
+        "How much energy can a time-varying weighted realisation create beyond its stored energy?",
+        "Counterexample to necessity of the per-state rate condition for passivity of time-varying diagonal systems."
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1712,6 +2105,11 @@
       ]
     },
     {
+      "aka": [
+        "eigenvalue budget",
+        "damping budget",
+        "left-right eigenvector attribution"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1743,6 +2141,15 @@
       "kind": "identity",
       "merged_into": null,
       "path": "ledger/MD_0073.md",
+      "phrasings": [
+        "How do I split an eigenvalue into contributions from each term of a matrix written as a sum?",
+        "Do the left-right eigenvector projections of the individual terms add up exactly to the eigenvalue?",
+        "Is each term's share of an eigenvalue equal to the eigenvalue's sensitivity to strengthening that term?",
+        "Attribute the real part of an eigenvalue, the damping or growth rate, to individual operator terms.",
+        "First-order eigenvalue perturbation with left and right eigenvectors for a non-normal matrix.",
+        "Does the eigenvalue budget still add up when the eigenvalue is not simple?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1777,6 +2184,11 @@
       ]
     },
     {
+      "aka": [
+        "conjugate heat transfer Stieltjes representation",
+        "capacity offset counterexample",
+        "detached solid counterexample"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1798,6 +2210,15 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0077.md",
+      "phrasings": [
+        "Is the mean temperature response of a gas enclosed by a conducting solid a Stieltjes function?",
+        "What sets the constant offset in the frequency response of a gas exchanging heat with a finite solid?",
+        "Does a solid piece that does not touch the gas count toward the heat capacity ratio offset?",
+        "Spectral representation of a two-phase heat conduction response as a positive sum of relaxation terms.",
+        "Why does the capacity offset formula fail when the solid region is disconnected?",
+        "What is the low frequency limit of the mean gas temperature in a gas and solid diffusion problem?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1832,6 +2253,11 @@
       ]
     },
     {
+      "aka": [
+        "fold of cycles double multiplier",
+        "limit point of cycles",
+        "saddle-node of periodic orbits"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1857,6 +2283,15 @@
       "kind": "theorem",
       "merged_into": null,
       "path": "ledger/MD_0083.md",
+      "phrasings": [
+        "At a fold of periodic orbits in an autonomous system, does the monodromy have a double eigenvalue one?",
+        "Does a Floquet multiplier cross one transversally at a limit point of cycles?",
+        "Why is a phase condition needed when continuing a family of periodic orbits through a fold?",
+        "Can a family of periodic orbits turn back in the parameter while one stays a simple multiplier?",
+        "Pitchfork of cycles where the multiplier touches one without crossing.",
+        "How do I detect a saddle-node of limit cycles from the Floquet multipliers?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1892,6 +2327,12 @@
       ]
     },
     {
+      "aka": [
+        "reverse threshold below linear onset",
+        "subcritical fold and hysteresis criterion",
+        "cubic gain versus quadratic drag",
+        "inflection mistaken for a fold"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1913,6 +2354,15 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0084.md",
+      "phrasings": [
+        "When does the large-amplitude branch of a subcritical amplitude equation survive below linear onset?",
+        "Does the curve of steady amplitudes have a fold exactly when the discriminant of its slope is positive?",
+        "Can a triggered oscillation persist after the linear growth rate has turned negative?",
+        "Is a flat point of the steady-amplitude curve where the slope does not change sign a fold?",
+        "What sets the reverse threshold of the hysteresis loop in a scalar amplitude equation?",
+        "Without the saturating quartic term, do large starts of a subcritical amplitude equation grow without bound?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -1947,6 +2397,12 @@
       ]
     },
     {
+      "aka": [
+        "two-stage cascade realisation",
+        "truncated filter bank with static remainder",
+        "cascade bank truncation error",
+        "negative-frequency sign slip"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -1974,6 +2430,15 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0094.md",
+      "phrasings": [
+        "Can a positive sum of two-pole low-pass terms be realised exactly by a bank of first-order cascades?",
+        "Does a bank of cascaded first-order lags with time-varying nonnegative rates keep its output bounded by the weight sum times the input bound?",
+        "How large is the frequency-response error when a two-pole series is truncated and the tail replaced by a constant gain?",
+        "Does adding the discarded weight back as a memoryless gain keep the zero-frequency gain exact?",
+        "Does the truncation error of a cascade filter bank grow at most linearly with frequency?",
+        "Does the truncation error bound hold at negative frequencies?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2007,6 +2472,11 @@
       ]
     },
     {
+      "aka": [
+        "minimal Boolean network for conditioning",
+        "four-node conditioning network claim",
+        "one-node even-window loophole"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2028,6 +2498,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0097.md",
+      "phrasings": [
+        "What is the smallest synchronous Boolean network that shows associative conditioning?",
+        "Can a single-node Boolean network learn to respond to a neutral input after pairing it with a triggering one?",
+        "Does a one-node network pass the classical conditioning protocol at even training windows?",
+        "How many nodes does a Boolean network need for Pavlovian conditioning, counting the two inputs?",
+        "Why does the parity of the training window matter for a minimal conditioning network?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2063,6 +2541,11 @@
       ]
     },
     {
+      "aka": [
+        "minimal conditioning network at odd windows",
+        "four-node minimal conditioning network",
+        "one node fails, two nodes pass"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2084,6 +2567,15 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0101.md",
+      "phrasings": [
+        "What is the smallest Boolean network that shows associative conditioning at every training window length?",
+        "Can a one-node Boolean network pass the conditioning protocol at an odd training window?",
+        "Is there a two-node Boolean network that learns an association for every training window and gap?",
+        "Does a robust conditioning network need two internal nodes besides the two inputs?",
+        "Why does a single memory node fail associative conditioning at odd training windows?",
+        "How many nodes does a Pavlovian conditioning circuit need if it must not depend on window parity?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2119,6 +2611,11 @@
       ]
     },
     {
+      "aka": [
+        "global attractor erases training",
+        "settling to one rest state forgets",
+        "no conditioning after full settling"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2137,6 +2634,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0102.md",
+      "phrasings": [
+        "If a Boolean network always returns to one rest state, can it remember a training input across a long gap?",
+        "Does a globally attracting fixed point rule out associative conditioning after a long enough delay?",
+        "After how many quiet steps does a network that settles to a unique rest state forget its training?",
+        "Can a network whose input-free dynamics reach one fixed point in finite time show persistent associative conditioning?",
+        "Does memory of an association require more than one rest state in a discrete network?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2172,6 +2677,11 @@
       ]
     },
     {
+      "aka": [
+        "acyclic networks cannot condition",
+        "feedforward Boolean network forgets training",
+        "settling time bounded by depth"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2190,6 +2700,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0103.md",
+      "phrasings": [
+        "Can a feedforward Boolean network without loops show associative conditioning?",
+        "How fast does an acyclic Boolean network settle once its inputs are switched off?",
+        "Does an acyclic Boolean network of depth d have a unique fixed point?",
+        "Is feedback among internal nodes necessary for a Boolean network to remember a training input across a gap?",
+        "After how many quiet steps does a loop-free network forget what it was trained on?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2225,6 +2743,12 @@
       ]
     },
     {
+      "aka": [
+        "orbit of a finite self-map",
+        "eventually periodic orbit",
+        "rho-shaped orbit",
+        "pigeonhole on iterates"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2243,6 +2767,14 @@
       "kind": "lemma",
       "merged_into": null,
       "path": "ledger/MD_0104.md",
+      "phrasings": [
+        "Is the set of states reachable by repeating one map on a finite set a single orbit?",
+        "How many distinct states can repeated application of one map reach on a set of N configurations?",
+        "Is every orbit of a self-map of a finite set eventually periodic?",
+        "Is the preperiod plus the period of an orbit at most the number of configurations?",
+        "Do the first N iterates of a map on N points already visit every reachable point?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2277,6 +2809,12 @@
       ]
     },
     {
+      "aka": [
+        "commuting maps give polynomial growth",
+        "reachable set growth under commutation",
+        "stars and bars reachable bound",
+        "commuting holonomies polynomial growth"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2300,6 +2838,15 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0105.md",
+      "phrasings": [
+        "How many states can be reached in k steps when each input applies one of several commuting maps?",
+        "If the update maps commute, does the number of reachable configurations grow only polynomially in the number of steps?",
+        "Does the order of the inputs matter for the reachable set when the maps commute?",
+        "Without commutation, can the reachable set grow exponentially, as fast as the number of input words?",
+        "Is the stars and bars count a sharp bound on the states reachable by commuting maps?",
+        "Can noncommuting maps reach a different configuration for every input word?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2335,6 +2882,11 @@
       ]
     },
     {
+      "aka": [
+        "linear orbit in Krylov subspace",
+        "conserved functionals confine a linear orbit",
+        "invariant affine slice of an orbit"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2353,6 +2905,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0107.md",
+      "phrasings": [
+        "Does the orbit of a vector under a linear map stay inside its Krylov subspace?",
+        "Is the dimension of a Krylov subspace bounded by the degree of the minimal polynomial?",
+        "If a linear functional is unchanged by a map, is it constant along every orbit of that map?",
+        "How many dimensions do r independent conserved linear quantities remove from the reachable set of a linear map?",
+        "Does the orbit of a linear map lie on an affine slice fixed by its conserved quantities?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2388,6 +2948,11 @@
       ]
     },
     {
+      "aka": [
+        "orbit walk versus random search",
+        "deterministic orbit search hit probability",
+        "memoryless search beats small orbits"
+      ],
       "between": {
         "above_of": [],
         "below_of": [],
@@ -2406,6 +2971,14 @@
       "kind": "proposition",
       "merged_into": null,
       "path": "ledger/MD_0108.md",
+      "phrasings": [
+        "Can stepping through a deterministic orbit find a random target faster than uniform random guessing?",
+        "What is the probability that N independent uniform draws hit a target in a set of N points?",
+        "How large must an orbit be for an orbit walk to beat memoryless random search?",
+        "Does a deterministic search beat random sampling on an unstructured target?",
+        "When does a target distribution favour following an orbit over sampling uniformly at random?"
+      ],
+      "plain_words_checked": null,
       "provenance": {
         "connects": [],
         "raised_by": {
@@ -2441,7 +3014,7 @@
       ]
     }
   ],
-  "generated_from": "de113710fed7bf3e5def96bef013c0b6a1f55d401adf57ab92bac3b755f02146",
+  "generated_from": "b0dc1a8d8605611866e5116c5ef71f0f7562e974ad6f00218c2ff82dbe7af007",
   "requests": [],
   "schema_version": 1,
   "unreleased": [
@@ -2603,6 +3176,10 @@
       "held": "unreleased, held in the private ledger",
       "id": "MD_0086",
       "named_by": [
+        {
+          "entry": "MD_0070",
+          "field": "<body>"
+        },
         {
           "entry": "MD_0071",
           "field": "<body>"
