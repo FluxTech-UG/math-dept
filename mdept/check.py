@@ -329,6 +329,13 @@ def i3_schema(ctx: Context) -> None:
             if required not in headings:
                 fail("I3 schema", ctx.rel(entry.path), "<body>",
                      f"missing the '## {required}' section; the four sections are {list(schema.BODY_HEADINGS)}")
+        plain = entry.sections().get(schema.PLAIN_WORDS_HEADING)
+        if plain is not None and not plain.strip():
+            fail("I3 schema", ctx.rel(entry.path), "<body>",
+                 f"the '## {schema.PLAIN_WORDS_HEADING}' section is present but empty")
+        if plain is None and config.REQUIRE_PLAIN_WORDS and entry.status in schema.SETTLED_STATUSES:
+            fail("I3 schema", ctx.rel(entry.path), "<body>",
+                 f"a settled entry carries a '## {schema.PLAIN_WORDS_HEADING}' section (config.REQUIRE_PLAIN_WORDS)")
 
 
 # --- I4 status and evidence -------------------------------------------------

@@ -133,6 +133,18 @@ ENTRY_KEYS = (
     "merged_into",
     "statement_hash",
 )
+
+#: The reading and search layers' keys (3 November 2026). Optional: absent on an entry that predates
+#: them, present (empty lists, null) on an entry `mdept.new` writes, filled at settle. `aka` holds
+#: informal names, `phrasings` the questions a consumer would type, `plain_words_checked` the date
+#: John (or a reviewer he names) cleared the `In plain words` section; null shows the unreviewed badge.
+OPTIONAL_ENTRY_KEYS = ("aka", "phrasings", "plain_words_checked")
+PLAIN_WORDS_HEADING = "In plain words"
+AKA_MAX = 5
+AKA_MAX_WORDS = 6
+PHRASINGS_MIN = 3
+PHRASINGS_MAX = 8
+PHRASINGS_MAX_WORDS = 25
 FORMAL_KEYS = ("decl", "file")
 BETWEEN_KEYS = RELATIONS
 PROVENANCE_KEYS = ("raised_by", "stipulated_by", "settled_by", "connects")
@@ -197,10 +209,10 @@ def _fail(path: Path, field: str, message: str) -> None:
     raise CheckError(f"I3 schema: {path}: field '{field}': {message}")
 
 
-def _closed_mapping(value, keys, path: Path, field: str) -> dict:
+def _closed_mapping(value, keys, path: Path, field: str, optional=()) -> dict:
     if not isinstance(value, dict):
         _fail(path, field, f"expected a mapping, got {type(value).__name__}")
-    unknown = sorted(set(value) - set(keys))
+    unknown = sorted(set(value) - set(keys) - set(optional))
     if unknown:
         _fail(path, field, f"unknown key(s) {unknown}; the schema is closed")
     missing = [k for k in keys if k not in value]
@@ -238,7 +250,8 @@ def _id_list(value, path: Path, field: str) -> list:
 
 def validate_front(front: dict, path: Path, kind: str = "public") -> None:
     """Validate one entry's front matter. `kind` is 'public' or 'private'."""
-    _closed_mapping(front, ENTRY_KEYS, path, "<root>")
+    _closed_mapping(front, ENTRY_KEYS, path, "<root>", optional=OPTIONAL_ENTRY_KEYS)
+    _validate_reading_keys(front, path)
 
     if not isinstance(front["id"], str) or not ID_RE.match(front["id"]):
         _fail(path, "id", f"{front['id']!r} is not an ID of the form MD_0007")
@@ -314,6 +327,33 @@ def validate_front(front: dict, path: Path, kind: str = "public") -> None:
     hashed = front["statement_hash"]
     if hashed is not None and (not isinstance(hashed, str) or not SHA256_RE.match(hashed)):
         _fail(path, "statement_hash", f"{hashed!r} is not null and not a lower-case sha256 hex digest")
+
+
+def _validate_reading_keys(front: dict, path: Path) -> None:
+    """The optional `aka`, `phrasings` and `plain_words_checked` keys, checked for shape when present."""
+    aka = front.get("aka")
+    if aka is not None:
+        names = _str_list(aka, path, "aka")
+        if len(names) > AKA_MAX:
+            _fail(path, "aka", f"{len(names)} names; at most {AKA_MAX}")
+        for name in names:
+            if not name.strip() or "$" in name or "\\" in name:
+                _fail(path, "aka", f"{name!r} is empty or carries LaTeX; an informal name is plain words")
+            if len(name.split()) > AKA_MAX_WORDS:
+                _fail(path, "aka", f"{name!r} runs past {AKA_MAX_WORDS} words")
+    phrasings = front.get("phrasings")
+    if phrasings is not None:
+        items = _str_list(phrasings, path, "phrasings")
+        if items and not PHRASINGS_MIN <= len(items) <= PHRASINGS_MAX:
+            _fail(path, "phrasings", f"{len(items)} phrasings; {PHRASINGS_MIN} to {PHRASINGS_MAX} when written")
+        for item in items:
+            if not item.strip() or "$" in item or "\\" in item:
+                _fail(path, "phrasings", f"{item!r} is empty or carries LaTeX; a phrasing is the consumer's words")
+            if len(item.split()) > PHRASINGS_MAX_WORDS:
+                _fail(path, "phrasings", f"{item!r} runs past {PHRASINGS_MAX_WORDS} words")
+    checked = front.get("plain_words_checked")
+    if checked is not None and (not isinstance(checked, str) or not ISO_DATE_RE.match(checked)):
+        _fail(path, "plain_words_checked", f"{checked!r} is not null or a YYYY-MM-DD date")
 
 
 def _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None:

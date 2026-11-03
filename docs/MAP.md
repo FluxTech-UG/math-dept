@@ -325,41 +325,41 @@ _Ledger invariants I1 to I21._
 - _precheck_filenames(root: Path) -> None  ·L283
 - i2_permanence(ctx: Context) -> None  ·L293
 - i3_schema(ctx: Context) -> None  ·L324
-- i4_status_evidence(ctx: Context) -> None  ·L337
-- _require_how(ctx: Context, entry, settled) -> None  ·L396
-- i5_formal_pointer(ctx: Context) -> None  ·L406
-- i6_counterexamples(ctx: Context) -> None  ·L447
-- i7_raised_by(ctx: Context) -> None  ·L491: Every anchor is a form of the grammar, and resolves to one place.
-- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L510
-- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L549
-- i8_links(ctx: Context) -> None  ·L566
-- const _IMPLIED_BY  ·L589
-- const _IMPLIES  ·L590
-- const _ESTABLISHED  ·L591
-- i9a_no_contradiction(ctx: Context) -> None  ·L594: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
-- i9b_inheritance_notice(ctx: Context) -> None  ·L619: The one informational check. Its notices are section 7 of the generated index.
-- i10_cited_sources(ctx: Context) -> None  ·L629
-- i11_tag_sync(ctx: Context) -> None  ·L656
-- i12_dangling_references(ctx: Context) -> None  ·L684
-- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L705
-- reference_surfaces(root: Path) -> list[Path]  ·L712: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside.
-- i13_inbox(ctx: Context) -> None  ·L727
-- i14_request_backlinks(ctx: Context) -> None  ·L764
-- const WRAP_WINDOW  ·L798
-- citation_text(lines: list[str], index: int, token: str) -> str  ·L801: The text that must carry `token`'s status word for its citation on `lines[index]`.
-- i15_consumer_citations(ctx: Context) -> None  ·L815: Every line of a listed file that names an entry carries its status word.
-- i16_generated_views(ctx: Context) -> None  ·L878
-- i17_prose(ctx: Context) -> None  ·L898
-- i18_dates(ctx: Context) -> None  ·L912
-- i19_attempt_records(ctx: Context) -> None  ·L931
-- i20_sorry_fence(ctx: Context) -> None  ·L962
-- i21_unlisted_citations(ctx: Context) -> None  ·L974: Every entry mention in a listed consumer appears in that entry's `cited_by`.
-- const INVARIANTS  ·L1026
-- bibliography_path(root: Path, kind: str) -> Path  ·L1052: The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1072
-- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1121: Narrow the context to the named entries, refusing the modes that read the whole tree.
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1145: Run every invariant in order; `CheckError` names the first failing invariant.
-- main(argv: list[str] | None=None) -> int  ·L1161
+- i4_status_evidence(ctx: Context) -> None  ·L344
+- _require_how(ctx: Context, entry, settled) -> None  ·L403
+- i5_formal_pointer(ctx: Context) -> None  ·L413
+- i6_counterexamples(ctx: Context) -> None  ·L454
+- i7_raised_by(ctx: Context) -> None  ·L498: Every anchor is a form of the grammar, and resolves to one place.
+- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L517
+- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L556
+- i8_links(ctx: Context) -> None  ·L573
+- const _IMPLIED_BY  ·L596
+- const _IMPLIES  ·L597
+- const _ESTABLISHED  ·L598
+- i9a_no_contradiction(ctx: Context) -> None  ·L601: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
+- i9b_inheritance_notice(ctx: Context) -> None  ·L626: The one informational check. Its notices are section 7 of the generated index.
+- i10_cited_sources(ctx: Context) -> None  ·L636
+- i11_tag_sync(ctx: Context) -> None  ·L663
+- i12_dangling_references(ctx: Context) -> None  ·L691
+- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L712
+- reference_surfaces(root: Path) -> list[Path]  ·L719: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates and indexes aside.
+- i13_inbox(ctx: Context) -> None  ·L734
+- i14_request_backlinks(ctx: Context) -> None  ·L771
+- const WRAP_WINDOW  ·L805
+- citation_text(lines: list[str], index: int, token: str) -> str  ·L808: The text that must carry `token`'s status word for its citation on `lines[index]`.
+- i15_consumer_citations(ctx: Context) -> None  ·L822: Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L885
+- i17_prose(ctx: Context) -> None  ·L905
+- i18_dates(ctx: Context) -> None  ·L919
+- i19_attempt_records(ctx: Context) -> None  ·L938
+- i20_sorry_fence(ctx: Context) -> None  ·L969
+- i21_unlisted_citations(ctx: Context) -> None  ·L981: Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- const INVARIANTS  ·L1033
+- bibliography_path(root: Path, kind: str) -> Path  ·L1059: The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1079
+- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1128: Narrow the context to the named entries, refusing the modes that read the whole tree.
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1152: Run every invariant in order; `CheckError` names the first failing invariant.
+- main(argv: list[str] | None=None) -> int  ·L1168
 
 ### mdept/config.py
 _Resolve the repo root and the sibling repo, with no silent defaults._
@@ -380,6 +380,7 @@ _Resolve the repo root and the sibling repo, with no silent defaults._
 - _declared_public_sibling(root: Path) -> Path | None  ·L133: The `public_sibling` line of repos.yaml, resolved against the repo root.
 - require_lean() -> bool  ·L150: True when a missing Lean toolchain must fail rather than skip.
 - lean_roots(root: Path) -> list[Path]  ·L155: Every Lean library directory present in this repo, sorted.
+- const REQUIRE_PLAIN_WORDS  ·L163
 
 ### mdept/family.py
 _The family this package reads: both ledgers, the inbox, and the listed consumers._
@@ -463,16 +464,16 @@ _Allocate the next ID and write the entry file._
 - const STATE_RE  ·L45
 - allocate_id(root: Path) -> str  ·L48: The next free ID across this repo and its sibling.
 - blank_front(entry_id: str) -> dict  ·L59: A schema-complete front matter with every key present and nothing invented.
-- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L84
-- _bullet_fields(block: str) -> dict  ·L110: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
-- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L132
-- _topics(value: str) -> list[str]  ·L146
-- _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None, same=lambda a, b: a == b) -> str | None  ·L150: The candidate's bullet, or the flag where the bullet is absent; a disagreement raises.
-- from_request(root: Path, stem: str, candidate: str, model: str | None, kind: str | None=None, topics: str | None=None, domain: str | None=None) -> tuple[str, str, str]  ·L165: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
-- from_title(root: Path, args) -> tuple[str, str, str]  ·L224: Write an entry raised in this repo, with no consumer request behind it.
-- _write_new(path: Path, text: str) -> None  ·L251
-- _record_on_request(path: Path, entry_id: str) -> None  ·L258: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
-- main(argv: list[str] | None=None) -> int  ·L281
+- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L87
+- _bullet_fields(block: str) -> dict  ·L113: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
+- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L135
+- _topics(value: str) -> list[str]  ·L149
+- _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None, same=lambda a, b: a == b) -> str | None  ·L153: The candidate's bullet, or the flag where the bullet is absent; a disagreement raises.
+- from_request(root: Path, stem: str, candidate: str, model: str | None, kind: str | None=None, topics: str | None=None, domain: str | None=None) -> tuple[str, str, str]  ·L168: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
+- from_title(root: Path, args) -> tuple[str, str, str]  ·L227: Write an entry raised in this repo, with no consumer request behind it.
+- _write_new(path: Path, text: str) -> None  ·L254
+- _record_on_request(path: Path, entry_id: str) -> None  ·L261: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
+- main(argv: list[str] | None=None) -> int  ·L284
 
 ### mdept/parse.py
 _Read the markdown surfaces: ledger entries, bibliography, requests, role lines._
@@ -608,42 +609,50 @@ _The closed front-matter schema for a ledger entry._
 - const RELATIONS  ·L106
 - const CITATION_WORDS  ·L112
 - const ENTRY_KEYS  ·L120
-- const FORMAL_KEYS  ·L136
-- const BETWEEN_KEYS  ·L137
-- const PROVENANCE_KEYS  ·L138
-- const RAISED_BY_KEYS  ·L139
-- const RAISED_BY_PUBLIC_KEYS  ·L141
-- const STIPULATED_BY_KEYS  ·L142
-- const SETTLED_BY_KEYS  ·L143
-- const EVIDENCE_KEYS  ·L144
-- const ID_RE  ·L148
-- const ID_TOKEN_RE  ·L149
-- const REQUEST_STEM_RE  ·L150
-- const REQUEST_TOKEN_RE  ·L151
-- const REQUEST_STEM_TOKEN_RE  ·L153
-- const TOPIC_RE  ·L156
-- const BIB_TAG_RE  ·L157
-- const DECL_RE  ·L158
-- const LEAN_FILE_RE  ·L159
-- const COUNTEREXAMPLE_STEM_RE  ·L160
-- const CITED_BY_RE  ·L165
-- const SHA256_RE  ·L168
-- const ISO_DATE_RE  ·L169
-- const BODY_HEADINGS  ·L172
-- const EM_DASH  ·L174
-- split_cited_by(citation: str) -> tuple[str, str, str | None] | None  ·L177: (repo, path, locator) from one `cited_by` string, or None when it is malformed.
-- cited_by_form(repo: str, path: str) -> str  ·L186: The `cited_by` string for this repo and path, quoted when it has to be.
-- citation_words(status: str) -> tuple[str, ...]  ·L191: The status words I15 requires on a line citing an entry at this status.
-- _fail(path: Path, field: str, message: str) -> None  ·L196
-- _closed_mapping(value, keys, path: Path, field: str) -> dict  ·L200
-- _enum(value, allowed, path: Path, field: str) -> None  ·L212
-- _iso_date(value, path: Path, field: str) -> None  ·L217
-- _str_list(value, path: Path, field: str) -> list  ·L226
-- _id_list(value, path: Path, field: str) -> list  ·L232
-- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L239: Validate one entry's front matter. `kind` is 'public' or 'private'.
-- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L319
-- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L345
-- _validate_settled_by(settled_by, path: Path) -> None  ·L366
+- const OPTIONAL_ENTRY_KEYS  ·L141
+- const PLAIN_WORDS_HEADING  ·L142
+- const AKA_MAX  ·L143
+- const AKA_MAX_WORDS  ·L144
+- const PHRASINGS_MIN  ·L145
+- const PHRASINGS_MAX  ·L146
+- const PHRASINGS_MAX_WORDS  ·L147
+- const FORMAL_KEYS  ·L148
+- const BETWEEN_KEYS  ·L149
+- const PROVENANCE_KEYS  ·L150
+- const RAISED_BY_KEYS  ·L151
+- const RAISED_BY_PUBLIC_KEYS  ·L153
+- const STIPULATED_BY_KEYS  ·L154
+- const SETTLED_BY_KEYS  ·L155
+- const EVIDENCE_KEYS  ·L156
+- const ID_RE  ·L160
+- const ID_TOKEN_RE  ·L161
+- const REQUEST_STEM_RE  ·L162
+- const REQUEST_TOKEN_RE  ·L163
+- const REQUEST_STEM_TOKEN_RE  ·L165
+- const TOPIC_RE  ·L168
+- const BIB_TAG_RE  ·L169
+- const DECL_RE  ·L170
+- const LEAN_FILE_RE  ·L171
+- const COUNTEREXAMPLE_STEM_RE  ·L172
+- const CITED_BY_RE  ·L177
+- const SHA256_RE  ·L180
+- const ISO_DATE_RE  ·L181
+- const BODY_HEADINGS  ·L184
+- const EM_DASH  ·L186
+- split_cited_by(citation: str) -> tuple[str, str, str | None] | None  ·L189: (repo, path, locator) from one `cited_by` string, or None when it is malformed.
+- cited_by_form(repo: str, path: str) -> str  ·L198: The `cited_by` string for this repo and path, quoted when it has to be.
+- citation_words(status: str) -> tuple[str, ...]  ·L203: The status words I15 requires on a line citing an entry at this status.
+- _fail(path: Path, field: str, message: str) -> None  ·L208
+- _closed_mapping(value, keys, path: Path, field: str, optional=()) -> dict  ·L212
+- _enum(value, allowed, path: Path, field: str) -> None  ·L224
+- _iso_date(value, path: Path, field: str) -> None  ·L229
+- _str_list(value, path: Path, field: str) -> list  ·L238
+- _id_list(value, path: Path, field: str) -> list  ·L244
+- validate_front(front: dict, path: Path, kind: str='public') -> None  ·L251: Validate one entry's front matter. `kind` is 'public' or 'private'.
+- _validate_reading_keys(front: dict, path: Path) -> None  ·L332: The optional `aka`, `phrasings` and `plain_words_checked` keys, checked for shape when present.
+- _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None  ·L359
+- _validate_stipulated_by(stipulated_by, status: str, path: Path) -> None  ·L385
+- _validate_settled_by(settled_by, path: Path) -> None  ·L406
 
 ### mdept/search.py
 _Random search for numeric leads._

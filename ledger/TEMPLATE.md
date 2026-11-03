@@ -29,6 +29,9 @@ provenance:
   settled_by: null             # {who, date, how: citation|counterexample|lean|informal-proof, checked_by, model}
   connects: []                 # free strings or MD_0007 tokens
 cited_by: []                   # "Repo:path/to/doc.md §n"; the doc must literally contain this ID
+aka: []                        # 1 to 5 informal names, at most 6 words each, no LaTeX (the reading and search layers)
+phrasings: []                  # 3 to 8 questions or sentences a consumer would type, at most 25 words each, no LaTeX
+plain_words_checked: null      # YYYY-MM-DD once John (or a reviewer he names) cleared the In plain words section
 revises: null
 merged_into: null
 statement_hash: null           # sha256 of the audit's pretty-printed Lean type, once formal.decl exists
@@ -43,6 +46,12 @@ Every quantifier explicit. Every symbol defined here or in Hypotheses.
 ## Hypotheses
 
 - **H1.** ...
+
+## In plain words
+
+One to two paragraphs for a reader who will not read the Statement: the special case first, then what
+the result decides for the consumer that raised it. Written at settle by a context that read the proof
+but did not write it; `plain_words_checked` stays null, and the page shows "unreviewed", until John clears it.
 
 ## Why it was raised
 
