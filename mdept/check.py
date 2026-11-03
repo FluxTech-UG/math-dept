@@ -725,7 +725,7 @@ def reference_surfaces(root: Path) -> list[Path]:
             paths.append(target)
         elif target.is_dir():
             paths.extend(parse.iter_markdown(target))
-    return [p for p in sorted(set(paths)) if p.name not in ("TEMPLATE.md", "INDEX.md")]
+    return [p for p in sorted(set(paths)) if not parse.is_ledger_view(p.name)]
 
 
 # --- I13 inbox lifecycle ----------------------------------------------------
@@ -890,13 +890,15 @@ def i16_generated_views(ctx: Context) -> None:
         return
     from . import index as index_mod
 
-    for rel, rendered in index_mod.render(ctx.root).items():
-        path = ctx.root / rel
-        if not path.is_file():
+    rendered = index_mod.render(ctx.root)
+    for rel in index_mod.drift(ctx.root, rendered):
+        if rel not in rendered:
+            fail("I16 generated", rel, "<file>",
+                 "a catalog topic file the views no longer produce; run `make regen`, which deletes it")
+        if not (ctx.root / rel).is_file():
             fail("I16 generated", rel, "<file>", "the generated view is missing; run `make regen`")
-        if path.read_text(encoding="utf-8") != rendered:
-            fail("I16 generated", rel, "<content>",
-                 "the generated view drifted from the ledger; run `make regen`")
+        fail("I16 generated", rel, "<content>",
+             "the generated view drifted from the ledger; run `make regen`")
 
 
 # --- I17 prose --------------------------------------------------------------

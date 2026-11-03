@@ -1,0 +1,90 @@
+source	kind	target
+MD_0011	cited_by	1DSim3:docs/design/21-real-fluid-gain.md §21.3
+MD_0011	cited_by	1DSim4:docs/design/21-bed-one-pore.md
+MD_0011	cited_by	1DSim4:twe4/sources/regenerator/two_parameter.py
+MD_0012	cited_by	1DSim3:docs/design/21-real-fluid-gain.md §21.3
+MD_0015	cited_by	1DSim3:docs/design/21-real-fluid-gain.md §21.3
+MD_0015	cited_by	1DSim3:twe/sources/cross_gain.py
+MD_0016	revises	MD_0012
+MD_0016	cited_by	1DSim3:docs/design/21-real-fluid-gain.md §21.3
+MD_0017	revises	MD_0014
+MD_0017	cited_by	1DSim3:docs/design/21-real-fluid-gain.md §21.3
+MD_0017	cited_by	1DSim3:twe/sources/cross_gain.py
+MD_0017	cited_by	1DSim3:twe/sources/pore_cell.py
+MD_0017	cited_by	1DSim4:docs/design/21-bed-one-pore.md
+MD_0017	cited_by	1DSim4:tests/test_onepore.py
+MD_0017	cited_by	1DSim4:twe4/config/blocks/__init__.py
+MD_0017	cited_by	1DSim4:twe4/sources/regenerator/pore.py
+MD_0017	cited_by	MesoSim1:mesosim/linear/cell.py
+MD_0017	cited_by	MesoSim1:mesosim/linear/exact.py
+MD_0022	cited_by	1DSim4:docs/design.md
+MD_0025	revises	MD_0022
+MD_0025	cited_by	1DSim4:docs/design.md
+MD_0026	revises	MD_0023
+MD_0027	revises	MD_0020
+MD_0029	revises	MD_0025
+MD_0029	cited_by	1DSim4:docs/design.md
+MD_0033	above_of	MD_0036
+MD_0033	cited_by	1DSim4:docs/design.md
+MD_0033	cited_by	1DSim4:docs/design/03-energy-state.md
+MD_0033	cited_by	1DSim4:twe4/ledger.py
+MD_0035	cited_by	1DSim4:docs/design.md
+MD_0035	cited_by	1DSim4:docs/design/03-energy-state.md
+MD_0035	cited_by	1DSim4:twe4/ledger.py
+MD_0036	below_of	MD_0033
+MD_0038	revises	MD_0034
+MD_0038	connects	MD_0033
+MD_0039	cited_by	1DSim4:docs/design.md
+MD_0039	cited_by	1DSim4:docs/design/03-energy-state.md
+MD_0039	cited_by	1DSim4:twe4/ledger.py
+MD_0041	connects	MD_0035
+MD_0041	cited_by	1DSim4:docs/design.md
+MD_0041	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0041	cited_by	1DSim4:twe4/orbit/invariants.py
+MD_0042	connects	MD_0035
+MD_0042	cited_by	1DSim4:docs/design.md
+MD_0042	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0042	cited_by	1DSim4:twe4/orbit/invariants.py
+MD_0043	cited_by	1DSim4:docs/design.md
+MD_0043	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0044	cited_by	1DSim4:docs/design.md
+MD_0044	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0045	cited_by	1DSim4:docs/design.md
+MD_0045	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0046	cited_by	1DSim4:docs/design.md
+MD_0046	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0049	connects	MD_0064
+MD_0049	cited_by	1DSim4:docs/design.md
+MD_0049	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0051	cited_by	1DSim4:docs/design.md
+MD_0051	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0052	cited_by	1DSim4:docs/STATUS.md
+MD_0052	cited_by	1DSim4:docs/design.md
+MD_0052	cited_by	1DSim4:docs/design/12-orbit.md
+MD_0052	cited_by	1DSim4:twe4/orbit/block_krylov.py
+MD_0070	cited_by	1DSim4:CLAUDE.md
+MD_0070	cited_by	1DSim4:docs/STATUS.md
+MD_0070	cited_by	1DSim4:docs/design.md
+MD_0070	cited_by	1DSim4:docs/design/14-test-regime.md
+MD_0070	cited_by	1DSim4:docs/design/21-bed-one-pore.md
+MD_0070	cited_by	1DSim4:tests/test_onepore.py
+MD_0070	cited_by	1DSim4:twe4/sources/regenerator/onepore.py
+MD_0070	cited_by	1DSim4:twe4/sources/regenerator/stieltjes.py
+MD_0070	cited_by	MesoSim1:docs/design.md
+MD_0073	cited_by	1DSim4:CLAUDE.md
+MD_0073	cited_by	1DSim4:docs/STATUS.md
+MD_0073	cited_by	1DSim4:docs/design.md
+MD_0073	cited_by	1DSim4:docs/design/14-test-regime.md
+MD_0073	cited_by	1DSim4:docs/design/22-damping-budget.md
+MD_0073	cited_by	1DSim4:scripts/damping_budget.py
+MD_0073	cited_by	1DSim4:tests/test_damping_budget.py
+MD_0073	cited_by	1DSim4:twe4/analysis/damping_budget/instrument.py
+MD_0073	cited_by	1DSim4:twe4/analysis/damping_budget/spectrum.py
+MD_0094	cited_by	1DSim4:docs/design/21-bed-one-pore.md
+MD_0101	revises	MD_0097
+MD_0102	special_case_of	MD_0096
+MD_0103	special_case_of	MD_0100
+MD_0104	cited_by	Formal Ontology:330-application-morphospace.md §2
+MD_0105	cited_by	Formal Ontology:330-application-morphospace.md §2
+MD_0107	cited_by	Formal Ontology:330-application-morphospace.md §2
+MD_0108	cited_by	Formal Ontology:330-application-morphospace.md §2

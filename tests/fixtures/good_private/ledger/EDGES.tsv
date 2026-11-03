@@ -1,0 +1,7 @@
+source	kind	target
+MD_0005	above_of	MD_0006
+MD_0005	cited_by	ToyRepo:docs/toy.md §1
+MD_0005	cited_by	ToyRepo:src/toy.py
+MD_0006	below_of	MD_0005
+MD_0006	cited_by	ToyRepo:"research/toy notes.md" §2
+MD_0006	cited_by	ToyRepo:docs/toy.md §1

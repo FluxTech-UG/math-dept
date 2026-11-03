@@ -25,6 +25,16 @@ IGNORE_DIRS = frozenset(
 #: Generated or template markdown that carries placeholder IDs by design.
 PLACEHOLDER_MD = ("ledger/TEMPLATE.md", "inbox/TEMPLATE.md")
 
+#: The markdown under `ledger/` that is not an entry: the template and the generated views.
+LEDGER_VIEW_NAMES = ("TEMPLATE.md", "INDEX.md", "CATALOG.md")
+#: A topic file of the catalog once it is split past its budget (`mdept.catalog`).
+CATALOG_TOPIC_RE = re.compile(r"^CATALOG-[a-z0-9]+(-[a-z0-9]+)*\.md$")
+
+
+def is_ledger_view(name: str) -> bool:
+    """True for a `ledger/` markdown file name that is the template or a generated view."""
+    return name in LEDGER_VIEW_NAMES or CATALOG_TOPIC_RE.match(name) is not None
+
 #: The closed key set of one `repos.yaml` consumer, and where its view lands.
 CONSUMER_KEYS = ("path", "ignore", "view", "archived")
 DEFAULT_VIEW = "docs/MATH.md"
@@ -149,11 +159,11 @@ class Entry:
 
 
 def entry_paths(root: Path) -> list[Path]:
-    """Every `ledger/MD_####.md` under `root`, sorted. TEMPLATE.md is not an entry."""
+    """Every `ledger/MD_####.md` under `root`, sorted. The template and the views are not entries."""
     ledger = Path(root) / "ledger"
     if not ledger.is_dir():
         raise CheckError(f"I1 filename: {root}: field '<ledger>': no 'ledger/' directory")
-    return sorted(p for p in ledger.glob("*.md") if p.name not in ("TEMPLATE.md", "INDEX.md"))
+    return sorted(p for p in ledger.glob("*.md") if not is_ledger_view(p.name))
 
 
 def load_entries(root: Path) -> list[Entry]:
