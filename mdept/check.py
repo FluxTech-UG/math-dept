@@ -3,12 +3,15 @@
 Run: `python -m mdept.check [--root PATH] [--run-counterexamples] [--family] [--lean]`
 or, scoped: `python -m mdept.check --entry MD_0007 [--entry MD_0008 ...]`
 
-Every invariant raises `CheckError` on the first violation it finds, naming the
-invariant, the offending path, and the offending field, except two that collect:
-I15 (consumer citations) and I21 (unlisted citations) gather every violation
-across the family and raise them together, one per line. There is no warnings
-tier and no partial pass: I9b is the single informational check, and it is
-reported as a notice that also lands in `ledger/INDEX.md` section 7.
+A violation names the invariant, the offending path, and the offending field.
+A run reports every failing invariant: `run()` goes on past each failure and
+raises one `CheckError` carrying them all, one per line, in invariant order.
+Within an invariant, most stop at their first violation. Five collect: I15
+(consumer citations), I20 (the sorry fence) and I21 (unlisted citations)
+report every violation, I13 every failing request and I14 every failing entry
+and Outcome id, each by its first violation. There is no warnings tier and no
+partial pass: I9b is the single informational check, and it is reported as a
+notice that also lands in `ledger/INDEX.md` section 7.
 
 Modes:
 
@@ -58,6 +61,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -97,8 +101,33 @@ ROLE_LINE_SURFACES = ("docs", "proofs", "triage")
 STANDARD_AXIOMS = ("propext", "Classical.choice", "Quot.sound")
 
 
+def violation(invariant: str, path, field_name: str, message: str) -> str:
+    """One violation line: the invariant, the offending path and field, and what is wrong."""
+    return f"{invariant}: {path}: field '{field_name}': {message}"
+
+
 def fail(invariant: str, path, field_name: str, message: str) -> None:
-    raise CheckError(f"{invariant}: {path}: field '{field_name}': {message}")
+    raise CheckError(violation(invariant, path, field_name, message))
+
+
+def collected(violations: list[str]) -> CheckError:
+    """Every violation found, one per line in the order found, as one error."""
+    return CheckError("\n".join(violations))
+
+
+@contextmanager
+def recording(violations: list[str]):
+    """Record a `CheckError` raised in the block into `violations` and carry on.
+
+    A loop that wraps each item's checks in this reports the first violation of
+    every item, not only of the first failing one. The raise still ends that
+    item's block, which is what keeps a later line from dereferencing the value
+    a failed check found missing.
+    """
+    try:
+        yield
+    except CheckError as exc:
+        violations.append(str(exc))
 
 
 @dataclass
@@ -760,70 +789,94 @@ def reference_surfaces(root: Path) -> list[Path]:
 
 
 def i13_inbox(ctx: Context) -> None:
+    """Each request's lifecycle; every failing request is reported, each by its first violation."""
     if not ctx.private:
         return
+    violations: list[str] = []
     for request in ctx.checked_requests():
-        if not schema.REQUEST_STEM_RE.match(request.stem):
-            fail("I13 inbox", request.rel, "<filename>",
-                 "a request filename is YYYY-MM-DD-slug.md with a lower-case hyphenated slug")
-        if request.front.get("request") != request.stem:
-            fail("I13 inbox", request.rel, "request",
-                 f"front matter says {request.front.get('request')!r}, the filename stem is {request.stem!r}")
-        state = request.state
-        if request.closed and state != "closed":
-            fail("I13 inbox", request.rel, "state",
-                 f"a request in inbox/done/ is state 'closed', found {state!r}")
-        if not request.closed and state not in ("new", "triaged"):
-            fail("I13 inbox", request.rel, "state",
-                 f"a request in inbox/ is state 'new' or 'triaged', found {state!r}")
-        if not request.candidates():
-            fail("I13 inbox", request.rel, "<body>", "a request offers at least one '### C1' candidate")
-        if not request.closed:
-            continue
-        outcome = request.outcome()
-        if not outcome.strip():
-            fail("I13 inbox", request.rel, "Outcome", "a closed request carries an Outcome block")
-        for candidate in request.candidates():
-            line = request.outcome_line(candidate)
-            if line is None:
-                fail("I13 inbox", request.rel, "Outcome",
-                     f"{candidate} has no line in the Outcome block")
-            if not (schema.ID_TOKEN_RE.search(line) or "declined:" in line):
-                fail("I13 inbox", request.rel, "Outcome",
-                     f"{candidate} maps to neither an MD_#### id nor 'declined: <reason>'")
+        with recording(violations):
+            _check_request(request)
+    if violations:
+        raise collected(violations)
+
+
+def _check_request(request) -> None:
+    if not schema.REQUEST_STEM_RE.match(request.stem):
+        fail("I13 inbox", request.rel, "<filename>",
+             "a request filename is YYYY-MM-DD-slug.md with a lower-case hyphenated slug")
+    if request.front.get("request") != request.stem:
+        fail("I13 inbox", request.rel, "request",
+             f"front matter says {request.front.get('request')!r}, the filename stem is {request.stem!r}")
+    state = request.state
+    if request.closed and state != "closed":
+        fail("I13 inbox", request.rel, "state",
+             f"a request in inbox/done/ is state 'closed', found {state!r}")
+    if not request.closed and state not in ("new", "triaged"):
+        fail("I13 inbox", request.rel, "state",
+             f"a request in inbox/ is state 'new' or 'triaged', found {state!r}")
+    if not request.candidates():
+        fail("I13 inbox", request.rel, "<body>", "a request offers at least one '### C1' candidate")
+    if not request.closed:
+        return
+    outcome = request.outcome()
+    if not outcome.strip():
+        fail("I13 inbox", request.rel, "Outcome", "a closed request carries an Outcome block")
+    for candidate in request.candidates():
+        line = request.outcome_line(candidate)
+        if line is None:
+            fail("I13 inbox", request.rel, "Outcome",
+                 f"{candidate} has no line in the Outcome block")
+        if not (schema.ID_TOKEN_RE.search(line) or "declined:" in line):
+            fail("I13 inbox", request.rel, "Outcome",
+                 f"{candidate} maps to neither an MD_#### id nor 'declined: <reason>'")
 
 
 # --- I14 request back-links -------------------------------------------------
 
 
 def i14_request_backlinks(ctx: Context) -> None:
+    """Entries and requests name each other; every failing entry and every failing Outcome id
+    is reported, each by its first violation."""
     if not ctx.private:
         return
+    violations: list[str] = []
     stems = {r.stem: r for r in ctx.requests}
     for entry in ctx.entries:
         token = entry.at("provenance.stipulated_by.request")
         if token is None:
             continue
-        stem, candidate = schema.REQUEST_TOKEN_RE.fullmatch(token).groups()
-        request = stems.get(stem)
-        if request is None:
-            fail("I14 back-link", ctx.rel(entry.path), "provenance.stipulated_by.request",
-                 f"{token} names no request in inbox/ or inbox/done/")
-        if candidate not in request.candidates():
-            fail("I14 back-link", ctx.rel(entry.path), "provenance.stipulated_by.request",
-                 f"{request.rel} has no '### {candidate}' heading")
-        if request.closed and entry.id not in parse.id_tokens(request.outcome()):
-            fail("I14 back-link", request.rel, "Outcome",
-                 f"{entry.id} cites this request but the Outcome does not name it")
+        with recording(violations):
+            _check_entry_backlink(ctx, entry, token, stems)
     for request in ctx.checked_requests():
         for token in sorted(parse.id_tokens(request.outcome())):
-            entry = ctx.resolve(token)
-            if entry is None:
-                fail("I14 back-link", request.rel, "Outcome", f"{token} does not exist")
-            back = entry.at("provenance.stipulated_by.request")
-            if back is None or not back.startswith(f"MDR:{request.stem}#"):
-                fail("I14 back-link", ctx.rel(entry.path), "provenance.stipulated_by.request",
-                     f"{request.rel} claims {token}, but the entry points at {back!r}")
+            with recording(violations):
+                _check_outcome_claim(ctx, request, token)
+    if violations:
+        raise collected(violations)
+
+
+def _check_entry_backlink(ctx: Context, entry, token: str, stems: dict) -> None:
+    stem, candidate = schema.REQUEST_TOKEN_RE.fullmatch(token).groups()
+    request = stems.get(stem)
+    if request is None:
+        fail("I14 back-link", ctx.rel(entry.path), "provenance.stipulated_by.request",
+             f"{token} names no request in inbox/ or inbox/done/")
+    if candidate not in request.candidates():
+        fail("I14 back-link", ctx.rel(entry.path), "provenance.stipulated_by.request",
+             f"{request.rel} has no '### {candidate}' heading")
+    if request.closed and entry.id not in parse.id_tokens(request.outcome()):
+        fail("I14 back-link", request.rel, "Outcome",
+             f"{entry.id} cites this request but the Outcome does not name it")
+
+
+def _check_outcome_claim(ctx: Context, request, token: str) -> None:
+    entry = ctx.resolve(token)
+    if entry is None:
+        fail("I14 back-link", request.rel, "Outcome", f"{token} does not exist")
+    back = entry.at("provenance.stipulated_by.request")
+    if back is None or not back.startswith(f"MDR:{request.stem}#"):
+        fail("I14 back-link", ctx.rel(entry.path), "provenance.stipulated_by.request",
+             f"{request.rel} claims {token}, but the entry points at {back!r}")
 
 
 # --- I15 consumer citations -------------------------------------------------
@@ -864,7 +917,7 @@ def i15_consumer_citations(ctx: Context) -> None:
     violations: list[str] = []
 
     def note(path, field_name: str, message: str) -> None:
-        violations.append(f"I15 citation: {path}: field '{field_name}': {message}")
+        violations.append(violation("I15 citation", path, field_name, message))
 
     for entry in ctx.entries:
         for i, citation in enumerate(entry.front["cited_by"]):
@@ -904,7 +957,7 @@ def i15_consumer_citations(ctx: Context) -> None:
                          f"cites {entry.id} without any of {list(required)}; "
                          f"the entry is {entry.status}")
     if violations:
-        raise CheckError("\n".join(violations))
+        raise collected(violations)
 
 
 # --- I16 generated views fresh ----------------------------------------------
@@ -997,12 +1050,12 @@ def i19_attempt_records(ctx: Context) -> None:
 
 
 def i20_sorry_fence(ctx: Context) -> None:
-    violations = [v for v in audit_mod.sorry_violations(ctx.root)
+    """Every breach of the sorry fence in a file this run counts, one per line."""
+    violations = [violation("I20 sorry fence", v["file"], "sorry", f"line {v['line']}: {v['reason']}")
+                  for v in audit_mod.sorry_violations(ctx.root)
                   if ctx.counts(ctx.root / v["file"])]
     if violations:
-        first = violations[0]
-        fail("I20 sorry fence", first["file"], "sorry",
-             f"line {first['line']}: {first['reason']}")
+        raise collected(violations)
 
 
 # --- I21 no unlisted consumer citation --------------------------------------
@@ -1048,16 +1101,18 @@ def i21_unlisted_citations(ctx: Context) -> None:
                 continue
             rel = consumer.rel(path)
             for token in sorted(parse.id_tokens(text)):
-                where = f"I21 unlisted citation: {name}:{rel}: field '<MD token>'"
+                where = f"{name}:{rel}"
                 if token not in cited:
-                    violations.append(f"{where}: {token} resolves to no entry in either ledger")
+                    violations.append(violation("I21 unlisted citation", where, "<MD token>",
+                                                f"{token} resolves to no entry in either ledger"))
                 elif (name, rel) not in cited[token]:
-                    violations.append(
-                        f"{where}: {token} is relied on here but its cited_by does not list "
+                    violations.append(violation(
+                        "I21 unlisted citation", where, "<MD token>",
+                        f"{token} is relied on here but its cited_by does not list "
                         f"'{schema.cited_by_form(name, rel)}'; add it, or the next "
-                        "status change misses this file")
+                        "status change misses this file"))
     if violations:
-        raise CheckError("\n".join(violations))
+        raise collected(violations)
 
 
 INVARIANTS = (
@@ -1184,14 +1239,33 @@ def run(root: Path | str | None = None,
         family: bool = False,
         lean: bool = False,
         entries: list[str] | None = None) -> Context:
-    """Run every invariant in order; `CheckError` names the first failing invariant.
+    """Run every invariant in order and report every one that fails.
+
+    A failing invariant's message is recorded and the run goes on to the next
+    one; at the end a single `CheckError` carries every failure, one per line, in
+    invariant order. A later invariant reads a tree an earlier failure already
+    found wrong, and it may crash on a value that failure reports missing. Such a
+    crash ends the run: it joins the report as one line naming the invariant
+    function and the exception, raised `from` it. A crash with nothing failed
+    before it is a fault in the checker and is raised as itself.
 
     `entries` scopes the run to those entry IDs (the CLI's `--entry`).
     """
     resolved = config.find_repo_root(root) if root is None else Path(root).resolve()
     ctx = build_context(resolved, run_counterexamples, family, lean, entries)
+    failures: list[str] = []
     for invariant in INVARIANTS:
-        invariant(ctx)
+        try:
+            invariant(ctx)
+        except CheckError as exc:
+            failures.append(str(exc))
+        except Exception as exc:
+            if not failures:
+                raise
+            failures.append(f"{invariant.__name__}: {type(exc).__name__}: {exc}")
+            raise collected(failures) from exc
+    if failures:
+        raise collected(failures)
     return ctx
 
 

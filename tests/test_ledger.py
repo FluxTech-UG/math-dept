@@ -383,6 +383,93 @@ def test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_th
     assert schema.SETTLED_SUPPORT_RULE in message
 
 
+# --- one run reports every failing invariant --------------------------------
+
+
+def _break_prose_and_fence(root: Path) -> None:
+    """Two breaks in disjoint files: an em dash in a doc (I17) and a sorry in a Result (I20)."""
+    apply_overlay(root, FIXTURES / "broken" / "I17_em_dash")
+    apply_overlay(root, FIXTURES / "broken" / "I20_sorry_in_results")
+
+
+def _first_line_of(lines: list[str], invariant: str) -> int:
+    starts = [n for n, line in enumerate(lines) if line.startswith(invariant)]
+    assert starts, f"no line starts with {invariant!r}: {lines}"
+    return starts[0]
+
+
+def test_a_run_reports_every_failing_invariant_in_order(tmp_path):
+    """The run goes on past a failing invariant, so a fix spanning two invariants is one round."""
+    root = stage(tmp_path) / "good_public"
+    _break_prose_and_fence(root)
+    with pytest.raises(CheckError) as raised:
+        check.run(root)
+    lines = str(raised.value).splitlines()
+    assert _first_line_of(lines, "I17 prose") < _first_line_of(lines, "I20 sorry fence")
+
+
+def test_the_cli_names_every_failing_invariant(tmp_path, capsys):
+    root = stage(tmp_path) / "good_public"
+    _break_prose_and_fence(root)
+    assert check.main(["--root", str(root)]) == 1
+    err = capsys.readouterr().err
+    assert err.startswith("FAIL I17 prose"), err
+    assert "\nI20 sorry fence" in err, err
+
+
+def test_the_sorry_fence_reports_every_violation(tmp_path):
+    root = stage(tmp_path) / "good_public"
+    apply_overlay(root, FIXTURES / "broken" / "I20_sorry_in_results")
+    lean = root / "MathDept/Results/MD_0001.lean"
+    lean.write_text(lean.read_text(encoding="utf-8").replace(
+        "end MathDept.MD_0001",
+        "theorem extra (n : Nat) : 0 + n = n := by\n  sorry\n\nend MathDept.MD_0001"), encoding="utf-8")
+    with pytest.raises(CheckError) as raised:
+        check.run(root)
+    fence = [line for line in str(raised.value).splitlines() if line.startswith("I20 sorry fence")]
+    assert len(fence) == 2, fence
+    assert "line 11:" in fence[0] and "line 14:" in fence[1], fence
+
+
+def test_the_inbox_check_reports_every_request(tmp_path):
+    """An open request marked closed and a closed one missing a candidate's line fail together."""
+    root = stage(tmp_path) / "good_private"
+    apply_overlay(root, FIXTURES / "broken" / "I13_closed_state_in_inbox")
+    closed = root / "inbox/done/2026-08-20-closed.md"
+    text = closed.read_text(encoding="utf-8")
+    assert text.count("- C3 -> declined:") == 1
+    closed.write_text(text[:text.index("- C3 -> declined:")], encoding="utf-8")
+    with pytest.raises(CheckError) as raised:
+        check.run(root)
+    inbox = [line for line in str(raised.value).splitlines() if line.startswith("I13 inbox")]
+    assert any("inbox/2026-09-01-toy.md" in line for line in inbox), inbox
+    assert any("2026-08-20-closed.md" in line and "C3 has no line" in line for line in inbox), inbox
+
+
+def test_a_crash_after_a_failure_is_reported_with_it(tmp_path, monkeypatch):
+    """An invariant reading a state an earlier failure guards may crash; the crash joins the report.
+
+    With nothing failed before it, the crash is raised as itself.
+    """
+    def breaks(ctx):
+        check.fail("I98 first", "ledger/MD_0001.md", "status", "a recorded failure")
+
+    def crashes(ctx):
+        raise RuntimeError("read a state the failure above guards")
+
+    root = stage(tmp_path) / "good_public"
+    monkeypatch.setattr(check, "INVARIANTS", (breaks, crashes))
+    with pytest.raises(CheckError) as raised:
+        check.run(root)
+    message = str(raised.value)
+    assert message.startswith("I98 first: ledger/MD_0001.md: field 'status': a recorded failure"), message
+    assert "crashes" in message and "RuntimeError: read a state the failure above guards" in message
+    assert isinstance(raised.value.__cause__, RuntimeError)
+    monkeypatch.setattr(check, "INVARIANTS", (crashes,))
+    with pytest.raises(RuntimeError, match="read a state"):
+        check.run(root)
+
+
 # --- I9b is a notice, not a failure -----------------------------------------
 
 
@@ -696,6 +783,25 @@ def test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path):
     check.run(root, entries=["MD_0003"])
     with pytest.raises(CheckError, match=r"^I16 generated"):
         check.run(root)
+
+
+def test_a_scoped_run_names_every_outcome_id_this_request_did_not_file(tmp_path):
+    """A closed request's Outcome names two entries that point at no request.
+
+    `2026-08-20-closed` files MD_0005 and MD_0006. A `related:` line naming the
+    public sibling's MD_0001 and the private MD_0007 makes I14 read both as this
+    request's claims, so the scoped gate of MD_0007 names both, not only the first.
+    """
+    root = stage(tmp_path) / "good_private"
+    request = root / "inbox/done/2026-08-20-closed.md"
+    request.write_text(request.read_text(encoding="utf-8") + "- related: MD_0001, MD_0007\n",
+                       encoding="utf-8")
+    with pytest.raises(CheckError) as raised:
+        check.run(root, entries=["MD_0007"])
+    backlinks = [line for line in str(raised.value).splitlines() if line.startswith("I14 back-link")]
+    assert len(backlinks) == 2, backlinks
+    assert "MD_0001" in backlinks[0] and "MD_0007" not in backlinks[0], backlinks
+    assert "MD_0007" in backlinks[1] and "MD_0001" not in backlinks[1], backlinks
 
 
 @pytest.mark.parametrize("flags, message", [
