@@ -20,7 +20,7 @@ classifiers = [
 dependencies = ["sympy>=1.12", "pyyaml>=6.0"]
 
 [project.optional-dependencies]
-search = ["numpy>=1.26"]
+search = ["numpy>=1.26", "scipy>=1.11"]
 figures = ["matplotlib>=3.8"]
 test = ["pytest>=7.0", "math-dept[search,figures]"]
 

@@ -775,6 +775,7 @@ def test_the_cli_takes_several_ids(tmp_path, monkeypatch, capsys):
 
 def test_release_refuses_without_repo_outline(tmp_path, monkeypatch):
     root = stage(tmp_path)
+    monkeypatch.setattr(release, "_require_outline", REAL_REQUIRE_OUTLINE, raising=False)
     monkeypatch.setattr(shutil, "which", lambda name: None)
     with pytest.raises(ConfigError, match="repo-outline is not on PATH"):
         REAL_OUTLINE(root / "good_public")

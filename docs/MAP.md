@@ -1357,16 +1357,16 @@ _Releasing an entry is all or nothing._
 - test_a_batch_refuses_a_repeated_id(tmp_path, monkeypatch)  ·L760
 - test_the_cli_takes_several_ids(tmp_path, monkeypatch, capsys)  ·L766
 - test_release_refuses_without_repo_outline(tmp_path, monkeypatch)  ·L776
-- const PROSE_PRIVATE  ·L785
-- const PROSE_PUBLIC  ·L786
-- const OTHER_PRIVATE  ·L787
-- _add_note(path: Path, sentence: str) -> None  ·L790
-- _stage_prose_pointers(public: Path, private: Path) -> None  ·L796: The moving entry, a public entry and a private entry each name the moving Lean file in prose.
-- test_a_release_rewrites_prose_pointers_to_the_moved_lean_file(tmp_path, monkeypatch)  ·L806
-- test_a_dry_run_names_the_prose_rewrites_and_touches_nothing(tmp_path, monkeypatch)  ·L825
-- const PUBLIC_LEAN_POINTER_RE  ·L835
-- test_a_pointer_to_a_lean_draft_that_stays_private_is_left_as_written(tmp_path, monkeypatch)  ·L838: A proven-informal entry with no `formal.file` whose note names a private draft.
-- test_a_rollback_restores_the_prose_pointers(tmp_path, monkeypatch)  ·L888
+- const PROSE_PRIVATE  ·L786
+- const PROSE_PUBLIC  ·L787
+- const OTHER_PRIVATE  ·L788
+- _add_note(path: Path, sentence: str) -> None  ·L791
+- _stage_prose_pointers(public: Path, private: Path) -> None  ·L797: The moving entry, a public entry and a private entry each name the moving Lean file in prose.
+- test_a_release_rewrites_prose_pointers_to_the_moved_lean_file(tmp_path, monkeypatch)  ·L807
+- test_a_dry_run_names_the_prose_rewrites_and_touches_nothing(tmp_path, monkeypatch)  ·L826
+- const PUBLIC_LEAN_POINTER_RE  ·L836
+- test_a_pointer_to_a_lean_draft_that_stays_private_is_left_as_written(tmp_path, monkeypatch)  ·L839: A proven-informal entry with no `formal.file` whose note names a private draft.
+- test_a_rollback_restores_the_prose_pointers(tmp_path, monkeypatch)  ·L889
 
 ### tests/test_root_fresh.py
 _Guard: MathDept.lean imports exactly the modules on disk._
