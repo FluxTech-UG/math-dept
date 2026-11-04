@@ -8,7 +8,7 @@ Modules, each also runnable as `python -m mdept.<module>`:
 - `config`  repo-root and sibling-repo resolution
 - `schema`  the closed front-matter key set, the enumerations, and their validator
 - `parse`   markdown front matter, ledger entries, bibliography, role lines
-- `check`   invariants I1 to I20 over a ledger tree
+- `check`   invariants I1 to I21 (I9 in two parts, I9a and I9b) over a ledger tree
 - `index`   the generated views `ledger/INDEX.md` and `ledger.json`
 - `new`     allocate the next ID and write an entry from the template
 - `settle`  set an entry's status and settled_by, the formal pointer from the audit
