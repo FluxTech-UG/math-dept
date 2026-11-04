@@ -6,6 +6,7 @@ and reads the HTML back; `--check` (the `make check` line) is exercised on a bro
 and on this repo's own ledger.
 """
 
+import re
 import shutil
 from pathlib import Path
 
@@ -176,6 +177,45 @@ def test_the_public_build_names_citing_repos_only_and_drops_the_request(family, 
         assert detail not in public, detail
         assert detail in private, detail
     assert public.count("<li><code>Repo</code></li>") == 1
+
+
+def by_repo_groups(index: str) -> list[tuple[str, str, list[str]]]:
+    """(anchor, heading, entry IDs) for each group of the index's by-repo section, in page order."""
+    start = index.index('<section id="by-repo">')
+    section = index[start:index.index("</section>", start)]
+    groups = re.findall(r'<h3 id="([^"]+)">(.*?)</h3>(.*?)(?=<h3 |\Z)', section, re.S)
+    return [(anchor, heading, re.findall(r'href="(MD_\d{4})\.html"', body)) for anchor, heading, body in groups]
+
+
+def test_the_index_groups_the_entries_by_the_repo_that_cites_them(family, tmp_path):
+    """John, 2026-11-04: "sort by connection to repos". One group per citing repo, largest first and
+    then by name, an entry under every repo that cites it, the uncited last; the public build names
+    the repo and never the document."""
+    ledger = family / "good_public/ledger"
+    edit(ledger / "MD_0001.md", "cited_by: []", "cited_by: ['Beta:docs/a.md §2', 'Alpha:docs/b.md §3']")
+    edit(ledger / "MD_0002.md", "cited_by: []", "cited_by: ['Beta:docs/c.md §4', 'Beta:docs/d.md']")
+    edit(ledger / "MD_0003.md", "cited_by: []", "cited_by: ['Gamma:docs/e.md §5']")
+    index = (build(family / "good_public", tmp_path) / "index.html").read_text(encoding="utf-8")
+    assert '<a href="#by-topic">by topic</a>' in index and '<a href="#by-repo">by repo</a>' in index
+    groups = by_repo_groups(index)
+    assert [(anchor, ids) for anchor, _, ids in groups] == [
+        ("repo-beta", ["MD_0001", "MD_0002"]), ("repo-alpha", ["MD_0001"]), ("repo-gamma", ["MD_0003"]),
+        ("uncited", ["MD_0004"])]
+    assert [heading.split(" <")[0] for _, heading, _ in groups[:3]] == ["Beta", "Alpha", "Gamma"]
+    section = index[index.index('<section id="by-repo">'):]
+    section = section[:section.index("</section>")]
+    for detail in ("docs/", "§2", ".md"):
+        assert detail not in section, detail
+
+
+def test_the_private_index_groups_the_unreleased_entries_too(family, tmp_path):
+    index = (build(family / "good_private", tmp_path) / "index.html").read_text(encoding="utf-8")
+    groups = by_repo_groups(index)
+    assert [(anchor, ids) for anchor, _, ids in groups] == [
+        ("repo-toyrepo", ["MD_0005", "MD_0006"]),
+        ("uncited", ["MD_0001", "MD_0002", "MD_0003", "MD_0004", "MD_0007"])]
+    toy = index[index.index('<h3 id="repo-toyrepo">'):index.index('<h3 id="uncited">')]
+    assert toy.count('class="badge unreleased"') == 2
 
 
 def test_a_merged_entry_shows_where_it_merged_instead_of_empty_provenance(family, tmp_path):

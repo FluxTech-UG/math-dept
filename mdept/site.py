@@ -10,8 +10,11 @@ this is its human face. Each entry page carries the Statement and Hypotheses (La
 rendered by KaTeX from a pinned CDN build), the status, the `In plain words` section
 with its review badge, the entry's neighbourhood graph as inline SVG, links to its
 source, proof, counterexample and Lean files, where it is cited, its figure when one
-was drawn, and the comment routes. The index counts entries by status and filters the
-full table by status, topic and text. Plain HTML and one stylesheet, no build step.
+was drawn, and the comment routes. The index arranges the entries two ways, switched by
+anchor links that need no script: by topic (the full table, counted by status and filtered
+by status, topic and text) and by repo (one group per repo whose documents cite an entry,
+largest first, then the entries no document cites). Plain HTML and one stylesheet, no
+build step.
 
 Two builds, chosen by the repo `--repo` names:
 
@@ -68,6 +71,11 @@ GISCUS_CLIENT = "https://giscus.app/client.js"
 
 STYLESHEET = "site.css"
 INDEX_PAGE = "index.html"
+#: The index's two arrangements of the entries, (section anchor, switch label), in page order.
+ARRANGEMENTS = (("by-topic", "by topic"), ("by-repo", "by repo"))
+#: A citing repo's group on the index is `#repo-<slug>`; the uncited entries' group is `#uncited`.
+REPO_ANCHOR_PREFIX = "repo-"
+UNCITED_ANCHOR = "uncited"
 #: The file that marks a directory as a build output, so `--out` never clears a stranger's folder.
 MARKER = ".mdept-site"
 #: The issue title carries the entry ID and the start of its title, cut at a word boundary.
@@ -524,6 +532,18 @@ def _credit(record: dict, keys: tuple[str, ...]) -> str:
     return ", ".join(f"{k.replace('_', ' ')} {record[k]}" for k in keys if record.get(k))
 
 
+def citing_repos(entry) -> list[str]:
+    """The repos whose documents cite the entry, once each, in the order `cited_by` names them."""
+    repos = []
+    for citation in entry.front["cited_by"]:
+        parts = schema.split_cited_by(citation)
+        if parts is None:
+            raise CheckError(f"site: {entry.rel}: field 'cited_by': {citation!r} is not of the "
+                             "form 'Repo:path §n'")
+        repos.append(parts[0])
+    return list(dict.fromkeys(repos))
+
+
 def _cited_by(ledger: Ledger, entry) -> list[str]:
     """The consumer documents that cite the entry. The public build names the citing repos only,
     once each: a consumer's document path and anchor stay in the private view."""
@@ -533,14 +553,7 @@ def _cited_by(ledger: Ledger, entry) -> list[str]:
         out.append("<p>No consumer document cites this entry yet.</p>")
     else:
         if not ledger.private:
-            repos = []
-            for citation in cited:
-                parts = schema.split_cited_by(citation)
-                if parts is None:
-                    raise CheckError(f"site: {entry.rel}: field 'cited_by': {citation!r} is not of the "
-                                     "form 'Repo:path §n'")
-                repos.append(parts[0])
-            cited = list(dict.fromkeys(repos))
+            cited = citing_repos(entry)
         out.append("<ul>" + "".join(f"<li><code>{html.escape(c)}</code></li>" for c in cited) + "</ul>")
     out.append("</section>")
     return out
@@ -668,6 +681,9 @@ def render_index(ledger: Ledger, cfg: SiteConfig) -> str:
                "application of it, with its status and how it was settled. Open an entry for its "
                "statement, a paragraph in plain words, and the entries it links to. The status words "
                f'are defined in the <a href="{html.escape(cfg.blob_url(False, "README.md"))}">README</a>.</p>')
+    out.append('<nav class="arrange">Arrange the entries '
+               + " or ".join(f'<a href="#{anchor}">{label}</a>' for anchor, label in ARRANGEMENTS) + "</nav>")
+    out.append(f'<section id="{ARRANGEMENTS[0][0]}"><h2>{ARRANGEMENTS[0][1].capitalize()}</h2>')
     out.append('<div class="chips">' + "".join(
         f'<button type="button" class="badge st-{s}" data-status-chip="{s}">{s} {n}</button>'
         for s, n in counts.items() if n) + "</div>")
@@ -697,9 +713,60 @@ def render_index(ledger: Ledger, cfg: SiteConfig) -> str:
             f"<td>{_badge(entry.status)}</td>"
             f'<td class="topics">{html.escape(", ".join(entry_topics))}</td>'
             f'<td data-label="plain words">{_plain_words_badge(state, date)}</td></tr>')
-    out.append("</tbody></table>")
+    out.append("</tbody></table></section>")
+    out += _by_repo(ledger)
     out += ["</main>", FOOTER, INDEX_SCRIPT, "</body>", "</html>"]
     return "\n".join(out) + "\n"
+
+
+def repo_groups(ledger: Ledger) -> list[tuple[str, list]]:
+    """The entries grouped by the repo whose documents cite them: an entry sits under every repo
+    citing it, the groups run largest first and then by name, the entries of a group by ID."""
+    groups: dict[str, list] = {}
+    for entry in ledger.entries:
+        for repo in citing_repos(entry):
+            groups.setdefault(repo, []).append(entry)
+    ordered = sorted(groups.items(), key=lambda item: (-len(item[1]), item[0].casefold(), item[0]))
+    return [(repo, sorted(entries, key=lambda e: e.id)) for repo, entries in ordered]
+
+
+def _repo_anchor(repo: str, taken: dict[str, str]) -> str:
+    """`repo-<slug>` for the repo's group, refused when it is empty or another repo's already."""
+    slug = _slug(repo)
+    anchor = f"{REPO_ANCHOR_PREFIX}{slug}"
+    if not slug or anchor in taken:
+        clash = f"the repo {taken[anchor]!r} has it too" if anchor in taken else "it has no letter or digit"
+        raise CheckError(f"site: field 'cited_by': the repo {repo!r} gets no anchor of its own on the "
+                         f"index ({clash})")
+    taken[anchor] = repo
+    return anchor
+
+
+def _by_repo(ledger: Ledger) -> list[str]:
+    """The index's second arrangement: one group per citing repo, then the entries no document cites.
+    Both builds name the repo only; which document cites an entry is on the entry's page."""
+    taken: dict[str, str] = {}
+    groups = [(_repo_anchor(repo, taken), html.escape(repo), entries) for repo, entries in repo_groups(ledger)]
+    uncited = sorted((e for e in ledger.entries if not e.front["cited_by"]), key=lambda e: e.id)
+    if uncited:
+        groups.append((UNCITED_ANCHOR, "No consumer document cites these yet", uncited))
+    anchor, label = ARRANGEMENTS[1]
+    out = [f'<section id="{anchor}"><h2>{label.capitalize()}</h2>',
+           "<p>Each entry is listed under every repo whose documents cite it, the largest group first. "
+           "Open an entry to see where it is cited.</p>"]
+    out.append('<p class="groups">' + " ".join(
+        f'<a href="#{a}">{name} <span class="count">{len(entries)}</span></a>' for a, name, entries in groups)
+        + "</p>")
+    for a, name, entries in groups:
+        out.append(f'<h3 id="{a}">{name} <span class="count">{len(entries)}</span></h3><ul class="group">')
+        for entry in entries:
+            unreleased = (' <span class="badge unreleased">unreleased</span>'
+                          if ledger.private and ledger.is_private_entry(entry) else "")
+            out.append(f'<li><a href="{entry.id}.html"><span class="id">{entry.id}</span> '
+                       f"{html.escape(entry.title)}</a> {_badge(entry.status)}{unreleased}</li>")
+        out.append("</ul>")
+    out.append("</section>")
+    return out
 
 
 # --- the stylesheet -------------------------------------------------------
@@ -785,6 +852,15 @@ th { font-size: .85em; color: var(--muted); font-weight: 600; }
 td.id .badge { display: block; width: max-content; margin-top: .3em; }
 td.id { white-space: nowrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
 td.topics { color: var(--muted); font-size: .85em; }
+nav.arrange { margin: 1em 0; }
+nav.arrange a { font-weight: 600; }
+h3 { font-size: 1em; margin: 1.4em 0 .3em; }
+.count { color: var(--muted); font-weight: 500; font-size: .9em; }
+p.groups { display: flex; flex-wrap: wrap; gap: .3em 1.1em; font-size: .92em; }
+ul.group { list-style: none; padding: 0; margin: 0; }
+ul.group li { padding: .35em 0; border-bottom: 1px solid var(--rule); }
+ul.group .id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em;
+  color: var(--muted); margin-right: .35em; }
 @media (max-width: 640px) {
   table, tbody, tr, td { display: block; width: 100%; }
   thead { display: none; }
