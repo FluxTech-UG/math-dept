@@ -588,22 +588,22 @@ _The markdown an entry body uses, rendered to HTML with its math left for KaTeX.
 
 ### mdept/new.py
 _Allocate the next ID and write the entry file._
-- const CANDIDATE_HEADING_RE  ·L40
-- const BULLET_RE  ·L41
-- const LEDGER_IDS_RE  ·L42
-- const STATE_RE  ·L45
-- allocate_id(root: Path) -> str  ·L48: The next free ID across this repo and its sibling.
-- blank_front(entry_id: str) -> dict  ·L59: A schema-complete front matter with every key present and nothing invented.
-- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L87
-- _bullet_fields(block: str) -> dict  ·L117: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
-- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L139
-- _topics(value: str) -> list[str]  ·L153
-- _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None, same=lambda a, b: a == b) -> str | None  ·L157: The candidate's bullet, or the flag where the bullet is absent; a disagreement raises.
-- from_request(root: Path, stem: str, candidate: str, model: str | None, kind: str | None=None, topics: str | None=None, domain: str | None=None) -> tuple[str, str, str]  ·L172: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
-- from_title(root: Path, args) -> tuple[str, str, str]  ·L231: Write an entry raised in this repo, with no consumer request behind it.
-- _write_new(path: Path, text: str) -> None  ·L258
-- _record_on_request(path: Path, entry_id: str) -> None  ·L265: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
-- main(argv: list[str] | None=None) -> int  ·L288
+- const CANDIDATE_HEADING_RE  ·L43
+- const BULLET_RE  ·L44
+- const LEDGER_IDS_RE  ·L45
+- const STATE_RE  ·L48
+- allocate_id(root: Path) -> str  ·L51: The next free ID across this repo and its sibling.
+- blank_front(entry_id: str) -> dict  ·L62: A schema-complete front matter with every key present and nothing invented.
+- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L90
+- _bullet_fields(block: str) -> dict  ·L120: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
+- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L142
+- _topics(value: str) -> list[str]  ·L156
+- _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None, same=lambda a, b: a == b) -> str | None  ·L160: The candidate's bullet, or the flag where the bullet is absent; a disagreement raises.
+- from_request(root: Path, stem: str, candidate: str, model: str | None, kind: str | None=None, topics: str | None=None, domain: str | None=None) -> tuple[str, str, str]  ·L175: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
+- from_title(root: Path, args) -> tuple[str, str, str]  ·L234: Write an entry raised in this repo, with no consumer request behind it.
+- _write_new(path: Path, text: str) -> None  ·L261
+- _record_on_request(path: Path, entry_id: str) -> None  ·L268: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
+- main(argv: list[str] | None=None) -> int  ·L291
 
 ### mdept/parse.py
 _Read the markdown surfaces: ledger entries, bibliography, requests, role lines._
@@ -740,6 +740,22 @@ _Move settled entries from the private repo into this public one._
 - _audit(root: Path) -> None  ·L477: Re-run the Lean audit and rewrite `audit/latest.json` (what `make lean` does in `root`).
 - _verify(root: Path, needs_lean: bool) -> dict  ·L490
 - main(argv: list[str] | None=None) -> int  ·L504
+
+### mdept/row.py
+_Append attempt rows to triage records: the one way a lead writes a row._
+- const FIELDS  ·L41
+- const STAGE_RE  ·L43
+- const FORBIDDEN  ·L44
+- const SEPARATOR_CELL_RE  ·L45
+- const BLOCK_SEPARATOR  ·L46
+- @dataclass class Row  ·L50
+  - render(self, date: str) -> str  ·L59
+- make_row(entry: str, fields: dict, where: str) -> Row  ·L64: One validated row; `where` names it in a refusal.
+- read_blocks(path: Path) -> list[Row]  ·L80: The rows of a `--from-file` batch, every block validated.
+- _cells(line: str) -> list[str] | None  ·L104
+- table_end(lines: list[str], where: str) -> int  ·L111: Index of the attempts table's last line (its last row, else its separator).
+- append_rows(root: Path, rows: list[Row], date: str) -> dict[Path, str]  ·L130: The rewritten text of every record the rows touch. Writes nothing.
+- main(argv: list[str] | None=None) -> int  ·L148
 
 ### mdept/schema.py
 _The closed front-matter schema for a ledger entry._
@@ -1199,36 +1215,37 @@ _The invariant suite, driven by a fixture ledger with one break per invariant._
 - test_inheritance_is_reported_and_not_failed(tmp_path)  ·L476
 - test_template_front_matter_validates()  ·L488
 - test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L497
-- test_new_never_reuses_an_id(tmp_path)  ·L518
-- _stage_wrapped_request(tmp_path: Path) -> Path  ·L527: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
-- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L535
-- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L543
-- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L550
-- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L560: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
-- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L574: The variable promised a repo, so the variable is what the message names.
-- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L592
-- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L611
-- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L615
-- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L620: The fixture cites `research/toy notes.md`, whose name contains a space.
-- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L633: A consumer checkout is scanned through git, and every violation is listed.
-- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L662: MD_0006 is cited from two files in ToyRepo and is one row, not two.
-- test_the_topic_index_is_topic_entries_and_neighbours(tmp_path)  ·L673: Three columns: the topic, its entries, the topics they also file under.
-- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L687: Two citing lines without their status word fail together, one line each.
-- const TOY_PARAGRAPH  ·L706
-- _rewrite_toy(root: Path, paragraph: str) -> None  ·L710
-- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L717: An ID in a line's last characters carries its status word at the next line's start.
-- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L726
-- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L737
-- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L749
-- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L755: MD_0001 carries an orphan artifact; MD_0003 is clean.
-- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L767
-- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L774: A half-built Result of MD_0001 and a stale index fail only the full run.
-- test_a_scoped_run_names_every_outcome_id_this_request_did_not_file(tmp_path)  ·L788: A closed request's Outcome names two entries that point at no request.
-- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L813
-- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L819
-- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L828
-- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L838
-- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L849
+- test_new_ends_its_output_on_the_allocated_id(tmp_path, capsys)  ·L518
+- test_new_never_reuses_an_id(tmp_path)  ·L527
+- _stage_wrapped_request(tmp_path: Path) -> Path  ·L536: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
+- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L544
+- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L552
+- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L559
+- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L569: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
+- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L583: The variable promised a repo, so the variable is what the message names.
+- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L601
+- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L620
+- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L624
+- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L629: The fixture cites `research/toy notes.md`, whose name contains a space.
+- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L642: A consumer checkout is scanned through git, and every violation is listed.
+- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L671: MD_0006 is cited from two files in ToyRepo and is one row, not two.
+- test_the_topic_index_is_topic_entries_and_neighbours(tmp_path)  ·L682: Three columns: the topic, its entries, the topics they also file under.
+- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L696: Two citing lines without their status word fail together, one line each.
+- const TOY_PARAGRAPH  ·L715
+- _rewrite_toy(root: Path, paragraph: str) -> None  ·L719
+- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L726: An ID in a line's last characters carries its status word at the next line's start.
+- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L735
+- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L746
+- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L758
+- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L764: MD_0001 carries an orphan artifact; MD_0003 is clean.
+- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L776
+- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L783: A half-built Result of MD_0001 and a stale index fail only the full run.
+- test_a_scoped_run_names_every_outcome_id_this_request_did_not_file(tmp_path)  ·L797: A closed request's Outcome names two entries that point at no request.
+- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L822
+- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L828
+- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L837
+- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L847
+- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L858
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._
@@ -1373,6 +1390,27 @@ _Guard: MathDept.lean imports exactly the modules on disk._
 - const REPO_ROOT  ·L12
 - test_root_is_fresh()  ·L15
 - test_generated_root_carries_the_header()  ·L26
+
+### tests/test_row.py
+_`python -m mdept.row` appends attempt rows to triage records, or writes nothing._
+- const FIXTURES  ·L17
+- const EM_DASH  ·L18
+- const ROW_0006  ·L19
+- const LAST_0006  ·L20
+- stage(tmp_path: Path) -> Path  ·L24
+- snapshot(root: Path) -> dict  ·L31
+- args_0006(root: Path, **override) -> list[str]  ·L35
+- test_row_lands_under_the_last_row_and_before_the_prose(tmp_path, capsys)  ·L46
+- test_row_on_a_table_that_ends_the_file_without_a_newline(tmp_path)  ·L55
+- test_date_defaults_to_today(tmp_path)  ·L65
+- test_root_is_found_from_the_working_directory(tmp_path, monkeypatch)  ·L72
+- @pytest.mark.parametrize test_a_bad_field_writes_nothing(tmp_path, capsys, override, reason)  ·L89
+- test_a_missing_record_writes_nothing(tmp_path, capsys)  ·L98
+- @pytest.mark.parametrize test_a_record_without_one_attempts_table_writes_nothing(tmp_path, capsys, mangle, reason)  ·L112
+- const BATCH  ·L122
+- test_from_file_writes_every_block_in_order(tmp_path, capsys)  ·L146
+- @pytest.mark.parametrize test_from_file_writes_nothing_when_any_block_is_bad(tmp_path, capsys, bad, reason)  ·L163
+- test_from_file_excludes_the_single_row_flags(tmp_path)  ·L173
 
 ### tests/test_search.py
 _The ranked search and the entry card: `python -m mdept.query "<words>"` and `mdept.card`._

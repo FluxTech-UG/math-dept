@@ -19,6 +19,9 @@ IDs are allocated as max plus one across BOTH repos, because entries are born
 private and released with gaps. Allocating from one repo alone would reissue an
 ID the other repo already owns, and an ID is never reused.
 
+The last line printed is `allocated MD_####`, so a caller reading only the last
+line of the output gets the new ID.
+
 Every field this writes is a real value taken from the request or the command
 line. There are no placeholder defaults: a flag you did not pass is a value the
 ledger would otherwise be inventing.
@@ -321,6 +324,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"ok {entry_id} {path} (anchor form: {anchor_form})")
     print(f"next: write the Statement, the Hypotheses and {schema.PLAIN_WORDS_HEADING}, "
           "then `make regen && make check`")
+    print(f"allocated {entry_id}")
     return 0
 
 

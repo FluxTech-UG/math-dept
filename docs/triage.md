@@ -65,6 +65,13 @@ stage, what was tried, what it showed, time spent, model. The record is the reas
 later session can tell "we tried and it resisted" from "nobody looked", and it is what
 `settled_by.model` and the attempt count are read from at close-out.
 
+Rows are written with `python -m mdept.row`, one row from flags or a batch from a file
+of six-line blocks (id, stage, tried, showed, time, model) separated by `---`. It finds
+the table by its header (`Date` and `Stage` first, `Time` and `Model` last), puts each
+row under the last one, and writes nothing when any row is refused: an empty cell, a
+cell holding a pipe or an em dash, or a stage that is not one word. A stage is a ladder
+rung (`S0` to `S4`) or a step outside the ladder, such as `fidelity` or `review`.
+
 The record is private and stays private. A released entry carries its outcome, not its
 attempts.
 

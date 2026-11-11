@@ -515,6 +515,15 @@ def test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path):
     assert front["provenance"]["raised_by"]["doc"] is None, "a public entry carries no private doc pointer"
 
 
+def test_new_ends_its_output_on_the_allocated_id(tmp_path, capsys):
+    root = stage(tmp_path) / "good_public"
+    assert new.main(["--root", str(root), "--title", "t", "--kind", "lemma", "--topics", "toy",
+                     "--domain", "d", "--who", "john"]) == 0
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[-2].startswith("next: "), "the hint stays above the id line"
+    assert lines[-1] == "allocated MD_0005", "a reader of the last line alone gets the id"
+
+
 def test_new_never_reuses_an_id(tmp_path):
     root = stage(tmp_path) / "good_public"
     args = SimpleNamespace(title="t", kind="lemma", topics="toy", domain="d", who="john",
