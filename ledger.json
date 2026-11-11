@@ -324,7 +324,9 @@
         "1DSim4:tests/test_onepore.py",
         "1DSim4:twe4/sources/regenerator/pore.py",
         "MesoSim1:mesosim/linear/cell.py",
-        "MesoSim1:mesosim/linear/exact.py"
+        "MesoSim1:mesosim/linear/exact.py",
+        "1DSim4:configs/tables/disc_from_onepore.json",
+        "1DSim4:scripts/make_disc_table.py"
       ],
       "evidence": [
         {
@@ -2125,7 +2127,8 @@
         "1DSim4:tests/test_damping_budget.py",
         "1DSim4:twe4/analysis/damping_budget/instrument.py",
         "1DSim4:twe4/analysis/damping_budget/spectrum.py",
-        "1DSim4:docs/design/14-test-regime.md"
+        "1DSim4:docs/design/14-test-regime.md",
+        "1DSim4:twe4/analysis/damping_budget/local.py"
       ],
       "evidence": [
         {
@@ -3014,7 +3017,7 @@
       ]
     }
   ],
-  "generated_from": "b0dc1a8d8605611866e5116c5ef71f0f7562e974ad6f00218c2ff82dbe7af007",
+  "generated_from": "586a5ac499b80033e6a9b676ec053946b3e1d5773e52855f23691260b6bbeee5",
   "requests": [],
   "schema_version": 1,
   "unreleased": [

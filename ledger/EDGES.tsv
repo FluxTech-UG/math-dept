@@ -11,7 +11,9 @@ MD_0017	revises	MD_0014
 MD_0017	cited_by	1DSim3:docs/design/21-real-fluid-gain.md §21.3
 MD_0017	cited_by	1DSim3:twe/sources/cross_gain.py
 MD_0017	cited_by	1DSim3:twe/sources/pore_cell.py
+MD_0017	cited_by	1DSim4:configs/tables/disc_from_onepore.json
 MD_0017	cited_by	1DSim4:docs/design/21-bed-one-pore.md
+MD_0017	cited_by	1DSim4:scripts/make_disc_table.py
 MD_0017	cited_by	1DSim4:tests/test_onepore.py
 MD_0017	cited_by	1DSim4:twe4/config/blocks/__init__.py
 MD_0017	cited_by	1DSim4:twe4/sources/regenerator/pore.py
@@ -79,6 +81,7 @@ MD_0073	cited_by	1DSim4:docs/design/22-damping-budget.md
 MD_0073	cited_by	1DSim4:scripts/damping_budget.py
 MD_0073	cited_by	1DSim4:tests/test_damping_budget.py
 MD_0073	cited_by	1DSim4:twe4/analysis/damping_budget/instrument.py
+MD_0073	cited_by	1DSim4:twe4/analysis/damping_budget/local.py
 MD_0073	cited_by	1DSim4:twe4/analysis/damping_budget/spectrum.py
 MD_0094	cited_by	1DSim4:docs/design/21-bed-one-pore.md
 MD_0101	revises	MD_0097

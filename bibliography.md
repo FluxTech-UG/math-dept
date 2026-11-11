@@ -32,6 +32,8 @@ another.
 | Physiological adaptation in regeneration | Experimental record of planarians regenerating a head insensitive to a potassium-channel blocker, its time course, its loss in water, and the transcriptional and pharmacological data behind it | membrane-potential models, ion-channel conductances, regulatory network memory | `EmmonsBell2019` |
 | Averaging and slow-fast systems | First-order averaging over one fast angle with angle-dependent frequency on the time scale 1/epsilon; averaged slow drift along a normally hyperbolic manifold of periodic orbits, generalising the Pontryagin-Rodygin theorem | Gronwall estimates, near-identity transformations, Floquet theory, invariant manifolds | `SandersVerhulstMurdock2007`, `RinkVoWechselberger2025` |
 | Scalar conservation laws and entropy solutions | The entropy-inequality definition of a bounded generalized solution, L^1 stability on characteristic cones, uniqueness, and existence as the almost-everywhere limit of vanishing viscosity; the L^1 error of the viscosity method of order the square root of viscosity times time, times the total variation of the data | Burgers equation, parabolic regularization, functions of bounded variation, L^1 contraction | `Kruzhkov1970`, `Kuznetsov1976` |
+| Rational approximation of Stieltjes functions | Skeleton approximation of the resolvent kernel with prescribed real poles, the Zolotarev ratio with prescribed poles and its Möbius invariance, and pole choices with geometric rates for Cauchy-Stieltjes matrix functions | rational Krylov methods, Zolotarev problems, Möbius transformations, Cauchy matrices | `MasseiRobol2021` |
+| Zolotarev numbers and displacement structure | The Zolotarev number of two sets and its Möbius invariance, explicit bounds for two real intervals in the Grötzsch function and in the cross-ratio, the disk case, and singular value bounds for Cauchy, Pick, Löwner, Krylov and positive definite Hankel matrices | rational approximation, elliptic integrals, Sylvester equations, numerical rank | `BeckermannTownsend2019` |
 
 ## Entries
 
@@ -237,4 +239,20 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** L^1 error of the vanishing-viscosity approximation of a scalar conservation law, of order the square root of viscosity times time, times the total variation of the data
 - **Mathlib:** `eVariationOn`, `BoundedVariationOn` (v4.33.1); entropy solutions and their error estimates: none found, searched 2026-11-03
+- **Ledger:** none yet
+
+### [MasseiRobol2021] Rational Krylov for Stieltjes matrix functions: convergence and pole selection
+- **Authors:** Massei, S.; Robol, L.
+- **Source:** BIT Numerical Mathematics 61(1), 237-273 (2021). DOI 10.1007/s10543-020-00826-z. Def. 2.2 (2.3); (3.1); Thm 3.4 (3.2) and its proof; Thm 3.6 proof; Def. 3.8; Lemma 3.9; Thm 3.10; Lemma 3.12 (3.6); Cor. 3.14 (3.7); Cor. 3.18 (3.10); Lemma 4.7; §5. Copy read: arXiv:1908.02032v4, https://arxiv.org/abs/1908.02032v4
+- **Kind:** paper
+- **Used for:** uniform rational approximation of the resolvent kernel with fixed real poles on a real interval, and geometric-rate pole choices for Cauchy-Stieltjes functions
+- **Mathlib:** `MeasureTheory.resolventTransform` (v4.33.1); Zolotarev problems, skeleton approximation, rational Krylov: none found, searched 2026-11-11
+- **Ledger:** none yet
+
+### [BeckermannTownsend2019] Bounds on the singular values of matrices with displacement structure
+- **Authors:** Beckermann, B.; Townsend, A.
+- **Source:** SIAM Review 61(2), 319-344 (2019). DOI 10.1137/19M1244433. Revised reprint of SIAM J. Matrix Anal. Appl. 38(4), 1227-1248 (2017), DOI 10.1137/16M1096426. §1 (1.4), (1.5); Thm 2.1; Cor 2.2; §3.1 (3.2), Thm 3.1, Cor 3.2, Thm 3.3; §3.2 (3.7), (3.8); §3.3; Cor 4.2; Remark 4.3 (4.7); Lemma 5.2. Copy read: the SIAM Review text, https://par.nsf.gov/servlets/purl/10101032, and arXiv:1609.09494v1
+- **Kind:** paper
+- **Used for:** explicit upper bounds on Zolotarev numbers of two disjoint real intervals, and the bound of singular values of displacement-structured matrices by Zolotarev numbers
+- **Mathlib:** Zolotarev numbers, Grötzsch ring function, complete elliptic integrals: none found, searched 2026-11-11
 - **Ledger:** none yet
