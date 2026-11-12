@@ -35,14 +35,21 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import CheckError, ConfigError
-from . import config, schema
+from . import config, parse, schema
 from .settle import _iso
 
 FIELDS = ("stage", "tried", "showed", "time", "model")
 # A stage is one word: a ladder rung (S0 to S4) or a step such as fidelity or review.
 STAGE_RE = re.compile(r"^\S+$")
-FORBIDDEN = (("|", "a pipe"), ("\n", "a newline"), ("\r", "a newline"), ("\u2014", "an em dash"))
-SEPARATOR_CELL_RE = re.compile(r"^:?-{3,}:?$")
+#: Each character a cell cannot carry, how a refusal names it, and the fix it names.
+_PIPE_FIX = "write an absolute value or a divisibility in words ('the absolute value of x', 'a divides b')"
+_NEWLINE_FIX = "write the field on one line"
+FORBIDDEN = (
+    ("|", "a pipe", _PIPE_FIX),
+    ("\n", "a newline", _NEWLINE_FIX),
+    ("\r", "a newline", _NEWLINE_FIX),
+    ("\u2014", "an em dash", "use a period, a comma, a colon or parentheses"),
+)
 BLOCK_SEPARATOR = "---"
 
 
@@ -69,9 +76,9 @@ def make_row(entry: str, fields: dict, where: str) -> Row:
         value = fields[name]
         if not value.strip():
             raise ConfigError(f"{where}: field {name!r} is empty")
-        for char, label in FORBIDDEN:
+        for char, label, fix in FORBIDDEN:
             if char in value:
-                raise ConfigError(f"{where}: field {name!r} holds {label}, which a table row cannot carry")
+                raise ConfigError(f"{where}: field {name!r} holds {label}, which a table row cannot carry; {fix}")
     if not STAGE_RE.match(fields["stage"].strip()):
         raise ConfigError(f"{where}: stage {fields['stage']!r} is not a single word")
     return Row(entry, *(fields[name].strip() for name in FIELDS), where)
@@ -101,32 +108,6 @@ def read_blocks(path: Path) -> list[Row]:
     return rows
 
 
-def _cells(line: str) -> list[str] | None:
-    body = line.strip()
-    if not (body.startswith("|") and body.endswith("|")) or len(body) < 2:
-        return None
-    return [cell.strip() for cell in body[1:-1].split("|")]
-
-
-def table_end(lines: list[str], where: str) -> int:
-    """Index of the attempts table's last line (its last row, else its separator)."""
-    heads = []
-    for i, line in enumerate(lines[:-1]):
-        cells = _cells(line)
-        if (cells and len(cells) == 6 and cells[:2] == ["Date", "Stage"] and cells[4:] == ["Time", "Model"]):
-            sep = _cells(lines[i + 1])
-            if sep and len(sep) == 6 and all(SEPARATOR_CELL_RE.match(c) for c in sep):
-                heads.append(i)
-    if len(heads) != 1:
-        found = "no attempts table" if not heads else f"{len(heads)} attempts tables"
-        raise CheckError(f"{where}: {found}; expected one table headed "
-                         "`| Date | Stage | ... | ... | Time | Model |` with its separator line")
-    end = heads[0] + 1
-    while end + 1 < len(lines) and lines[end + 1].startswith("|"):
-        end += 1
-    return end
-
-
 def append_rows(root: Path, rows: list[Row], date: str) -> dict[Path, str]:
     """The rewritten text of every record the rows touch. Writes nothing."""
     texts: dict[Path, str] = {}
@@ -137,7 +118,7 @@ def append_rows(root: Path, rows: list[Row], date: str) -> dict[Path, str]:
                 raise ConfigError(f"{item.where}: {item.entry} has no triage record at triage/{item.entry}.md")
             texts[path] = path.read_text(encoding="utf-8")
         lines = texts[path].splitlines(keepends=True)
-        end = table_end(lines, f"{item.where}: triage/{item.entry}.md")
+        _head, end = parse.attempts_table(lines, f"{item.where}: triage/{item.entry}.md")
         if not lines[end].endswith("\n"):
             lines[end] += "\n"
         lines.insert(end + 1, item.render(date))

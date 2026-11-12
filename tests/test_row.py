@@ -80,7 +80,9 @@ def test_root_is_found_from_the_working_directory(tmp_path, monkeypatch):
 
 @pytest.mark.parametrize("override, reason", [
     ({"--tried": "a | b"}, "pipe"),
+    ({"--tried": "a | b"}, "write an absolute value or a divisibility in words"),
     ({"--showed": f"closes {EM_DASH} mostly"}, "em dash"),
+    ({"--showed": f"closes {EM_DASH} mostly"}, "use a period, a comma, a colon or parentheses"),
     ({"--time": "  "}, "empty"),
     ({"--model": "a\nb"}, "newline"),
     ({"--stage": "S3 review"}, "single word"),

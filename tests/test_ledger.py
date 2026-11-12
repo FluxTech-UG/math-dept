@@ -78,6 +78,7 @@ CASES = [
     Case("I19_missing_role_line", "good_public", "I19 attempt record", PLAIN),
     Case("I20_sorry_in_results", "good_public", "I20 sorry fence", PLAIN),
     Case("I21_unlisted_citation", "good_private", "I21 unlisted citation", FAMILY),
+    Case("I22_fidelity_stale", "good_private", "I22 fidelity", PLAIN),
 ]
 
 
@@ -386,14 +387,14 @@ def test_a_view_of_an_archived_consumer_is_refused(tmp_path):
 
 def test_every_invariant_has_a_case():
     covered = {case.invariant.split()[0] for case in CASES}
-    expected = {f"I{n}" for n in range(1, 22)}
+    expected = {f"I{n}" for n in range(1, 23)}
     expected.discard("I9")
     expected.add("I9a")
     assert covered == expected
 
 
 def test_the_invariant_list_is_the_one_that_runs():
-    assert len(check.INVARIANTS) == 22
+    assert len(check.INVARIANTS) == 23
 
 
 # --- one break per invariant ------------------------------------------------
@@ -968,3 +969,114 @@ def test_new_request_form_refuses_title_form_flags(tmp_path):
     with pytest.raises(SystemExit):
         new.main(["--root", str(root), "--request", "2026-09-02-wrapped", "--candidate", "C1",
                   "--who", "john"])
+
+
+# --- I22 fidelity after a statement edit ------------------------------------
+
+
+@pytest.mark.parametrize("stages, stale", [
+    (["S0", "statement"], 1),
+    (["statement", "fidelity"], None),
+    (["statement", "fidelity", "statement", "S3"], 2),
+    (["fidelity", "statement", "S3", "fidelity (steps 2 to 4)"], None),
+    (["S0", "S1"], None),
+    (["S4 (statement)"], None),
+])
+def test_the_last_statement_row_needs_a_later_fidelity_row(stages, stale):
+    """Table order is the order; a legacy multi-word stage is read by its first word."""
+    assert parse.stale_statement_row(stages) == stale
+
+
+def test_i22_reports_every_stale_entry_and_a_fidelity_row_clears_it(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    apply_overlay(root, FIXTURES / "broken" / "I22_fidelity_stale")
+    record = root / "triage" / "MD_0007.md"
+    record.write_text(record.read_text(encoding="utf-8")
+                      + "| 2026-09-04 | statement | a hypothesis named | applied | 1 min | m |\n",
+                      encoding="utf-8")
+    with pytest.raises(CheckError) as raised:
+        check.run(root)
+    lines = str(raised.value).splitlines()
+    assert [line.split(":")[1].strip() for line in lines] == ["triage/MD_0006.md", "triage/MD_0007.md"]
+    assert all(line.startswith("I22 fidelity: ") for line in lines)
+    assert "row 4 of the attempts table" in lines[0]
+    for path in (root / "triage" / "MD_0006.md", record):
+        text = path.read_text(encoding="utf-8")
+        last = [line for line in text.splitlines() if line.startswith("| 20")][-1]
+        path.write_text(text.replace(last, last + "\n| 2026-09-05 | fidelity | round trip | match | 3 min | m |"),
+                        encoding="utf-8")
+    check.run(root)
+
+
+# --- the family baseline: consumer-owned failures, declared in repos.yaml ---
+
+
+def declare_baseline(root: Path, *items: dict) -> None:
+    """Append a `baseline` list to the staged private fixture's repos.yaml."""
+    import yaml
+
+    full = [{"reason": "the consumer fixes it", "since": "2026-11-12", **item} for item in items]
+    path = root / "repos.yaml"
+    path.write_text(path.read_text(encoding="utf-8") + yaml.safe_dump({"baseline": full}, sort_keys=False),
+                    encoding="utf-8")
+
+
+I15_TOY = {"invariant": "I15", "file": "ToyRepo:docs/toy.md"}
+
+
+def test_a_baselined_failure_passes_and_every_hit_is_a_notice(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    apply_overlay(root, FIXTURES / "broken" / "I15_citation_missing_word")
+    declare_baseline(root, {**I15_TOY, "text": "cites MD_0005"}, {**I15_TOY, "text": "cites MD_0006"})
+    context = check.run(root, family=True)
+    hits = [n for n in context.notices if n.startswith("baseline: ")]
+    assert len(hits) == 2
+    assert all("I15 citation: ToyRepo:docs/toy.md:5" in n and "since 2026-11-12" in n for n in hits)
+
+
+def test_a_failure_outside_the_baseline_still_fails(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    apply_overlay(root, FIXTURES / "broken" / "I15_citation_missing_word")
+    declare_baseline(root, {**I15_TOY, "text": "cites MD_0005"})
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    lines = str(raised.value).splitlines()
+    assert len(lines) == 1 and "cites MD_0006" in lines[0]
+    assert any(n.startswith("baseline: ") and "cites MD_0005" in n for n in raised.value.notices)
+
+
+def test_a_baseline_item_that_no_longer_fails_fails(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    declare_baseline(root, {**I15_TOY, "text": "cites MD_0005"})
+    with pytest.raises(CheckError, match=r"^baseline stale: repos.yaml: field 'baseline\[0\]'") as raised:
+        check.run(root, family=True)
+    assert "baseline item no longer fails, remove it" in str(raised.value)
+    assert check.failure_report(str(raised.value), False)[-1] == "FAIL total 1: baseline 1"
+
+
+def test_a_baselined_i7_failure_does_not_hide_the_next(tmp_path):
+    """I7 reports every failing anchor, so a baselined one masks nothing behind it."""
+    root = stage(tmp_path) / "good_private"
+    apply_overlay(root, FIXTURES / "broken" / "I07_anchor_unresolved")
+    apply_overlay(root, FIXTURES / "broken" / "I07_request_anchor")
+    index.write(root)
+    declare_baseline(root, {"invariant": "I7", "file": "ToyRepo/docs/toy.md",
+                            "text": "'§99.9' (form heading) resolves nowhere"})
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    lines = str(raised.value).splitlines()
+    assert len(lines) == 1 and "'T9' (form item) resolves nowhere" in lines[0]
+
+
+@pytest.mark.parametrize("item, words", [
+    ({**I15_TOY, "text": "x", "reason": ""}, "reason"),
+    ({**I15_TOY, "text": "x", "since": "2026-02-30"}, "since"),
+    ({**I15_TOY, "text": "x", "line": 5}, r"unknown key\(s\) \['line'\]"),
+    ({"invariant": "I15", "text": "x"}, "file"),
+    ({"invariant": "I3", "file": "ledger/MD_0005.md", "text": "x"}, "reads a consumer"),
+])
+def test_a_malformed_baseline_item_is_refused(tmp_path, item, words):
+    root = stage(tmp_path) / "good_private"
+    declare_baseline(root, item)
+    with pytest.raises((CheckError, ConfigError), match=words):
+        check.run(root, family=True)

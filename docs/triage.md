@@ -15,7 +15,10 @@ Mandatory, and it comes before the ladder. A statement nobody checked is the che
 way to waste a whole session proving the wrong thing.
 
 1. Write the statement with every quantifier and every hypothesis explicit, and every
-   symbol defined in the statement or in the Hypotheses list.
+   symbol defined in the statement or in the Hypotheses list. A class of solutions or
+   eigenfunctions of a differential equation states its regularity on the closed
+   domain, boundary and corners included: a class smooth only in the interior admits
+   modes that blow up at a corner.
 2. Have a **different** agent informalize it back to prose, working from the formal
    statement alone.
 3. Compare that prose against the request's own wording.
@@ -29,6 +32,10 @@ typechecks and before the first tactic. Three signals say the formalization slip
 - the statement does not imply the downstream use the request describes.
 
 Any of the three sends the statement back to step 1, not to the next rung.
+
+An edit to a Statement or its Hypotheses is recorded as a `statement` row and re-opens
+fidelity: the round trip runs again on the new wording, and until its `fidelity` row
+follows in the attempts table, invariant I22 fails.
 
 ## 2. Allocate the ID
 

@@ -1,4 +1,4 @@
-"""Ledger invariants I1 to I21.
+"""Ledger invariants I1 to I22.
 
 Run: `python -m mdept.check [--root PATH] [--run-counterexamples] [--family] [--lean]`
 or, scoped: `python -m mdept.check --entry MD_0007 [--entry MD_0008 ...]`
@@ -6,13 +6,17 @@ or, scoped: `python -m mdept.check --entry MD_0007 [--entry MD_0008 ...]`
 A violation names the invariant, the offending path, and the offending field.
 A run reports every failing invariant: `run()` goes on past each failure and
 raises one `CheckError` carrying them all, one per line, in invariant order.
-Within an invariant, most stop at their first violation. Five collect: I15
+Within an invariant, most stop at their first violation. Seven collect: I15
 (consumer citations), I20 (the sorry fence) and I21 (unlisted citations)
-report every violation, I13 every failing request and I14 every failing entry
-and Outcome id, each by its first violation. There is no warnings tier and no
+report every violation, I7 every failing anchor, I13 every failing request,
+I14 every failing entry and Outcome id, and I22 every entry whose fidelity is
+stale, each by its first violation. There is no warnings tier and no
 partial pass. Notices are informational: I9b's and I7's text-anchor notices
 also land in `ledger/INDEX.md` section 7, and I15 reports a stale citation in a
-consumer `repos.yaml` marks `retired` as a notice. The CLI prints notices on a
+consumer `repos.yaml` marks `retired` as a notice. With `--family`, a failure
+`repos.yaml` declares in its `baseline` as consumer-owned is a `baseline:`
+notice, and a declared item that no longer fails is a failure
+(`apply_baseline`). The CLI prints notices on a
 failing run too, starts every failing line with `FAIL `, and ends a failing run
 on one count line, `FAIL total 25: I7 1, I15 24` (`failure_report`).
 
@@ -150,6 +154,7 @@ class Context:
     notices: list = field(default_factory=list)
     scope: frozenset | None = None
     all_entries: list = field(default_factory=list)
+    baseline: list = field(default_factory=list)
     _sibling_entries: list | None = field(default=None, repr=False)
     _sibling_root: Path | None = field(default=None, repr=False)
     _family_by_id: dict | None = field(default=None, repr=False)
@@ -546,14 +551,21 @@ def i7_raised_by(ctx: Context) -> None:
     """
     if not (ctx.family and ctx.private):
         return
-    for entry in ctx.entries:
-        _check_anchor(ctx, ctx.rel(entry.path), "provenance.raised_by",
-                      entry.at("provenance.raised_by"))
-    for request in ctx.requests:
-        _check_anchor(ctx, request.rel, "from", request.front.get("from"))
     from . import index as index_mod
 
     ctx.notices.extend(index_mod.anchor_notices(ctx.entries, ctx.requests))
+    # Every failing anchor is reported, each by its first violation, so a
+    # baselined anchor (`apply_baseline`) hides no anchor behind it.
+    violations: list[str] = []
+    for entry in ctx.entries:
+        with recording(violations):
+            _check_anchor(ctx, ctx.rel(entry.path), "provenance.raised_by",
+                          entry.at("provenance.raised_by"))
+    for request in ctx.requests:
+        with recording(violations):
+            _check_anchor(ctx, request.rel, "from", request.front.get("from"))
+    if violations:
+        raise collected(violations)
 
 
 def _check_anchor(ctx: Context, where: str, field_name: str, source) -> None:
@@ -1147,6 +1159,42 @@ def i21_unlisted_citations(ctx: Context) -> None:
         raise collected(violations)
 
 
+# --- I22 fidelity after a statement edit ------------------------------------
+
+
+def i22_fidelity_after_statement(ctx: Context) -> None:
+    """A `statement` row in an attempt record is followed by a `fidelity` row.
+
+    An edit to an entry's Statement or Hypotheses is recorded as a `statement`
+    row and re-opens fidelity (`docs/triage.md`, section 1): the round trip ran
+    on the old wording. Table order is the order, since rows carry dates only.
+    The rule holds whatever the entry's status: a settled statement is frozen,
+    so a stale row there means it was settled on a wording nobody round-tripped.
+    Every failing entry is reported; an entry without a record is I19's.
+    """
+    if not ctx.private:
+        return
+    violations: list[str] = []
+    for entry in ctx.entries:
+        record = ctx.root / "triage" / f"{entry.id}.md"
+        if not record.is_file():
+            continue
+        where = f"triage/{entry.id}.md"
+        with recording(violations):
+            try:
+                stages = parse.attempt_stages(record, where)
+            except CheckError as exc:
+                fail("I22 fidelity", where, "<attempts table>", str(exc))
+            stale = parse.stale_statement_row(stages)
+            if stale is not None:
+                fail("I22 fidelity", where, "<attempts table>",
+                     f"row {stale + 1} of the attempts table is a statement edit ({stages[stale]!r}) "
+                     "with no later fidelity row; the round trip runs again after an edit to the "
+                     "Statement or its Hypotheses (docs/triage.md, section 1)")
+    if violations:
+        raise collected(violations)
+
+
 INVARIANTS = (
     i1_filename_is_id,
     i2_permanence,
@@ -1170,6 +1218,7 @@ INVARIANTS = (
     i19_attempt_records,
     i20_sorry_fence,
     i21_unlisted_citations,
+    i22_fidelity_after_statement,
 )
 
 
@@ -1224,6 +1273,13 @@ def build_context(root: Path, run_counterexamples: bool, family: bool, lean: boo
                 "It lives in the private repo; run --family from a session there."
             )
         ctx.consumers = located.consumers
+        ctx.baseline = located.baseline
+        for i, item in enumerate(ctx.baseline):
+            if item["invariant"] not in BASELINE_INVARIANTS:
+                raise ConfigError(
+                    f"{repos_yaml}: field 'baseline[{i}].invariant': {item['invariant']} reads no "
+                    f"consumer; a baseline item names a failure a consumer owns, so its invariant "
+                    f"is one that reads a consumer, {list(BASELINE_INVARIANTS)}")
         ctx.sibling = located.sibling_of(root)
         # Eagerly, not lazily: the design's rule is that a repo listed in
         # repos.yaml and absent from disk FAILS. Resolving only the repos some
@@ -1294,11 +1350,63 @@ def run(root: Path | str | None = None,
         except Exception as exc:
             if not failures:
                 raise
+            failures = apply_baseline(failures, ctx, complete=False)
             failures.append(f"{invariant.__name__}: {type(exc).__name__}: {exc}")
             raise _with_notices(collected(failures), ctx) from exc
+    failures = apply_baseline(failures, ctx, complete=True)
     if failures:
         raise _with_notices(collected(failures), ctx)
     return ctx
+
+
+#: The invariants that read a consumer repo, and so the only ones a baseline item may name.
+BASELINE_INVARIANTS = ("I7", "I15", "I21")
+
+
+def _baseline_matches(item: dict, line: str) -> bool:
+    return (line.startswith(item["invariant"] + " ")
+            and item["file"] in line and item["text"] in line)
+
+
+def apply_baseline(failures: list[str], ctx: Context, complete: bool) -> list[str]:
+    """The failures left once the declared consumer-owned ones are taken out.
+
+    `repos.yaml` may list failures a consumer owns (`ctx.baseline`, read with
+    `--family` only): an item names its invariant and two literal substrings,
+    `file` and `text`, that pin the failure line without its line number. A
+    failure line an item matches is not a failure of this run; it is printed as
+    a `baseline:` notice with the item's date and reason, so nothing is hidden.
+    Every other line fails as before. An item that matches no line fails as
+    `baseline stale`, so the list cannot outlive the failures it declares. A run
+    that crashed part way (`complete` False) did not reach every invariant, so
+    only the matching applies there.
+    """
+    if not ctx.baseline:
+        return failures
+    hit = [False] * len(ctx.baseline)
+    kept: list[str] = []
+    for failure in failures:
+        lines = []
+        for line in failure.splitlines():
+            matched = [i for i, item in enumerate(ctx.baseline) if _baseline_matches(item, line)]
+            for i in matched:
+                hit[i] = True
+            if matched:
+                item = ctx.baseline[matched[0]]
+                ctx.notices.append(f"baseline: {line} (consumer-owned since {item['since']}: {item['reason']})")
+            else:
+                lines.append(line)
+        if lines:
+            kept.append("\n".join(lines))
+    if complete:
+        for i, item in enumerate(ctx.baseline):
+            if not hit[i]:
+                kept.append(violation(
+                    "baseline stale", "repos.yaml", f"baseline[{i}]",
+                    f"{item['invariant']} with file {item['file']!r} and text {item['text']!r}, "
+                    f"listed since {item['since']}, matches no failure; baseline item no longer "
+                    "fails, remove it"))
+    return kept
 
 
 def _with_notices(error: CheckError, ctx: Context) -> CheckError:
@@ -1307,8 +1415,9 @@ def _with_notices(error: CheckError, ctx: Context) -> CheckError:
     return error
 
 
-#: A violation line opens with its invariant's ID: `I15 citation: ...` counts under I15.
-_FAILURE_INVARIANT_RE = re.compile(r"^(I\d+[ab]?) ")
+#: A violation line opens with its invariant's ID: `I15 citation: ...` counts under I15;
+#: a stale baseline item (`apply_baseline`) counts under `baseline`.
+_FAILURE_INVARIANT_RE = re.compile(r"^(I\d+[ab]?|baseline) ")
 #: A crash `run` joins to the report: `<invariant function>: <exception type>: ...`.
 _FAILURE_CRASH_RE = re.compile(r"^[A-Za-z_]\w*: [A-Za-z_][\w.]*: ")
 
@@ -1323,9 +1432,19 @@ def failure_report(message: str, config_error: bool) -> list[str]:
     with its prefix and counted with the line it continues, or, standing first,
     as `unlabelled`, so the total never hides a line it could not place.
     """
-    lines = message.splitlines() or [message]
+    keyed = _keyed_lines(message, config_error)
     counts: dict[str, int] = {}
-    for number, line in enumerate(lines):
+    for key, _line in keyed:
+        if key is not None:
+            counts[key] = counts.get(key, 0) + 1
+    per_invariant = ", ".join(f"{key} {n}" for key, n in counts.items())
+    return [f"FAIL {line}" for _key, line in keyed] + [f"FAIL total {sum(counts.values())}: {per_invariant}"]
+
+
+def _keyed_lines(message: str, config_error: bool) -> list[tuple[str | None, str]]:
+    """Each line of a failed run's message with the key it counts under, None for a continuation."""
+    keyed = []
+    for number, line in enumerate(message.splitlines() or [message]):
         if config_error:
             key = "config" if number == 0 else None
         elif match := _FAILURE_INVARIANT_RE.match(line):
@@ -1334,10 +1453,23 @@ def failure_report(message: str, config_error: bool) -> list[str]:
             key = "crash"
         else:
             key = "unlabelled" if number == 0 else None
-        if key is not None:
-            counts[key] = counts.get(key, 0) + 1
-    per_invariant = ", ".join(f"{key} {n}" for key, n in counts.items())
-    return [f"FAIL {line}" for line in lines] + [f"FAIL total {sum(counts.values())}: {per_invariant}"]
+        keyed.append((key, line))
+    return keyed
+
+
+def failure_lines(message: str, config_error: bool) -> list[str]:
+    """The failures of a failed run, one string each, as `failure_report` counts them.
+
+    A continuation line is joined to the line it continues, so the list is as
+    long as the report's total.
+    """
+    found: list[str] = []
+    for key, line in _keyed_lines(message, config_error):
+        if key is None:
+            found[-1] += "\n" + line
+        else:
+            found.append(line)
+    return found
 
 
 def main(argv: list[str] | None = None) -> int:

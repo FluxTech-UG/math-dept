@@ -319,6 +319,12 @@ class Family:
             self._consumers = {} if declared is None else read_consumers(declared)
         return self._consumers
 
+    @property
+    def baseline(self) -> list[dict]:
+        """The consumer-owned failures `repos.yaml` declares, empty when it declares none."""
+        declared = self.repos_yaml
+        return [] if declared is None else parse.load_repos_yaml(declared)["baseline"]
+
     def ledgers(self) -> list[Repo]:
         return [repo for repo in (self.public, self.private) if repo is not None]
 

@@ -3,7 +3,7 @@
 
 Repo-specific rules only; each names what enforces it. A rule with no command behind
 it is an intention, not a convention. Enforcement is `python -m mdept.check`
-(invariants I1 to I21), the Lean guards reached through `make lean`, and `tests/`. The
+(invariants I1 to I22), the Lean guards reached through `make lean`, and `tests/`. The
 flow these rules serve is `docs/protocol.md`.
 
 ## Role line
@@ -171,6 +171,11 @@ share the checkout: every invariant over the named entries and the files that be
 them, other entries' files ignored, a file that belongs to no entry still reported, I16
 left to the full run; it excludes `--family` and `--lean`.
 
+`python -m mdept.inbox_status`, run in the private repo, prints an inbox run's measure on
+one line, `new=<n> closable_open=<n> entries_without_current_fidelity=<n> check_fails=<n>`,
+then the names behind each nonzero count; its module docstring defines each count, and
+`check_fails` is the family check run in-process, baseline hits not counted.
+
 `repos.yaml` lists each consumer as a bare path, as `{path, ignore, view}`, or as
 `{archived: <where>}` for a repo whose files are kept off-line. A mapping may add
 `retired: true` for a repo on disk that is read-only for good: every invariant reads it
@@ -190,6 +195,17 @@ skipped without being listed: tool and build directories, a nested checkout (any
 subdirectory with its own `.git`, which is what a git worktree is, so a family check
 does not pass or fail by whether someone is working in one), and a file that declares
 itself generated in its first eight lines.
+
+`repos.yaml` may also carry a `baseline`: a short dated list of failures a consumer owns
+and fixes in its own repo. Each item has every one of `invariant` (I7, I15 or I21, the
+invariants that read a consumer), `file` and `text` (literal substrings that pin the
+failure line without its line number), `reason` (one sentence) and `since` (an ISO
+date). With `--family`, a failure line that starts with the item's invariant and holds
+both substrings prints as a `baseline:` notice carrying the date and reason, and does not
+fail; every other failure fails as before; and an item that matches no failure fails as
+`baseline stale`, so the list is pruned the run its failure is fixed. `apply_baseline`
+in `mdept/check.py` holds the rule. I7, I15 and I21 report every violation, so a
+baselined line hides none behind it.
 
 ## Which invariant enforces which rule
 
@@ -230,4 +246,7 @@ failure, since that repo is read-only for good; I16 generated views
 are fresh; I17 no U+2014 in prose; I21 every `MD_####` mention in a listed consumer appears in that entry's
 `cited_by`, so a status change reaches every file that relies on it. A consumer that is
 a git checkout is scanned over its tracked and untracked-but-not-ignored files; what it
-gitignores never reaches its history and is not a citation surface.
+gitignores never reaches its history and is not a citation surface. I22 every `statement`
+row of an attempt record (an edit to the Statement or its Hypotheses) has a later
+`fidelity` row in the same table, table order being the order; a legacy stage of several
+words (`fidelity (steps 2 to 4)`) is read by its first word.

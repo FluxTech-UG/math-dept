@@ -191,6 +191,10 @@ Underneath those:
 - `python -m mdept.check --entry MD_0007 [--entry ...]` is one entry's gate while other
   sessions share the checkout: every invariant over the named entries and their own
   files, other entries' files ignored (the module docstring has the rules).
+- `python -m mdept.inbox_status` (run in `math-dept-private`) prints an inbox run's
+  measure, `new=<n> closable_open=<n> entries_without_current_fidelity=<n>
+  check_fails=<n>`, then the names behind each nonzero count (the module docstring
+  defines them).
 - `python -m mdept.index --check` regenerates the views in memory and fails on drift.
 - `python -m mdept.audit all --json` is the contract the validator consumes: sorry scan,
   per-declaration axioms and pretty-printed types, counterexample results.

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import yaml
 
-from . import CheckError
+from . import CheckError, ConfigError
 from . import schema
 
 #: Directories no scan descends into.
@@ -353,6 +353,83 @@ def parse_role_line(path: Path) -> tuple[str, str]:
     return role, match.group("date")
 
 
+# --- attempt records (private repo) -----------------------------------------
+
+#: The attempts table's header: six cells, these two first and these two last.
+ATTEMPTS_HEAD = ("Date", "Stage")
+ATTEMPTS_TAIL = ("Time", "Model")
+_SEPARATOR_CELL_RE = re.compile(r"^:?-{3,}:?$")
+
+#: The stage of a row recording an edit to an entry's Statement or Hypotheses, and
+#: the stage of a statement round trip (`docs/triage.md`, section 1).
+STATEMENT_STAGE = "statement"
+FIDELITY_STAGE = "fidelity"
+
+
+def table_cells(line: str) -> list[str] | None:
+    """A markdown table line's cells, stripped, or None when the line is no table row."""
+    body = line.strip()
+    if not (body.startswith("|") and body.endswith("|")) or len(body) < 2:
+        return None
+    return [cell.strip() for cell in body[1:-1].split("|")]
+
+
+def attempts_table(lines: list[str], where: str) -> tuple[int, int]:
+    """(header index, index of the last line) of a record's one attempts table.
+
+    The table is found by its header, wherever it sits: six cells with `Date` and
+    `Stage` first and `Time` and `Model` last, then the separator line. Its last
+    line is its last row, or the separator when it has none. A record without
+    exactly one such table is refused, naming `where`.
+    """
+    heads = []
+    for i, line in enumerate(lines[:-1]):
+        cells = table_cells(line)
+        if cells and len(cells) == 6 and tuple(cells[:2]) == ATTEMPTS_HEAD and tuple(cells[4:]) == ATTEMPTS_TAIL:
+            sep = table_cells(lines[i + 1])
+            if sep and len(sep) == 6 and all(_SEPARATOR_CELL_RE.match(c) for c in sep):
+                heads.append(i)
+    if len(heads) != 1:
+        found = "no attempts table" if not heads else f"{len(heads)} attempts tables"
+        raise CheckError(f"{where}: {found}; expected one table headed "
+                         "`| Date | Stage | ... | ... | Time | Model |` with its separator line")
+    end = heads[0] + 1
+    while end + 1 < len(lines) and lines[end + 1].startswith("|"):
+        end += 1
+    return heads[0], end
+
+
+def attempt_stages(path: Path, where: str) -> list[str]:
+    """The Stage cell of every row of a record's attempts table, in table order."""
+    lines = Path(path).read_text(encoding="utf-8").splitlines()
+    head, end = attempts_table(lines, where)
+    return [table_cells(line)[1] for line in lines[head + 2:end + 1]]
+
+
+def _stage_word(stage: str) -> str:
+    # Rows written before `mdept.row` held a stage to one word carry forms such as
+    # `fidelity (steps 2 to 4)`; the first word is the stage.
+    words = stage.split()
+    return words[0] if words else ""
+
+
+def stale_statement_row(stages: list[str]) -> int | None:
+    """Index of the last `statement` row when no `fidelity` row follows it, else None.
+
+    Table order is the order: rows carry dates only, and a day holds several rows.
+    """
+    words = [_stage_word(stage) for stage in stages]
+    if STATEMENT_STAGE not in words:
+        return None
+    last = len(words) - 1 - words[::-1].index(STATEMENT_STAGE)
+    return None if FIDELITY_STAGE in words[last + 1:] else last
+
+
+def has_fidelity_row(stages: list[str]) -> bool:
+    """True when some row of the table is a statement round trip."""
+    return any(_stage_word(stage) == FIDELITY_STAGE for stage in stages)
+
+
 def load_repos_yaml(path: Path) -> dict:
     """Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
 
@@ -365,7 +442,8 @@ def load_repos_yaml(path: Path) -> dict:
     comes back normalized with the same six keys: `paths` the candidates in order,
     `path` the first of them, `archived` None for a repo on disk, `retired` a
     bool, and for an archived one `path` None and `paths` empty, so no caller has
-    to test which was written.
+    to test which was written. An optional `baseline` list declares failures the
+    consumers own (`_baseline_item`); it comes back as a list, empty when absent.
     """
     path = Path(path)
     if not path.is_file():
@@ -373,16 +451,57 @@ def load_repos_yaml(path: Path) -> dict:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict):
         raise CheckError(f"I7 raised-by: {path}: field '<repos.yaml>': expected a mapping")
-    unknown = sorted(set(data) - {"public_sibling", "consumers"})
+    unknown = sorted(set(data) - {"public_sibling", "consumers", "baseline"})
     if unknown:
         raise CheckError(f"I7 raised-by: {path}: field '<repos.yaml>': unknown key(s) {unknown}")
     consumers = data.get("consumers") or {}
     if not isinstance(consumers, dict):
         raise CheckError(f"I7 raised-by: {path}: field 'consumers': expected a mapping of name to path")
+    baseline = data.get("baseline") or []
+    if not isinstance(baseline, list):
+        raise ConfigError(f"{path}: field 'baseline': expected a list of items {list(BASELINE_KEYS)}")
     return {
         "public_sibling": data.get("public_sibling"),
         "consumers": {name: _consumer_entry(path, name, value) for name, value in consumers.items()},
+        "baseline": [_baseline_item(path, i, item) for i, item in enumerate(baseline)],
     }
+
+
+#: The closed key set of one `repos.yaml` baseline item, every key required.
+BASELINE_KEYS = ("invariant", "file", "text", "reason", "since")
+_INVARIANT_ID_RE = re.compile(r"^I\d+[ab]?$")
+
+
+def _baseline_item(path: Path, index: int, item) -> dict:
+    """One declared consumer-owned failure, normalized: every key a stripped string.
+
+    `invariant` is an invariant ID (`I15`); `file` and `text` are literal
+    substrings that pin the failure line without its line number; `reason` says
+    in a sentence why the failure belongs to the consumer; `since` is the ISO
+    date it was declared. `mdept.check` owns what the item means.
+    """
+    where = f"{path}: field 'baseline[{index}]'"
+    if not isinstance(item, dict):
+        raise ConfigError(f"{where}: expected a mapping of {list(BASELINE_KEYS)}, got {type(item).__name__}")
+    unknown = sorted(set(item) - set(BASELINE_KEYS))
+    if unknown:
+        raise ConfigError(f"{where}: unknown key(s) {unknown}; an item carries {list(BASELINE_KEYS)}")
+    normalized = {}
+    for key in BASELINE_KEYS:
+        value = item.get(key)
+        if isinstance(value, datetime.date):
+            value = value.isoformat()
+        if not isinstance(value, str) or not value.strip():
+            raise ConfigError(f"{where}.{key}: required, a non-empty string; every item carries "
+                              f"{list(BASELINE_KEYS)}")
+        normalized[key] = value.strip()
+    if not _INVARIANT_ID_RE.match(normalized["invariant"]):
+        raise ConfigError(f"{where}.invariant: {normalized['invariant']!r} is not an invariant ID like I15")
+    try:
+        datetime.date.fromisoformat(normalized["since"])
+    except ValueError:
+        raise ConfigError(f"{where}.since: {normalized['since']!r} is not an ISO date") from None
+    return normalized
 
 
 def _consumer_entry(path: Path, name: str, value) -> dict:
