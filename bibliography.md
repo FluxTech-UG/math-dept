@@ -34,6 +34,9 @@ another.
 | Scalar conservation laws and entropy solutions | The entropy-inequality definition of a bounded generalized solution, L^1 stability on characteristic cones, uniqueness, and existence as the almost-everywhere limit of vanishing viscosity; the L^1 error of the viscosity method of order the square root of viscosity times time, times the total variation of the data | Burgers equation, parabolic regularization, functions of bounded variation, L^1 contraction | `Kruzhkov1970`, `Kuznetsov1976` |
 | Rational approximation of Stieltjes functions | Skeleton approximation of the resolvent kernel with prescribed real poles, the Zolotarev ratio with prescribed poles and its Möbius invariance, and pole choices with geometric rates for Cauchy-Stieltjes matrix functions | rational Krylov methods, Zolotarev problems, Möbius transformations, Cauchy matrices | `MasseiRobol2021` |
 | Zolotarev numbers and displacement structure | The Zolotarev number of two sets and its Möbius invariance, explicit bounds for two real intervals in the Grötzsch function and in the cross-ratio, the disk case, and singular value bounds for Cauchy, Pick, Löwner, Krylov and positive definite Hankel matrices | rational approximation, elliptic integrals, Sylvester equations, numerical rank | `BeckermannTownsend2019` |
+| The divergence equation on bounded domains | A right inverse of the divergence from mean-zero L^p functions into W_0^{1,p} on bounded John domains, Lipschitz domains included, with its W^{1,p} bound; the Korn inequality as a consequence | Stokes pressure, Bogovskii operator, Calderón-Zygmund operators | `AcostaDuranMuschietti2006` |
+| Unbounded self-adjoint operators and closed forms | The self-adjoint operator of a closed semibounded form, the orthonormal eigenbasis of an operator with compact resolvent, min-max and the eigenvalue shift under a bounded perturbation, relatively bounded perturbation, analytic continuation of a simple eigenvalue, tensor-product bases | Lax-Milgram, Rayleigh quotients, Sobolev spaces | `Kato1976`, `ReedSimon1980`, `ReedSimon1978` |
+| Stieltjes representations and bounds for two-component media | The effective coefficient of a two-component random medium as a Stieltjes transform of a positive measure on [0, 1]; its range of values over measures with prescribed moments, bounded by circular arcs; Padé approximants to Stieltjes series | moment problems, Chebyshev systems, Herglotz functions, rational approximation of Stieltjes functions | `GoldenPapanicolaou1983`, `Milton1981`, `BakerGravesMorris1996` |
 
 ## Entries
 
@@ -255,4 +258,60 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** explicit upper bounds on Zolotarev numbers of two disjoint real intervals, and the bound of singular values of displacement-structured matrices by Zolotarev numbers
 - **Mathlib:** Zolotarev numbers, Grötzsch ring function, complete elliptic integrals: none found, searched 2026-11-11
+- **Ledger:** none yet
+
+### [AcostaDuranMuschietti2006] Solutions of the divergence operator on John domains
+- **Authors:** Acosta, G.; Durán, R. G.; Muschietti, M. A.
+- **Source:** Advances in Mathematics 206(2), 373-401 (2006). DOI 10.1016/j.aim.2005.09.004. Def. 2.1; Lemma 2.1; Cor. 3.1; Lemma 3.3 (3.7); Thm 4.1 (4.25); Thm 4.2; §1 pp. 375-376. Copy read: https://sedici.unlp.edu.ar/handle/10915/83153
+- **Kind:** paper
+- **Used for:** the divergence maps W_0^{1,p} onto the mean-zero L^p functions on a bounded John domain, 1 < p < ∞, with a bounded right inverse
+- **Mathlib:** `TemperedDistribution.MemSobolev` (v4.33.1); Sobolev spaces on domains, John domains, Bogovskii operator: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [Kato1976] Perturbation Theory for Linear Operators, 2nd ed.
+- **Authors:** Kato, T.
+- **Source:** Springer (1976), Grundlehren der mathematischen Wissenschaften 132; reprinted in Classics in Mathematics (1995), DOI 10.1007/978-3-642-66282-9. Ch. II §1 Thm 1.8; Ch. VI §2 Thms 2.1, 2.6. Full text not read, checked 2026-11-12; theorem numbers as cited in the ledger's proofs, unverified
+- **Kind:** book
+- **Used for:** the self-adjoint operator of a closed semibounded form, self-adjointness under a relatively bounded perturbation, and analytic continuation of a simple eigenvalue with its eigenvectors
+- **Mathlib:** `IsCoercive.continuousLinearEquivOfBilin` (v4.33.1); closed unbounded forms, unbounded self-adjoint operators, relatively bounded perturbation: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [ReedSimon1980] Methods of Modern Mathematical Physics I: Functional Analysis, revised and enlarged ed.
+- **Authors:** Reed, M.; Simon, B.
+- **Source:** Academic Press (1980), ISBN 0-12-585050-6. Thm II.10; Thm VIII.15. Full text not read, checked 2026-11-12; theorem numbers as cited in the ledger's proofs, which name no edition, unverified
+- **Kind:** book
+- **Used for:** the self-adjoint operator of a closed semibounded form, and the orthonormal basis of a tensor product of L^2 spaces
+- **Mathlib:** `HilbertBasis` (v4.33.1); quadratic forms of unbounded operators, Hilbert tensor products: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [ReedSimon1978] Methods of Modern Mathematical Physics IV: Analysis of Operators
+- **Authors:** Reed, M.; Simon, B.
+- **Source:** Academic Press, New York (1978), ISBN 0-12-585004-2. Sec. XIII.1; Thm XIII.64. Full text not read, checked 2026-11-12; numbers as cited in the ledger's proofs, unverified
+- **Kind:** book
+- **Used for:** the min-max principle and the eigenvalue shift under a bounded symmetric perturbation; the orthonormal eigenbasis of a self-adjoint operator with compact resolvent
+- **Mathlib:** `IsCompactOperator`, `IsSelfAdjoint.hasEigenvector_of_isMaxOn` (v4.33.1); compact resolvent, min-max for unbounded operators: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [BakerGravesMorris1996] Padé Approximants, 2nd ed.
+- **Authors:** Baker, G. A., Jr.; Graves-Morris, P.
+- **Source:** Cambridge University Press (1996), Encyclopedia of Mathematics and its Applications 59. DOI 10.1017/CBO9780511530074. No section pointer: full text not read, checked 2026-11-12
+- **Kind:** book
+- **Used for:** background on the geometric convergence rate of Padé approximants to Stieltjes series
+- **Mathlib:** Padé approximants: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [GoldenPapanicolaou1983] Bounds for effective parameters of heterogeneous media by analytic continuation
+- **Authors:** Golden, K.; Papanicolaou, G.
+- **Source:** Communications in Mathematical Physics 90(4), 473-491 (1983). DOI 10.1007/BF01216179. Sec. 2 (2.1), (2.2); Sec. 4 Representation Theorem (4.11), (4.12); Sec. 5 (5.5), (5.9), (5.17); Sec. 6 (6.1)-(6.12). Copy read: https://www2.math.utah.edu/~golden/docs/publications/Golden_Papanicolaou_CMP_1983.pdf
+- **Kind:** paper
+- **Used for:** the effective coefficient of a two-component random medium as a Stieltjes transform of a positive measure on [0, 1], and its range of values over measures with prescribed moments, bounded by circular arcs
+- **Mathlib:** `MeasureTheory.resolventTransform`, `MeasureTheory.analyticOn_resolventTransform` (v4.33.1); moment spaces and their extreme points: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [Milton1981] Bounds on the complex permittivity of a two-component composite material
+- **Authors:** Milton, G. W.
+- **Source:** Journal of Applied Physics 52(8), 5286-5293 (1981). DOI 10.1063/1.329385. Full text not open, checked 2026-11-12; metadata only
+- **Kind:** paper
+- **Used for:** citation pointer for complex-plane bounds on the permittivity of a two-component composite; never a statement source
+- **Mathlib:** none found, searched 2026-11-12
 - **Ledger:** none yet

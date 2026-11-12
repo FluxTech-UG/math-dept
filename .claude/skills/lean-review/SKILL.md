@@ -74,6 +74,37 @@ VERDICT: REJECT
   reduction or add the allowlist line with a recorded reason.
 ```
 
+## An informal proof
+
+A review of `proofs/MD_0007.md` (the first review, and the later-day check
+`proven-informal` requires) has no Lean file to build, so the checklist above is
+replaced by this one. Read the entry's Statement and Hypotheses and the proof
+file; read `triage/MD_0007.md` only after forming a verdict, so an earlier
+reviewer's finding does not steer this one.
+
+1. **Fidelity.** The proof proves the Statement as written: same quantifiers,
+   same constants, same domain, every clause. A weaker or neighbouring claim is
+   a REJECT.
+2. **Hypothesis use.** Every hypothesis is used at a named step, or the proof
+   says plainly that it is not needed. Nothing is used that the entry does not
+   grant.
+3. **Every step.** Recompute each displayed inequality, constant and limit.
+   Where a step cites a theorem, check its conditions hold and that the cited
+   locator (section, theorem number) is the one the source carries. Check the
+   edge cases: equality, empty or degenerate parameters, the smallest index.
+4. **Non-vacuity.** Name one concrete instance satisfying every hypothesis.
+5. **Quoted numbers.** Rerun at most one cheap probe, in scratch, where a wrong
+   number would break the argument.
+6. **Remarks.** A remark beside the proof is checked like a step: a false
+   remark is reported even when no step depends on it.
+7. **Blockers.** The file carries a "Formalization blockers" section.
+
+The verdict is ACCEPT, ACCEPT WITH NITS (each nit with its location and the
+change), or REJECT (the first failing step, why, and whether a local repair is
+visible). A step that resists three attempts is reported UNRESOLVED at that
+step, which counts as not accepted. A nit on the Statement or Hypotheses of a
+settled entry is reported, never applied: that text is frozen.
+
 ## Close out
 
 The artifact is the verdict, and it is the same artifact in both modes: the item table
