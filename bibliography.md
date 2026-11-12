@@ -270,7 +270,7 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 
 ### [Kato1976] Perturbation Theory for Linear Operators, 2nd ed.
 - **Authors:** Kato, T.
-- **Source:** Springer (1976), Grundlehren der mathematischen Wissenschaften 132; reprinted in Classics in Mathematics (1995), DOI 10.1007/978-3-642-66282-9. Ch. II §1 Thm 1.8; Ch. VI §2 Thms 2.1, 2.6. Full text not read, checked 2026-11-12; theorem numbers as cited in the ledger's proofs, unverified
+- **Source:** Springer (1976), Grundlehren der mathematischen Wissenschaften 132; reprinted in Classics in Mathematics (1995), DOI 10.1007/978-3-642-66282-9. Ch. II §1 Thm 1.8; Ch. VI §2 Thms 2.1, 2.6. Ch. VI §2 Thms 2.1 and 2.6 read on pp. 322-323 of the reprint, 2026-11-12 (2.1 is the m-sectorial statement, 2.6 the self-adjoint case); Ch. II Thm 1.8 as cited in the ledger's proofs, unverified
 - **Kind:** book
 - **Used for:** the self-adjoint operator of a closed semibounded form, self-adjointness under a relatively bounded perturbation, and analytic continuation of a simple eigenvalue with its eigenvectors
 - **Mathlib:** `IsCoercive.continuousLinearEquivOfBilin` (v4.33.1); closed unbounded forms, unbounded self-adjoint operators, relatively bounded perturbation: none found, searched 2026-11-12
