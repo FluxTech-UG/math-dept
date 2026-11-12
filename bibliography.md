@@ -34,7 +34,7 @@ another.
 | Scalar conservation laws and entropy solutions | The entropy-inequality definition of a bounded generalized solution, L^1 stability on characteristic cones, uniqueness, and existence as the almost-everywhere limit of vanishing viscosity; the L^1 error of the viscosity method of order the square root of viscosity times time, times the total variation of the data | Burgers equation, parabolic regularization, functions of bounded variation, L^1 contraction | `Kruzhkov1970`, `Kuznetsov1976` |
 | Rational approximation of Stieltjes functions | Skeleton approximation of the resolvent kernel with prescribed real poles, the Zolotarev ratio with prescribed poles and its Möbius invariance, and pole choices with geometric rates for Cauchy-Stieltjes matrix functions | rational Krylov methods, Zolotarev problems, Möbius transformations, Cauchy matrices | `MasseiRobol2021` |
 | Zolotarev numbers and displacement structure | The Zolotarev number of two sets and its Möbius invariance, explicit bounds for two real intervals in the Grötzsch function and in the cross-ratio, the disk case, and singular value bounds for Cauchy, Pick, Löwner, Krylov and positive definite Hankel matrices | rational approximation, elliptic integrals, Sylvester equations, numerical rank | `BeckermannTownsend2019` |
-| The divergence equation on bounded domains | A right inverse of the divergence from mean-zero L^p functions into W_0^{1,p} on bounded John domains, Lipschitz domains included, with its W^{1,p} bound; the Korn inequality as a consequence | Stokes pressure, Bogovskii operator, Calderón-Zygmund operators | `AcostaDuranMuschietti2006` |
+| The divergence equation on bounded domains | A right inverse of the divergence from mean-zero L^p functions into W_0^{1,p} on bounded John domains, Lipschitz domains included, with its W^{1,p} bound; the Korn inequality as a consequence; the uniform interior cone condition implies the John condition with a bound on its constant; a decomposition of mean-zero integrable functions over a tree of subdomains, and the divergence solvable on a union covered by such a tree, with its constant | Stokes pressure, Bogovskii operator, Calderón-Zygmund operators | `AcostaDuranMuschietti2006`, `MagnaniniPoggesi2024`, `LopezGarcia2014` |
 | Unbounded self-adjoint operators and closed forms | The self-adjoint operator of a closed semibounded form, the orthonormal eigenbasis of an operator with compact resolvent, min-max and the eigenvalue shift under a bounded perturbation, relatively bounded perturbation, analytic continuation of a simple eigenvalue, tensor-product bases | Lax-Milgram, Rayleigh quotients, Sobolev spaces | `Kato1976`, `ReedSimon1980`, `ReedSimon1978` |
 | Stieltjes representations and bounds for two-component media | The effective coefficient of a two-component random medium as a Stieltjes transform of a positive measure on [0, 1]; its range of values over measures with prescribed moments, bounded by circular arcs; Padé approximants to Stieltjes series | moment problems, Chebyshev systems, Herglotz functions, rational approximation of Stieltjes functions | `GoldenPapanicolaou1983`, `Milton1981`, `BakerGravesMorris1996` |
 
@@ -266,6 +266,22 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** the divergence maps W_0^{1,p} onto the mean-zero L^p functions on a bounded John domain, 1 < p < ∞, with a bounded right inverse
 - **Mathlib:** `TemperedDistribution.MemSobolev` (v4.33.1); Sobolev spaces on domains, John domains, Bogovskii operator: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [LopezGarcia2014] A decomposition technique for integrable functions with applications to the divergence problem
+- **Authors:** López García, F.
+- **Source:** J. Math. Anal. Appl. 418(1), 79-99 (2014); DOI not confirmed. §2 definition of (div)_p and (1.1); §3.1 conditions (a), (b); (3.4)-(3.6); Lemma 3.1; Thm 3.1 (3.7), (3.8); §3.3 conditions (c)-(f); Thm 3.2 (3.9); Cor 3.1; Thm 4.1; p. 14 (5.19). Copy read: arXiv:1308.4346v1, https://arxiv.org/abs/1308.4346 (numbering of v1; journal version not compared)
+- **Kind:** paper
+- **Used for:** the divergence problem on a bounded domain covered by a tree-indexed family of subdomains on which it is uniformly solvable, with an explicit constant
+- **Mathlib:** `PartitionOfUnity`, `SmoothPartitionOfUnity` (rev 0df444a); divergence problem, Sobolev spaces on domains, Marcinkiewicz interpolation: none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [MagnaniniPoggesi2024] Quantitative symmetry in a mixed Serrin-type problem for a constrained torsional rigidity
+- **Authors:** Magnanini, R.; Poggesi, G.
+- **Source:** Calc. Var. Partial Differential Equations 63 (2024), Paper No. 23. DOI 10.1007/s00526-023-02629-w. §3 (3.1); Remark 3.3; §4.3 (4.14), (4.15); App. A.1: definition of b-John domain, Lemmas A.1, A.2, A.3. Copy read: arXiv:2210.10288v2, https://arxiv.org/html/2210.10288v2
+- **Kind:** paper
+- **Used for:** a bounded domain with the uniform interior cone condition is a b-John domain, with a bound on b
+- **Mathlib:** John domains, uniform interior cone condition: none found, searched 2026-11-12
 - **Ledger:** none yet
 
 ### [Kato1976] Perturbation Theory for Linear Operators, 2nd ed.
