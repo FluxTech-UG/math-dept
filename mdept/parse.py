@@ -36,7 +36,7 @@ def is_ledger_view(name: str) -> bool:
     return name in LEDGER_VIEW_NAMES or CATALOG_TOPIC_RE.match(name) is not None
 
 #: The closed key set of one `repos.yaml` consumer, and where its view lands.
-CONSUMER_KEYS = ("path", "ignore", "view", "archived")
+CONSUMER_KEYS = ("path", "ignore", "view", "archived", "retired")
 DEFAULT_VIEW = "docs/MATH.md"
 
 FRONT_MATTER_RE = re.compile(r"\A---\r?\n(?P<front>.*?)\r?\n---\r?\n(?P<body>.*)\Z", re.DOTALL)
@@ -356,14 +356,16 @@ def parse_role_line(path: Path) -> tuple[str, str]:
 def load_repos_yaml(path: Path) -> dict:
     """Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
 
-    A consumer's value is either a bare path, a mapping `{path, ignore, view}`, or
-    `{archived: <where>}` for a repo whose files are kept off-line. The bare form
-    means `{path: <it>, ignore: [], view: 'docs/MATH.md'}`. The mapping's `path` is
-    one path or a non-empty list of candidate paths, tried in order where the
-    consumers are resolved (`family.read_consumers`). Every form comes back
-    normalized with the same five keys: `paths` the candidates in order, `path` the
-    first of them, `archived` None for a repo on disk, and for an archived one
-    `path` None and `paths` empty, so no caller has to test which was written.
+    A consumer's value is either a bare path, a mapping `{path, ignore, view,
+    retired}`, or `{archived: <where>}` for a repo whose files are kept off-line.
+    The bare form means `{path: <it>, ignore: [], view: 'docs/MATH.md', retired:
+    false}`; `retired: true` marks a repo on disk that is read-only for good. The
+    mapping's `path` is one path or a non-empty list of candidate paths, tried in
+    order where the consumers are resolved (`family.read_consumers`). Every form
+    comes back normalized with the same six keys: `paths` the candidates in order,
+    `path` the first of them, `archived` None for a repo on disk, `retired` a
+    bool, and for an archived one `path` None and `paths` empty, so no caller has
+    to test which was written.
     """
     path = Path(path)
     if not path.is_file():
@@ -407,7 +409,8 @@ def _consumer_entry(path: Path, name: str, value) -> dict:
                 f"I7 raised-by: {path}: field 'consumers.{name}': an archived consumer has no "
                 f"tree on disk, so it takes no {extra}"
             )
-        return {"path": None, "paths": [], "ignore": [], "view": DEFAULT_VIEW, "archived": where.strip()}
+        return {"path": None, "paths": [], "ignore": [], "view": DEFAULT_VIEW, "archived": where.strip(),
+                "retired": False}
     if not value.get("path"):
         raise CheckError(
             f"I7 raised-by: {path}: field 'consumers.{name}.path': a consumer declares a path, "
@@ -424,10 +427,17 @@ def _consumer_entry(path: Path, name: str, value) -> dict:
         raise CheckError(
             f"I7 raised-by: {path}: field 'consumers.{name}.ignore': expected a list of glob strings"
         )
+    retired = value.get("retired", False)
+    if not isinstance(retired, bool):
+        raise CheckError(
+            f"I7 raised-by: {path}: field 'consumers.{name}.retired': expected true or false, "
+            f"got {retired!r}"
+        )
     return {
         "path": candidates[0],
         "paths": list(candidates),
         "ignore": [str(glob) for glob in ignore],
         "view": str(value.get("view") or DEFAULT_VIEW),
         "archived": None,
+        "retired": retired,
     }

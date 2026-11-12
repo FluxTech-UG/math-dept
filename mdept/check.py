@@ -10,8 +10,11 @@ Within an invariant, most stop at their first violation. Five collect: I15
 (consumer citations), I20 (the sorry fence) and I21 (unlisted citations)
 report every violation, I13 every failing request and I14 every failing entry
 and Outcome id, each by its first violation. There is no warnings tier and no
-partial pass: I9b is the single informational check, and it is reported as a
-notice that also lands in `ledger/INDEX.md` section 7.
+partial pass. Notices are informational: I9b's and I7's text-anchor notices
+also land in `ledger/INDEX.md` section 7, and I15 reports a stale citation in a
+consumer `repos.yaml` marks `retired` as a notice. The CLI prints notices on a
+failing run too, starts every failing line with `FAIL `, and ends a failing run
+on one count line, `FAIL total 25: I7 1, I15 24` (`failure_report`).
 
 Modes:
 
@@ -737,6 +740,8 @@ def i12_dangling_references(ctx: Context) -> None:
         _dangling_ids(ctx, path, text)
         if not ctx.private:
             _released_lean_pointers(ctx, path, text)
+            if path.resolve() == (ctx.root / "bibliography.md").resolve():
+                _bibliography_ledger_lines(ctx)
             continue
         stems = {r.stem: r for r in ctx.requests}
         for stem, candidate in sorted(parse.request_tokens(text)):
@@ -761,6 +766,24 @@ def _released_lean_pointers(ctx: Context, path: Path, text: str) -> None:
         if (ctx.root / public).is_file():
             fail("I12 dangling", ctx.rel(path), "<Lean pointer>",
                  f"{pointer} was released; the file is {public}")
+
+
+def _bibliography_ledger_lines(ctx: Context) -> None:
+    """Public run: a bibliography `Ledger` line names only entries the public ledger holds.
+
+    Elsewhere the public run reads an unreleased ID as held and passes it
+    (`Context.held`). The bibliography is public text that lists the entries
+    resting on a source, and an unreleased ID there points readers at nothing.
+    """
+    for tag, bib in ctx.bibliography.items():
+        line = bib.fields.get("Ledger")
+        if line is None:
+            continue
+        unreleased = sorted(t for t in parse.id_tokens(line) if t not in ctx.by_id)
+        if unreleased:
+            fail("I12 dangling", "bibliography.md", f"[{tag}].Ledger",
+                 f"{', '.join(unreleased)} has no file in ledger/; a public Ledger line "
+                 "names released entries only")
 
 
 def _dangling_ids(ctx: Context, path: Path, text: str) -> None:
@@ -911,6 +934,10 @@ def i15_consumer_citations(ctx: Context) -> None:
 
     Every violation across the family is collected and reported together, one
     per line, so a fix that spans several files is one round, not one per file.
+
+    A consumer marked `retired` in `repos.yaml` is read-only for good: a line
+    there that lacks its status word can never be fixed, so it is a notice, not
+    a failure. Every other I15 violation in a retired consumer still fails.
     """
     if not ctx.family:
         return
@@ -952,10 +979,15 @@ def i15_consumer_citations(ctx: Context) -> None:
                 continue
             for k in citing:
                 cited = citation_text(all_lines, k, entry.id).lower()
-                if not any(word in cited for word in required):
-                    note(f"{repo}:{rel}:{k + 1}", "<line>",
-                         f"cites {entry.id} without any of {list(required)}; "
+                if any(word in cited for word in required):
+                    continue
+                stale = (f"cites {entry.id} without any of {list(required)}; "
                          f"the entry is {entry.status}")
+                if consumer.retired:
+                    ctx.notices.append(f"I15: {repo}:{rel}:{k + 1}: {stale}; {repo} is retired, "
+                                       "so the citation stays as written")
+                else:
+                    note(f"{repo}:{rel}:{k + 1}", "<line>", stale)
     if violations:
         raise collected(violations)
 
@@ -1263,10 +1295,49 @@ def run(root: Path | str | None = None,
             if not failures:
                 raise
             failures.append(f"{invariant.__name__}: {type(exc).__name__}: {exc}")
-            raise collected(failures) from exc
+            raise _with_notices(collected(failures), ctx) from exc
     if failures:
-        raise collected(failures)
+        raise _with_notices(collected(failures), ctx)
     return ctx
+
+
+def _with_notices(error: CheckError, ctx: Context) -> CheckError:
+    """Carry the run's notices on its failure, so a red run still prints them."""
+    error.notices = list(ctx.notices)
+    return error
+
+
+#: A violation line opens with its invariant's ID: `I15 citation: ...` counts under I15.
+_FAILURE_INVARIANT_RE = re.compile(r"^(I\d+[ab]?) ")
+#: A crash `run` joins to the report: `<invariant function>: <exception type>: ...`.
+_FAILURE_CRASH_RE = re.compile(r"^[A-Za-z_]\w*: [A-Za-z_][\w.]*: ")
+
+
+def failure_report(message: str, config_error: bool) -> list[str]:
+    """A failed run's stderr: every line of the report opening with `FAIL `, then the count.
+
+    The count line is `FAIL total <n>: I7 1, I15 24`, per invariant in the order
+    the run met them. A configuration error counts as `config`, a crash `run`
+    joined to the report as `crash`. A line that opens with neither an invariant
+    ID nor a crash is the continuation of a multi-line message: it is printed
+    with its prefix and counted with the line it continues, or, standing first,
+    as `unlabelled`, so the total never hides a line it could not place.
+    """
+    lines = message.splitlines() or [message]
+    counts: dict[str, int] = {}
+    for number, line in enumerate(lines):
+        if config_error:
+            key = "config" if number == 0 else None
+        elif match := _FAILURE_INVARIANT_RE.match(line):
+            key = match.group(1)
+        elif _FAILURE_CRASH_RE.match(line):
+            key = "crash"
+        else:
+            key = "unlabelled" if number == 0 else None
+        if key is not None:
+            counts[key] = counts.get(key, 0) + 1
+    per_invariant = ", ".join(f"{key} {n}" for key, n in counts.items())
+    return [f"FAIL {line}" for line in lines] + [f"FAIL total {sum(counts.values())}: {per_invariant}"]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1291,7 +1362,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         ctx = run(args.root, args.run_counterexamples, args.family, args.lean, args.entry)
     except (CheckError, ConfigError) as exc:
-        print(f"FAIL {exc}", file=sys.stderr)
+        for notice in getattr(exc, "notices", ()):
+            print(f"notice {notice}")
+        for line in failure_report(str(exc), isinstance(exc, ConfigError)):
+            print(line, file=sys.stderr)
         return 1
     modes = [name for name, on in
              (("counterexamples", args.run_counterexamples), ("family", args.family), ("lean", args.lean)) if on]

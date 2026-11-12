@@ -148,6 +148,7 @@ def test_a_bare_consumer_path_still_means_the_default_view(tmp_path):
         "ignore": [],
         "view": "docs/MATH.md",
         "archived": None,
+        "retired": False,
     }
 
 
@@ -245,6 +246,7 @@ def test_an_archived_consumer_parses_without_a_path(tmp_path):
         "ignore": [],
         "view": "docs/MATH.md",
         "archived": "external drive, off-line",
+        "retired": False,
     }
 
 
@@ -286,6 +288,91 @@ def test_a_citation_naming_an_archived_consumer_fails_i15(tmp_path):
         check.run(root, family=True)
     assert str(raised.value).startswith("I15 citation")
     assert "archived" in str(raised.value)
+
+
+# --- a retired consumer: a stale citation there is a notice ----------------
+
+
+STALE_TOY = ("This section relies on MD_0005 as a result and on\n"
+             "MD_0006 as another, so verdicts here depend on both.")
+
+
+def retire_toy(root: Path) -> None:
+    repos = root / "repos.yaml"
+    text = repos.read_text(encoding="utf-8")
+    assert text.count("    view: docs/MATH.md\n") == 1
+    repos.write_text(text.replace("    view: docs/MATH.md\n", "    view: docs/MATH.md\n    retired: true\n"),
+                     encoding="utf-8")
+
+
+def test_a_stale_citation_in_a_retired_consumer_is_a_notice(tmp_path):
+    root = stage(tmp_path) / "good_private"
+    retire_toy(root)
+    _rewrite_toy(root, STALE_TOY)
+    context = check.run(root, family=True)
+    assert context.consumers["ToyRepo"].retired is True
+    stale = [n for n in context.notices if n.startswith("I15: ToyRepo:docs/toy.md:")]
+    assert len(stale) == 2, context.notices
+    assert "cites MD_0005 without any of" in stale[0] and "retired" in stale[0]
+
+
+def test_a_retired_consumer_still_fails_i15_on_a_missing_file(tmp_path):
+    """Only the missing status word turns into a notice; a citation of an absent file still fails."""
+    root = stage(tmp_path) / "good_private"
+    retire_toy(root)
+    entry = root / "ledger" / "MD_0007.md"
+    text = entry.read_text(encoding="utf-8")
+    entry.write_text(text.replace("cited_by: []", 'cited_by: ["ToyRepo:docs/absent.md"]'), encoding="utf-8")
+    index.write(root)
+    with pytest.raises(CheckError) as raised:
+        check.run(root, family=True)
+    assert str(raised.value).startswith("I15 citation") and "does not exist" in str(raised.value)
+
+
+def test_the_cli_prints_notices_on_a_failing_run(tmp_path, capsys):
+    root = stage(tmp_path) / "good_private"
+    retire_toy(root)
+    _rewrite_toy(root, STALE_TOY)
+    apply_overlay(root, FIXTURES / "broken" / "I17_em_dash")
+    assert check.main(["--root", str(root), "--family"]) == 1
+    out, err = capsys.readouterr()
+    assert sum(line.startswith("notice I15: ToyRepo:") for line in out.splitlines()) == 2, out
+    assert err.splitlines()[-1] == "FAIL total 1: I17 1", err
+
+
+@pytest.mark.parametrize("value", ["'true'", "1", "[true]"])
+def test_retired_takes_a_boolean(value, tmp_path):
+    written = tmp_path / "repos.yaml"
+    written.write_text(f"consumers:\n  Old: {{path: /somewhere, retired: {value}}}\n", encoding="utf-8")
+    with pytest.raises(CheckError, match=r"consumers\.Old\.retired"):
+        parse.load_repos_yaml(written)
+
+
+# --- a public bibliography Ledger line names released entries only ---------
+
+
+def _set_fixture_ledger_line(root: Path, ids: str) -> None:
+    bib = root / "bibliography.md"
+    text = bib.read_text(encoding="utf-8")
+    assert text.count("- **Ledger:** MD_0003\n") == 1
+    bib.write_text(text.replace("- **Ledger:** MD_0003\n", f"- **Ledger:** {ids}\n"), encoding="utf-8")
+
+
+def test_a_public_bibliography_ledger_line_naming_an_unreleased_id_fails(tmp_path):
+    root = stage(tmp_path) / "good_public"
+    _set_fixture_ledger_line(root, "MD_0003, MD_0007")
+    with pytest.raises(CheckError) as raised:
+        check.run(root)
+    message = str(raised.value)
+    assert message.startswith("I12 dangling: bibliography.md: field '[Test2026].Ledger'"), message
+    assert "MD_0007" in message and "MD_0003" not in message
+
+
+def test_the_private_run_reads_the_same_ledger_line_through_both_ledgers(tmp_path):
+    """MD_0007 is a private entry, so the private run's walk of the sibling resolves it."""
+    root = stage(tmp_path) / "good_public"
+    _set_fixture_ledger_line(root, "MD_0003, MD_0007")
+    check.run(tmp_path / "good_private")
 
 
 def test_a_view_of_an_archived_consumer_is_refused(tmp_path):
@@ -414,7 +501,28 @@ def test_the_cli_names_every_failing_invariant(tmp_path, capsys):
     assert check.main(["--root", str(root)]) == 1
     err = capsys.readouterr().err
     assert err.startswith("FAIL I17 prose"), err
-    assert "\nI20 sorry fence" in err, err
+    assert "\nFAIL I20 sorry fence" in err, err
+
+
+def test_every_failing_line_starts_with_fail_and_the_run_ends_on_a_count(tmp_path, capsys):
+    """A collected invariant (I15) prints one FAIL line per violation, then the per-invariant count."""
+    root = stage(tmp_path) / "good_private"
+    apply_overlay(root, FIXTURES / "broken" / "I17_em_dash")
+    _rewrite_toy(root, "This section relies on MD_0005 as a result and on\n"
+                       "MD_0006 as another, so verdicts here depend on both.")
+    assert check.main(["--root", str(root), "--family"]) == 1
+    lines = capsys.readouterr().err.splitlines()
+    assert lines and all(line.startswith("FAIL ") for line in lines), lines
+    assert sum(line.startswith("FAIL I15 citation: ") for line in lines) == 2, lines
+    assert lines[-1] == "FAIL total 3: I15 2, I17 1", lines
+
+
+def test_a_config_failure_is_one_fail_line_and_its_count(tmp_path, capsys):
+    root = stage(tmp_path) / "good_public"
+    assert check.main(["--root", str(root), "--family"]) == 1
+    lines = capsys.readouterr().err.splitlines()
+    assert len(lines) == 2 and lines[0].startswith("FAIL --family needs"), lines
+    assert lines[1] == "FAIL total 1: config 1", lines
 
 
 def test_the_sorry_fence_reports_every_violation(tmp_path):

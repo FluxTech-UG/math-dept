@@ -172,7 +172,9 @@ them, other entries' files ignored, a file that belongs to no entry still report
 left to the full run; it excludes `--family` and `--lean`.
 
 `repos.yaml` lists each consumer as a bare path, as `{path, ignore, view}`, or as
-`{archived: <where>}` for a repo whose files are kept off-line. The mapping's `path` may
+`{archived: <where>}` for a repo whose files are kept off-line. A mapping may add
+`retired: true` for a repo on disk that is read-only for good: every invariant reads it
+as before, and only I15's missing status word there turns into a notice. The mapping's `path` may
 be a list of candidate paths, each expanded (`~`) and resolved against the `repos.yaml`
 directory when relative: the first that is a directory on disk is the consumer's path,
 and when none is, the first fails the family check with every candidate named, so one
@@ -214,12 +216,17 @@ full run walks the public sibling's entries (I8, I9a) and reference surfaces (I1
 so a public link to such an ID or to a merged private entry fails there. In the public
 repo I12 also fails a prose pointer into the private library
 (`MathDeptPrivate/Results/MD_0007.lean`) at a Lean file the public repo holds: the file
-was released, and the failure names its public path.
+was released, and the failure names its public path. It also fails a bibliography
+`- **Ledger:**` line that names an ID with no file in the public `ledger/`: that line is
+public text, so it lists released entries only (`none yet` until one is);
+`python -m mdept.release` does not edit the line, and a released ID is added by hand.
 
 **Flow.** I13 inbox lifecycle and Outcome completeness; I14 requests back-link to the
 IDs they seeded; I15 every line of a listed file that names an entry carries its status
 word, in code as well as in prose (an ID in a line's last 20 characters may carry it
-at the start of the next line, where a wrapped citation puts it); I16 generated views
+at the start of the next line, where a wrapped citation puts it), and in a consumer
+`repos.yaml` marks `retired: true` a line missing its status word is a notice, not a
+failure, since that repo is read-only for good; I16 generated views
 are fresh; I17 no U+2014 in prose; I21 every `MD_####` mention in a listed consumer appears in that entry's
 `cited_by`, so a status change reaches every file that relies on it. A consumer that is
 a git checkout is scanned over its tracked and untracked-but-not-ignored files; what it

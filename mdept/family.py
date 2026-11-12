@@ -62,6 +62,9 @@ class Consumer:
     kept off-line: its key still resolves, and nothing of it is read.
     `candidates` are the paths `repos.yaml` lists for it, resolved, in order;
     `path` is the first of them on disk, or the first of them when none is.
+    A retired consumer (`retired` True) is on disk and read-only for good: the
+    check reads it as any other, and only reports a stale I15 citation in it as
+    a notice.
     """
 
     name: str
@@ -70,6 +73,7 @@ class Consumer:
     view: str = "docs/MATH.md"
     archived: str | None = None
     candidates: tuple[Path, ...] = ()
+    retired: bool = False
 
     @property
     def view_path(self) -> Path:
@@ -431,6 +435,7 @@ def read_consumers(repos_yaml: Path) -> dict:
             ignore=tuple(value["ignore"]),
             view=value["view"],
             candidates=tuple(candidates),
+            retired=value["retired"],
         )
     return consumers
 
