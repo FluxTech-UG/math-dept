@@ -193,8 +193,9 @@ Underneath those:
   files, other entries' files ignored (the module docstring has the rules).
 - `python -m mdept.inbox_status` (run in `math-dept-private`) prints an inbox run's
   measure, `new=<n> closable_open=<n> entries_without_current_fidelity=<n>
-  check_fails=<n>`, then the names behind each nonzero count (the module docstring
-  defines them).
+  check_fails=<n> later_day_owed=<n>`, then the names behind each nonzero count (the
+  module docstring defines them; `later_day_owed` names each conjectured entry with a
+  proof that owes its later-day check, the first day it may run and the settle date).
 - `python -m mdept.index --check` regenerates the views in memory and fails on drift.
 - `python -m mdept.audit all --json` is the contract the validator consumes: sorry scan,
   per-declaration axioms and pretty-printed types, counterexample results.

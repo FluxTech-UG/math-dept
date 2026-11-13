@@ -406,6 +406,26 @@ def attempt_stages(path: Path, where: str) -> list[str]:
     return [table_cells(line)[1] for line in lines[head + 2:end + 1]]
 
 
+def attempt_rows(path: Path, where: str) -> list[tuple[datetime.date, str]]:
+    """(date, stage word) of every row of a record's attempts table, in table order.
+
+    A Date cell that is not an ISO calendar date is refused, naming `where` and the cell.
+    """
+    lines = Path(path).read_text(encoding="utf-8").splitlines()
+    head, end = attempts_table(lines, where)
+    rows = []
+    for number, line in enumerate(lines[head + 2:end + 1], start=head + 3):
+        cells = table_cells(line)
+        if not schema.ISO_DATE_RE.match(cells[0]):
+            raise CheckError(f"{where}:{number}: field 'Date': expected an ISO date YYYY-MM-DD, got {cells[0]!r}")
+        try:
+            day = datetime.date.fromisoformat(cells[0])
+        except ValueError as exc:
+            raise CheckError(f"{where}:{number}: field 'Date': {cells[0]!r} is not a real calendar date ({exc})") from exc
+        rows.append((day, _stage_word(cells[1])))
+    return rows
+
+
 def _stage_word(stage: str) -> str:
     # Rows written before `mdept.row` held a stage to one word carry forms such as
     # `fidelity (steps 2 to 4)`; the first word is the stage.

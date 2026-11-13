@@ -172,9 +172,11 @@ them, other entries' files ignored, a file that belongs to no entry still report
 left to the full run; it excludes `--family` and `--lean`.
 
 `python -m mdept.inbox_status`, run in the private repo, prints an inbox run's measure on
-one line, `new=<n> closable_open=<n> entries_without_current_fidelity=<n> check_fails=<n>`,
-then the names behind each nonzero count; its module docstring defines each count, and
-`check_fails` is the family check run in-process, baseline hits not counted.
+one line, `new=<n> closable_open=<n> entries_without_current_fidelity=<n> check_fails=<n>
+later_day_owed=<n>`, then the names behind each nonzero count; its module docstring
+defines each count, `check_fails` is the family check run in-process, baseline hits not
+counted, and `later_day_owed` lists each conjectured entry with a proof whose last change
+has no later-day check after it, with the first day the check may run and the settle date.
 
 `repos.yaml` lists each consumer as a bare path, as `{path, ignore, view}`, or as
 `{archived: <where>}` for a repo whose files are kept off-line. A mapping may add

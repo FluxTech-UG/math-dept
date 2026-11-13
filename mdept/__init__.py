@@ -9,7 +9,7 @@ Modules, each also runnable as `python -m mdept.<module>`:
 - `schema`  the closed front-matter key set, the enumerations, and their validator
 - `parse`   markdown front matter, ledger entries, bibliography, role lines
 - `check`   invariants I1 to I22 (I9 in two parts, I9a and I9b) over a ledger tree
-- `inbox_status` an inbox run's measure: new and closable requests, stale fidelity, check failures
+- `inbox_status` an inbox run's measure: new and closable requests, stale fidelity, check failures, owed later-day checks
 - `index`   the generated views `ledger/INDEX.md` and `ledger.json`
 - `new`     allocate the next ID and write an entry from the template
 - `settle`  set an entry's status and settled_by, the formal pointer from the audit

@@ -27,7 +27,10 @@ the guard working, not a bug to route around.
 Read the source itself. An abstract or a recollection of the result produces an
 extract that reads authoritative and states hypotheses the source does not have,
 the failure mode this ledger exists to catch. When the full text is unreachable,
-report that and file nothing. Budget the extract at 1,200 to 1,800 tokens.
+report that and file nothing. A PDF is fetched only to save it, then read from
+the saved file with the Read tool's `pages` parameter: a web fetch asked to
+summarise a PDF returns raw compressed bytes (13 such fetches were wasted across
+four agents on 13 November 2026). Budget the extract at 1,200 to 1,800 tokens.
 
 ## The web is read by an agent tier
 

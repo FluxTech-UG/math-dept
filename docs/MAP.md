@@ -529,13 +529,16 @@ _The ledger's links as one edge list: what `ledger/EDGES.tsv` holds and what a c
 - render_tsv(rows) -> str  ·L50: `ledger/EDGES.tsv`: a header line, then one tab-separated edge per line.
 
 ### mdept/inbox_status.py
-_Where an inbox run stands: four counts on one line, then the names behind them._
-- const COUNTS  ·L38
-- _answered(outcome) -> bool  ·L41: True for a candidate declined, or seeding entries that are all settled.
-- fidelity_gap(record, entry_id: str) -> str | None  ·L49: Why an unsettled entry has no current fidelity, or None when it has.
-- status(root=None) -> dict  ·L62: The four lists behind the counts, each in a stable order.
-- render(found: dict) -> list[str]  ·L90
-- main(argv: list[str] | None=None) -> int  ·L101
+_Where an inbox run stands: five counts on one line, then the names behind them._
+- const COUNTS  ·L43
+- const PROOF_CHANGE_STAGES  ·L47
+- const LATER_DAY_CHECK_STAGE  ·L49
+- _answered(outcome) -> bool  ·L52: True for a candidate declined, or seeding entries that are all settled.
+- fidelity_gap(record, entry_id: str) -> str | None  ·L60: Why an unsettled entry has no current fidelity, or None when it has.
+- later_day_owed(entry, root) -> str | None  ·L73: `<id> (check from <day>, settle --date <day>)` when a conjectured entry owes its check.
+- status(root=None) -> dict  ·L98: The five lists behind the counts, each in a stable order.
+- render(found: dict) -> list[str]  ·L129
+- main(argv: list[str] | None=None) -> int  ·L140
 
 ### mdept/index.py
 _The generated views: `ledger/INDEX.md`, `ledger.json`, `ledger/CATALOG.md` and `ledger/EDGES.tsv`._
@@ -682,14 +685,15 @@ _Read the markdown surfaces: ledger entries, bibliography, requests, role lines.
 - table_cells(line: str) -> list[str] | None  ·L369: A markdown table line's cells, stripped, or None when the line is no table row.
 - attempts_table(lines: list[str], where: str) -> tuple[int, int]  ·L377: (header index, index of the last line) of a record's one attempts table.
 - attempt_stages(path: Path, where: str) -> list[str]  ·L402: The Stage cell of every row of a record's attempts table, in table order.
-- _stage_word(stage: str) -> str  ·L409
-- stale_statement_row(stages: list[str]) -> int | None  ·L416: Index of the last `statement` row when no `fidelity` row follows it, else None.
-- has_fidelity_row(stages: list[str]) -> bool  ·L428: True when some row of the table is a statement round trip.
-- load_repos_yaml(path: Path) -> dict  ·L433: Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
-- const BASELINE_KEYS  ·L471
-- const _INVARIANT_ID_RE  ·L472
-- _baseline_item(path: Path, index: int, item) -> dict  ·L475: One declared consumer-owned failure, normalized: every key a stripped string.
-- _consumer_entry(path: Path, name: str, value) -> dict  ·L507
+- attempt_rows(path: Path, where: str) -> list[tuple[datetime.date, str]]  ·L409: (date, stage word) of every row of a record's attempts table, in table order.
+- _stage_word(stage: str) -> str  ·L429
+- stale_statement_row(stages: list[str]) -> int | None  ·L436: Index of the last `statement` row when no `fidelity` row follows it, else None.
+- has_fidelity_row(stages: list[str]) -> bool  ·L448: True when some row of the table is a statement round trip.
+- load_repos_yaml(path: Path) -> dict  ·L453: Load `repos.yaml`: a `public_sibling` path and the `consumers` map.
+- const BASELINE_KEYS  ·L491
+- const _INVARIANT_ID_RE  ·L492
+- _baseline_item(path: Path, index: int, item) -> dict  ·L495: One declared consumer-owned failure, normalized: every key a stripped string.
+- _consumer_entry(path: Path, name: str, value) -> dict  ·L527
 
 ### mdept/query.py
 _Search both ledgers, and resolve a request token, from anywhere in the family._
@@ -1195,11 +1199,23 @@ _`python -m mdept.inbox_status`: the inbox run's measure, one line and the names
 - const FIXTURES  ·L17
 - stage(tmp_path: Path) -> Path  ·L22
 - lines_of(root: Path, capsys) -> list[str]  ·L28
-- test_the_first_line_is_the_four_counts_and_the_names_follow(tmp_path, capsys)  ·L33
-- test_a_request_whose_every_candidate_is_answered_is_closable(tmp_path, capsys)  ·L42
-- test_a_statement_edit_after_the_last_round_trip_counts_and_a_new_round_trip_clears_it(tmp_path, capsys)  ·L52
-- test_check_failures_are_counted_in_process_and_baseline_hits_are_not(tmp_path, capsys)  ·L67
-- test_the_public_repo_alone_is_refused(tmp_path, capsys, monkeypatch)  ·L82
+- count(line: str, name: str) -> int  ·L33: The value of one `name=<n>` field of the first line.
+- const PROOF  ·L39
+- const RECORD_HEAD  ·L41
+- const OWING_ROWS  ·L44
+- give_proof(root: Path, n: str, rows: str) -> None  ·L51: Write proofs/MD_<n>.md and an attempt record holding `rows`.
+- stipulate(root: Path, date: str) -> None  ·L58
+- test_the_first_line_is_the_five_counts_and_the_names_follow(tmp_path, capsys)  ·L64
+- test_a_request_whose_every_candidate_is_answered_is_closable(tmp_path, capsys)  ·L74
+- test_a_statement_edit_after_the_last_round_trip_counts_and_a_new_round_trip_clears_it(tmp_path, capsys)  ·L84
+- test_check_failures_are_counted_in_process_and_baseline_hits_are_not(tmp_path, capsys)  ·L99
+- test_a_conjectured_entry_whose_proof_changed_last_owes_a_check_from_the_next_day(tmp_path, capsys)  ·L114
+- test_a_later_day_check_after_the_last_change_clears_the_entry(tmp_path, capsys)  ·L124
+- test_a_settled_entry_with_a_proof_is_never_owed(tmp_path, capsys)  ·L135
+- test_an_entry_stipulated_the_day_of_its_proof_settles_that_day(tmp_path, capsys)  ·L146
+- test_an_entry_stipulated_after_its_last_change_settles_on_its_stipulated_date(tmp_path, capsys)  ·L154
+- test_a_record_row_whose_date_is_not_a_date_is_refused(tmp_path, capsys)  ·L164
+- test_the_public_repo_alone_is_refused(tmp_path, capsys, monkeypatch)  ·L172
 
 ### tests/test_lean_build.py
 _Guard: the Lake package builds._
