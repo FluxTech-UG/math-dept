@@ -37,6 +37,8 @@ another.
 | The divergence equation on bounded domains | A right inverse of the divergence from mean-zero L^p functions into W_0^{1,p} on bounded John domains, Lipschitz domains included, with its W^{1,p} bound; the Korn inequality as a consequence; the uniform interior cone condition implies the John condition with a bound on its constant; a decomposition of mean-zero integrable functions over a tree of subdomains, and the divergence solvable on a union covered by such a tree, with its constant | Stokes pressure, Bogovskii operator, Calderón-Zygmund operators | `AcostaDuranMuschietti2006`, `MagnaniniPoggesi2024`, `LopezGarcia2014` |
 | Unbounded self-adjoint operators and closed forms | The self-adjoint operator of a closed semibounded form, the orthonormal eigenbasis of an operator with compact resolvent, min-max and the eigenvalue shift under a bounded perturbation, relatively bounded perturbation, analytic continuation of a simple eigenvalue, tensor-product bases | Lax-Milgram, Rayleigh quotients, Sobolev spaces | `Kato1976`, `ReedSimon1980`, `ReedSimon1978` |
 | Stieltjes representations and bounds for two-component media | The effective coefficient of a two-component random medium as a Stieltjes transform of a positive measure on [0, 1]; its range of values over measures with prescribed moments, bounded by circular arcs; Padé approximants to Stieltjes series | moment problems, Chebyshev systems, Herglotz functions, rational approximation of Stieltjes functions | `GoldenPapanicolaou1983`, `Milton1981`, `BakerGravesMorris1996` |
+| Regular Sturm-Liouville problems | Separated boundary conditions on a compact interval; simple eigenvalues accumulating only at infinity with an orthonormal eigenbasis; ordering, lowest eigenvalue and zero count by Prüfer angles | compact symmetric operators, Green functions, Rayleigh quotients | `Teschl2012` |
+| Classical maximum principles and potential theory | The Hopf boundary point lemma and the strong maximum principle for non-divergence elliptic operators with first-order terms; the mean value property and its converse for continuous functions; C^2 regularity of the Newtonian potential of a bounded Hölder density | harmonic functions, Poisson integral, fundamental solution of the Laplacian | `GuerraOrriols2026`, `Viaclovsky2004` |
 
 ## Entries
 
@@ -330,4 +332,28 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** paper
 - **Used for:** citation pointer for complex-plane bounds on the permittivity of a two-component composite; never a statement source
 - **Mathlib:** none found, searched 2026-11-12
+- **Ledger:** none yet
+
+### [Teschl2012] Ordinary Differential Equations and Dynamical Systems
+- **Authors:** Teschl, G.
+- **Source:** American Mathematical Society (2012), Graduate Studies in Mathematics 140, DOI 10.1090/gsm/140. Ch. 5: (5.45), (5.55); Thm 5.11 (p. 160); Lemma 5.12 (p. 162); Thm 5.17 (p. 169). Copy read: author's preliminary version, https://www.mat.univie.ac.at/~gerald/ftp/book-ode/ode.pdf, 2026-11-13; numbers and pages from that copy, not checked against the print
+- **Kind:** book
+- **Used for:** the eigenvalues of a regular Sturm-Liouville problem with separated boundary conditions are simple, bounded below, strictly ordered and accumulate only at infinity
+- **Mathlib:** Sturm-Liouville problems: none found, searched 2026-11-13
+- **Ledger:** none yet
+
+### [GuerraOrriols2026] Lecture notes on Elliptic Partial Differential Equations
+- **Authors:** Guerra, A.; Orriols, G.
+- **Source:** University of Cambridge lecture notes, dated March 27, 2026. (3.1) p. 15; Def 3.10 p. 18; Thm 3.11 p. 18; Thm 3.12 p. 19; Prop 1.7 p. 4. Copy read: https://www.dpmms.cam.ac.uk/~adblg2/EllipticPDELent2026.pdf, 2026-11-13
+- **Kind:** notes
+- **Used for:** the Hopf boundary point lemma and the strong maximum principle for elliptic operators with bounded first-order coefficients and no zeroth-order term
+- **Mathlib:** `InnerProductSpace.HarmonicOnNhd`, `InnerProductSpace.HarmonicOnNhd.circleAverage_eq` (rev 0df444a3); elliptic maximum principles, Hopf lemma: none found, searched 2026-11-13
+- **Ledger:** none yet
+
+### [Viaclovsky2004] 18.156 Differential Analysis, lecture notes
+- **Authors:** Viaclovsky, J. (Lectures 0-11 typed by Wang, Z., per the course page)
+- **Source:** MIT OpenCourseWare, Spring 2004. Lec 0 Def 1 p. 4; Lec 1 Thm 1 p. 1; Lec 2 Thm 2 and Cor 2 p. 4; Lec 8 Prop 1 p. 1; Lec 9 Prop 1 p. 1. Copies read 2026-11-13: https://ocw.mit.edu/courses/18-156-differential-analysis-spring-2004/62906408ea3a1fde43dee67b2c5ee0d0_lec0.pdf, .../2d5342d2f35b2d991e8a284c5ab1e325_lec1.pdf, .../7bc7bb25dccb29a54eff57f0ac7cfcfd_lec2.pdf, .../40da295b182c40f92fe445a35e6f7e31_lec8.pdf, .../07af62163ffad3b8133c3a356965aace_lec9.pdf
+- **Kind:** notes
+- **Used for:** C^2 regularity of the Newtonian potential of a bounded locally Hölder density, and harmonicity of a continuous function with the mean value property
+- **Mathlib:** `InnerProductSpace.HarmonicOnNhd.circleAverage_eq` (rev 0df444a3, forward direction only); converse mean value property, Newtonian potential: none found, searched 2026-11-13
 - **Ledger:** none yet
