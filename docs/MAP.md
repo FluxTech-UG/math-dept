@@ -782,18 +782,18 @@ _Move settled entries from the private repo into this public one._
 
 ### mdept/row.py
 _Append attempt rows to triage records: the one way a lead writes a row._
-- const FIELDS  ·L41
-- const STAGE_RE  ·L43
-- const _PIPE_FIX  ·L45
-- const _NEWLINE_FIX  ·L46
-- const FORBIDDEN  ·L47
-- const BLOCK_SEPARATOR  ·L53
-- @dataclass class Row  ·L57
-  - render(self, date: str) -> str  ·L66
-- make_row(entry: str, fields: dict, where: str) -> Row  ·L71: One validated row; `where` names it in a refusal.
-- read_blocks(path: Path) -> list[Row]  ·L87: The rows of a `--from-file` batch, every block validated.
-- append_rows(root: Path, rows: list[Row], date: str) -> dict[Path, str]  ·L111: The rewritten text of every record the rows touch. Writes nothing.
-- main(argv: list[str] | None=None) -> int  ·L129
+- const FIELDS  ·L48
+- const STAGE_RE  ·L50
+- const _PIPE_FIX  ·L52
+- const _NEWLINE_FIX  ·L53
+- const FORBIDDEN  ·L54
+- const BLOCK_SEPARATOR  ·L60
+- @dataclass class Row  ·L64
+  - render(self, date: str) -> str  ·L73
+- make_row(entry: str, fields: dict, where: str) -> Row  ·L78: One validated row; `where` names it in a refusal.
+- read_blocks(path: Path) -> list[Row]  ·L94: The rows of a `--from-file` batch, every block validated.
+- append_rows(root: Path, rows: list[Row], date: str) -> dict[Path, str]  ·L118: The rewritten text of every record the rows touch. Writes nothing.
+- main(argv: list[str] | None=None) -> int  ·L136
 
 ### mdept/schema.py
 _The closed front-matter schema for a ledger entry._
@@ -1491,7 +1491,11 @@ _`python -m mdept.row` appends attempt rows to triage records, or writes nothing
 - const BATCH  ·L124
 - test_from_file_writes_every_block_in_order(tmp_path, capsys)  ·L148
 - @pytest.mark.parametrize test_from_file_writes_nothing_when_any_block_is_bad(tmp_path, capsys, bad, reason)  ·L165
-- test_from_file_excludes_the_single_row_flags(tmp_path)  ·L175
+- test_check_on_a_clean_batch_writes_nothing(tmp_path, capsys)  ·L175
+- test_check_on_a_clean_single_row_writes_nothing(tmp_path, capsys)  ·L185
+- @pytest.mark.parametrize test_check_refuses_as_a_real_run_does(tmp_path, capsys, bad, reason)  ·L199
+- test_check_accepts_the_time_placeholder(tmp_path, capsys)  ·L212
+- test_from_file_excludes_the_single_row_flags(tmp_path)  ·L222
 
 ### tests/test_search.py
 _The ranked search and the entry card: `python -m mdept.query "<words>"` and `mdept.card`._

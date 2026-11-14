@@ -22,7 +22,15 @@ way to waste a whole session proving the wrong thing.
 2. Have a **different** agent informalize it back to prose, working from the formal
    statement alone.
 3. Compare that prose against the request's own wording.
-4. Record the comparison in `triage/MD_####.md`.
+4. Record the comparison in `triage/MD_####.md` as a `fidelity` row with its verdict.
+
+The verdict judges one thing: whether the Statement, read cold, says what the
+consuming document needs. It is `MATCH`; `MATCH-WITH-NOTED-CHANGES` when the
+differences are recorded as deliberate or as non-blocking wording; or `MISMATCH` when
+the Statement says something else or is ill-posed. A Statement that is faithful and
+looks false gets a match, with the refutation candidate named in the same row and
+routed to a refutation attempt (S1). Whether the statement is true is the ladder's
+question, not the round trip's.
 
 Run the same round trip on the Lean statement before any proof attempt, once the file
 typechecks and before the first tactic. Three signals say the formalization slipped:
@@ -31,7 +39,10 @@ typechecks and before the first tactic. Three signals say the formalization slip
 - the statement is suspiciously easy;
 - the statement does not imply the downstream use the request describes.
 
-Any of the three sends the statement back to step 1, not to the next rung.
+Any of the three sends the statement back to step 1, not to the next rung. There the
+round trip judges the wording only: a statement that looks false and that the round
+trip finds faithful takes a match with its refutation candidate, as above, and goes to
+S1.
 
 An edit to a Statement or its Hypotheses is recorded as a `statement` row and re-opens
 fidelity: the round trip runs again on the new wording, and until its `fidelity` row
@@ -78,6 +89,10 @@ the table by its header (`Date` and `Stage` first, `Time` and `Model` last), put
 row under the last one, and writes nothing when any row is refused: an empty cell, a
 cell holding a pipe or an em dash, or a stage that is not one word. A stage is a ladder
 rung (`S0` to `S4`) or a step outside the ladder, such as `fidelity` or `review`.
+`--check` runs every refusal on the same input and writes nothing, printing `ok <n>
+rows would be written` or the refusal: an agent checks its row file with it before
+handing the file to the lead. It accepts a time field left as `TIME` for the lead to
+fill, as a real run does.
 
 The record is private and stays private. A released entry carries its outcome, not its
 attempts.

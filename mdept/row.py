@@ -23,6 +23,13 @@ an ID that is not `MD_####`, a record that does not exist, a record without exac
 one attempts table, an empty field, a field holding a pipe, a newline or an em dash,
 a stage that is not one word (`STAGE_RE`), or a date that is not a real ISO date.
 Each row written prints `row MD_0007 S3`.
+
+`--check` is the dry run, with either form: it applies every refusal above, the
+existing record included, writes nothing, and prints `ok <n> rows would be written`
+(exit 0) or the same `FAIL` line a real run prints (exit 1). A time field may be the
+placeholder `TIME` that an agent leaves for the lead to fill: it is a one-word,
+non-empty field, so both the dry run and a real run accept it, and a real run
+writes it as typed.
 """
 
 from __future__ import annotations
@@ -136,6 +143,8 @@ def main(argv: list[str] | None = None) -> int:
                              "separated by a line ---")
     parser.add_argument("--date", default=None, help="the rows' date, YYYY-MM-DD (default: today)")
     parser.add_argument("--root", default=None, help="repo root (default: nearest ancestor with ledger/)")
+    parser.add_argument("--check", action="store_true",
+                        help="dry run: apply every refusal, write nothing, print 'ok <n> rows would be written'")
     args = parser.parse_args(argv)
 
     single = {name: getattr(args, name) for name in FIELDS}
@@ -160,6 +169,9 @@ def main(argv: list[str] | None = None) -> int:
     except (CheckError, ConfigError) as exc:
         print(f"FAIL {exc}; nothing is written", file=sys.stderr)
         return 1
+    if args.check:
+        print(f"ok {len(rows)} rows would be written")
+        return 0
     for path, text in texts.items():
         path.write_text(text, encoding="utf-8")
     for item in rows:

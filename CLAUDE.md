@@ -206,7 +206,9 @@ Underneath those:
   [--date D]`, or `--from-file FILE` for a batch, appends attempt rows to
   `triage/MD_####.md` from either repo (`--root` defaults to the nearest ancestor with
   `ledger/`). It validates every row before writing any and prints `row MD_0007 S3` per
-  row; the rules are in its module docstring.
+  row; the rules are in its module docstring. `--check` with either form is the dry run:
+  every refusal applied, nothing written, `ok <n> rows would be written` or the `FAIL`
+  line a real run prints.
 - `python -m mdept.settle MD_0007 --status S --by WHO --model M [--how H] [--date D]
   [--checked-by D] [--decl NAME] [--merged-into ID]` is the way a lead sets status: it
   writes `status` and `provenance.settled_by` (for `proven-formal` also the formal

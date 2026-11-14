@@ -172,6 +172,53 @@ def test_from_file_writes_nothing_when_any_block_is_bad(tmp_path, capsys, bad, r
     assert snapshot(root) == before
 
 
+def test_check_on_a_clean_batch_writes_nothing(tmp_path, capsys):
+    root = stage(tmp_path)
+    batch = tmp_path / "rows.txt"
+    batch.write_text(BATCH, encoding="utf-8")
+    before = snapshot(root)
+    assert row.main(["--from-file", str(batch), "--root", str(root), "--check"]) == 0
+    assert capsys.readouterr().out == "ok 3 rows would be written\n"
+    assert snapshot(root) == before
+
+
+def test_check_on_a_clean_single_row_writes_nothing(tmp_path, capsys):
+    root = stage(tmp_path)
+    before = snapshot(root)
+    assert row.main(args_0006(root) + ["--check"]) == 0
+    assert capsys.readouterr().out == "ok 1 rows would be written\n"
+    assert snapshot(root) == before
+
+
+@pytest.mark.parametrize("bad, reason", [
+    (BATCH.replace("ACCEPT", "ACC|EPT"), "block 3: field 'showed' holds a pipe"),
+    (BATCH.replace("nothing", f"no{EM_DASH}thing"), "block 2: field 'showed' holds an em dash"),
+    (BATCH.replace("review", "S3 review"), "block 3: stage 'S3 review' is not a single word"),
+    (BATCH.replace("MD_0007", "MD_0001"), "block 2: MD_0001 has no triage record"),
+])
+def test_check_refuses_as_a_real_run_does(tmp_path, capsys, bad, reason):
+    root = stage(tmp_path)
+    batch = tmp_path / "rows.txt"
+    batch.write_text(bad, encoding="utf-8")
+    before = snapshot(root)
+    assert row.main(["--from-file", str(batch), "--root", str(root), "--check"]) == 1
+    checked = capsys.readouterr()
+    assert checked.out == "" and checked.err.startswith("FAIL ") and reason in checked.err
+    assert row.main(["--from-file", str(batch), "--root", str(root)]) == 1
+    assert capsys.readouterr().err == checked.err
+    assert snapshot(root) == before
+
+
+def test_check_accepts_the_time_placeholder(tmp_path, capsys):
+    root = stage(tmp_path)
+    batch = tmp_path / "rows.txt"
+    batch.write_text(BATCH.replace("3 min", "TIME"), encoding="utf-8")
+    before = snapshot(root)
+    assert row.main(["--from-file", str(batch), "--root", str(root), "--check"]) == 0
+    assert capsys.readouterr().out == "ok 3 rows would be written\n"
+    assert snapshot(root) == before
+
+
 def test_from_file_excludes_the_single_row_flags(tmp_path):
     root = stage(tmp_path)
     batch = tmp_path / "rows.txt"
