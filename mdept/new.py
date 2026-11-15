@@ -1,4 +1,4 @@
-"""Allocate the next ID and write the entry file.
+"""Allocate the next ID and write the entry file and its attempt record.
 
 Run either form:
 
@@ -18,6 +18,13 @@ the title, the stipulator and the repo) and raise when given with `--request`.
 IDs are allocated as max plus one across BOTH repos, because entries are born
 private and released with gaps. Allocating from one repo alone would reissue an
 ID the other repo already owns, and an ID is never reused.
+
+In the private repo each form writes two files in one call: the entry
+`ledger/MD_####.md` and its attempt record `triage/MD_####.md`, a header, the
+role line, one neutral line on how the ID was allocated, and an empty attempts
+table that `python -m mdept.row` appends to. Neither file is written when either
+already exists. Attempt records live in the private repo only, so the title form
+run on the public root writes the ledger file alone.
 
 The last line printed is `allocated MD_####`, so a caller reading only the last
 line of the output gets the new ID.
@@ -117,6 +124,25 @@ def render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str:
     return f"---\n{dumped}\n---\n{body}"
 
 
+def render_record(entry_id: str, date: str, how: str) -> str:
+    """A fresh attempt record: header, role line, how the ID was allocated, an empty table."""
+    columns = (*parse.ATTEMPTS_HEAD, "What was tried", "What it showed", *parse.ATTEMPTS_TAIL)
+    return "\n".join(
+        [
+            f"# {entry_id} attempt record",
+            f"<!-- role: record | status: current {date} | entry: {entry_id} -->",
+            "",
+            f"Allocated {date} {how}.",
+            "",
+            "## Attempts",
+            "",
+            "| " + " | ".join(columns) + " |",
+            "|" + "---|" * len(columns),
+            "",
+        ]
+    )
+
+
 def _bullet_fields(block: str) -> dict:
     """Each `- **Key:** value` bullet of a candidate block, continuation lines included.
 
@@ -200,6 +226,7 @@ def from_request(root: Path, stem: str, candidate: str, model: str | None,
     domain = _merge_flag(request, candidate, "Domain", fields.get("Domain"), domain)
 
     entry_id = allocate_id(root)
+    today = datetime.date.today().isoformat()
     front = blank_front(entry_id)
     front["title"] = title
     front["kind"] = kind or "lemma"
@@ -213,7 +240,7 @@ def from_request(root: Path, stem: str, candidate: str, model: str | None,
     }
     front["provenance"]["stipulated_by"] = {
         "who": source.get("who"),
-        "date": datetime.date.today().isoformat(),
+        "date": today,
         "model": model or source.get("model"),
         "request": f"MDR:{stem}#{candidate}",
     }
@@ -224,8 +251,8 @@ def from_request(root: Path, stem: str, candidate: str, model: str | None,
         fields.get("Hypotheses", "- **H1.** ..."),
         f"Raised by {source.get('repo')} through {candidate} of MDR:{stem}.",
     )
-    path = root / "ledger" / f"{entry_id}.md"
-    _write_new(path, text)
+    record = render_record(entry_id, today, f"from candidate {candidate} of MDR:{stem}")
+    path = _write_entry(root, entry_id, text, record)
     _record_on_request(request.path, entry_id)
     anchor = source.get("anchor")
     return entry_id, str(path), anchors.classify(anchor) if anchor else "none"
@@ -235,6 +262,7 @@ def from_title(root: Path, args) -> tuple[str, str, str]:
     """Write an entry raised in this repo, with no consumer request behind it."""
     root = Path(root).resolve()
     entry_id = allocate_id(root)
+    today = datetime.date.today().isoformat()
     front = blank_front(entry_id)
     front["title"] = args.title
     front["kind"] = args.kind
@@ -248,19 +276,48 @@ def from_title(root: Path, args) -> tuple[str, str, str]:
     }
     front["provenance"]["stipulated_by"] = {
         "who": args.who,
-        "date": datetime.date.today().isoformat(),
+        "date": today,
         "model": args.model,
         "request": None,
     }
     text = render_entry(front, "$$ ... $$", "- **H1.** ...", args.domain)
-    path = root / "ledger" / f"{entry_id}.md"
-    _write_new(path, text)
+    path = _write_entry(root, entry_id, text, render_record(entry_id, today, "with no request behind it"))
     return entry_id, str(path), "none"
 
 
-def _write_new(path: Path, text: str) -> None:
+def record_path(root: Path, entry_id: str) -> Path:
+    """Where an entry's attempt record lives, beside its ledger file under the same root."""
+    return Path(root) / "triage" / f"{entry_id}.md"
+
+
+def _write_entry(root: Path, entry_id: str, entry_text: str, record_text: str) -> Path:
+    """Write the ledger file and the attempt record, or neither. Returns the ledger path.
+
+    Both paths are checked before either is written, so a refusal leaves no half
+    allocation behind: no ledger file, no record, no edit to the request. The
+    record is a private surface: a public root gets the ledger file alone.
+    """
+    path = root / "ledger" / f"{entry_id}.md"
+    record = record_path(root, entry_id) if config.is_private(root) else None
+    _refuse_existing(path)
+    if record is not None and record.exists():
+        raise CheckError(
+            f"I19 attempt record: {record}: field '<file>': already exists; allocation writes a fresh "
+            f"record, so nothing is written for {entry_id}"
+        )
+    _write_new(path, entry_text)
+    if record is not None:
+        _write_new(record, record_text)
+    return path
+
+
+def _refuse_existing(path: Path) -> None:
     if path.exists():
         raise CheckError(f"I2 permanence: {path}: field '<file>': already exists; IDs are never reused")
+
+
+def _write_new(path: Path, text: str) -> None:
+    _refuse_existing(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
 
@@ -321,7 +378,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
 
-    print(f"ok {entry_id} {path} (anchor form: {anchor_form})")
+    record = f"; record {record_path(root, entry_id)}" if config.is_private(root) else ""
+    print(f"ok {entry_id} {path} (anchor form: {anchor_form}){record}")
     print(f"next: write the Statement, the Hypotheses and {schema.PLAIN_WORDS_HEADING}, "
           "then `make regen && make check`")
     print(f"allocated {entry_id}")

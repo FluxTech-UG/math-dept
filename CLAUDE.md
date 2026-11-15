@@ -200,8 +200,10 @@ Underneath those:
 - `python -m mdept.audit all --json` is the contract the validator consumes: sorry scan,
   per-declaration axioms and pretty-printed types, counterexample results.
 - `python -m mdept.refute --all` verifies every counterexample witness.
-- `python -m mdept.new` allocates the next ID with provenance pre-filled; its last line
-  of output is `allocated MD_####`.
+- `python -m mdept.new` allocates the next ID with provenance pre-filled and writes, in
+  the same call, the ledger file and, in the private repo, the attempt record
+  `triage/MD_####.md` (role line and an empty attempts table, ready for `mdept.row`); it
+  writes neither when either exists. Its last line of output is `allocated MD_####`.
 - `python -m mdept.row MD_0007 --stage S3 --tried T --showed S --time "12 min" --model M
   [--date D]`, or `--from-file FILE` for a batch, appends attempt rows to
   `triage/MD_####.md` from either repo (`--root` defaults to the nearest ancestor with

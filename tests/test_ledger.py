@@ -12,6 +12,7 @@ names the invariant the diff was designed to break, not merely that something
 failed.
 """
 
+import datetime
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -22,6 +23,7 @@ import pytest
 
 from mdept import CheckError, ConfigError, check, index, new, parse, schema
 from mdept import family as family_mod
+from mdept import row as row_mod
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -669,6 +671,82 @@ def test_new_refuses_to_overwrite_an_existing_entry(tmp_path):
     root = stage(tmp_path) / "good_public"
     with pytest.raises(CheckError, match="already exists"):
         new._write_new(root / "ledger" / "MD_0001.md", "would clobber a permanent ID")
+
+
+# --- new: allocation writes the attempt record -------------------------------
+
+
+def _title_args(**override) -> SimpleNamespace:
+    fields = dict(title="t", kind="lemma", topics="toy", domain="elementary arithmetic on the naturals",
+                  who="claude", repo="math-dept", model="claude-opus-5-5")
+    fields.update(override)
+    return SimpleNamespace(**fields)
+
+
+def _allocate(form: str, tmp_path: Path) -> tuple[Path, str]:
+    """Allocate one entry in the private fixture by the named form; (root, id)."""
+    root = _stage_wrapped_request(tmp_path)
+    if form == "request":
+        entry_id, _, _ = new.from_request(root, "2026-09-02-wrapped", "C1", None)
+    else:
+        entry_id, _, _ = new.from_title(root, _title_args())
+    return root, entry_id
+
+
+@pytest.mark.parametrize("form, how", [
+    ("request", "from candidate C1 of MDR:2026-09-02-wrapped."),
+    ("title", "with no request behind it."),
+])
+def test_new_writes_the_attempt_record_on_either_form(form, how, tmp_path):
+    root, entry_id = _allocate(form, tmp_path)
+    record = root / "triage" / f"{entry_id}.md"
+    today = datetime.date.today().isoformat()
+    lines = record.read_text(encoding="utf-8").splitlines()
+    assert lines[0] == f"# {entry_id} attempt record"
+    assert parse.parse_role_line(record) == ("record", today)
+    assert f"Allocated {today} {how}" in lines
+    assert parse.attempt_rows(record, f"triage/{entry_id}.md") == [], "the table starts empty"
+
+
+@pytest.mark.parametrize("form", ["request", "title"])
+def test_a_fresh_record_takes_a_row_and_passes_the_scoped_check(form, tmp_path, capsys):
+    root, entry_id = _allocate(form, tmp_path)
+    index.write(root)
+    check.run(root, entries=[entry_id])
+    assert row_mod.main([entry_id, "--root", str(root), "--stage", "S0", "--tried", "a search",
+                         "--showed", "nothing found", "--time", "5 min", "--model", "claude-opus-5-5",
+                         "--date", "2026-11-01"]) == 0
+    lines = (root / "triage" / f"{entry_id}.md").read_text(encoding="utf-8").splitlines()
+    assert lines[-2] == "|---|---|---|---|---|---|"
+    assert lines[-1] == "| 2026-11-01 | S0 | a search | nothing found | 5 min | claude-opus-5-5 |"
+    check.run(root, entries=[entry_id])
+
+
+@pytest.mark.parametrize("form", ["request", "title"])
+def test_new_refuses_an_existing_record_and_writes_nothing(form, tmp_path):
+    root = _stage_wrapped_request(tmp_path)
+    request = root / "inbox" / "2026-09-02-wrapped.md"
+    before = request.read_bytes()
+    planted = root / "triage" / "MD_0008.md"
+    planted.write_text("a record that is already there\n", encoding="utf-8")
+    with pytest.raises(CheckError, match=r"I19 attempt record: .*MD_0008\.md: field '<file>': already exists"):
+        if form == "request":
+            new.from_request(root, "2026-09-02-wrapped", "C1", None)
+        else:
+            new.from_title(root, _title_args())
+    assert not (root / "ledger" / "MD_0008.md").exists(), "no ledger file on a refusal"
+    assert planted.read_text(encoding="utf-8") == "a record that is already there\n"
+    assert request.read_bytes() == before, "the request is not edited on a refusal"
+
+
+def test_the_title_form_writes_no_record_on_the_public_root(tmp_path):
+    """Attempt records are a private surface: a public allocation is the ledger file alone."""
+    root = stage(tmp_path) / "good_public"
+    entry_id, path, _ = new.from_title(root, _title_args())
+    assert Path(path).is_file()
+    assert not (root / "triage").exists()
+    index.write(root)
+    check.run(root)
 
 
 

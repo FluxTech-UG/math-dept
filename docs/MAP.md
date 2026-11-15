@@ -611,23 +611,27 @@ _The markdown an entry body uses, rendered to HTML with its math left for KaTeX.
 - _snippet(text: str, at: int, width: int=60) -> str  ·L318
 
 ### mdept/new.py
-_Allocate the next ID and write the entry file._
-- const CANDIDATE_HEADING_RE  ·L43
-- const BULLET_RE  ·L44
-- const LEDGER_IDS_RE  ·L45
-- const STATE_RE  ·L48
-- allocate_id(root: Path) -> str  ·L51: The next free ID across this repo and its sibling.
-- blank_front(entry_id: str) -> dict  ·L62: A schema-complete front matter with every key present and nothing invented.
-- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L90
-- _bullet_fields(block: str) -> dict  ·L120: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
-- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L142
-- _topics(value: str) -> list[str]  ·L156
-- _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None, same=lambda a, b: a == b) -> str | None  ·L160: The candidate's bullet, or the flag where the bullet is absent; a disagreement raises.
-- from_request(root: Path, stem: str, candidate: str, model: str | None, kind: str | None=None, topics: str | None=None, domain: str | None=None) -> tuple[str, str, str]  ·L175: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
-- from_title(root: Path, args) -> tuple[str, str, str]  ·L234: Write an entry raised in this repo, with no consumer request behind it.
-- _write_new(path: Path, text: str) -> None  ·L261
-- _record_on_request(path: Path, entry_id: str) -> None  ·L268: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
-- main(argv: list[str] | None=None) -> int  ·L291
+_Allocate the next ID and write the entry file and its attempt record._
+- const CANDIDATE_HEADING_RE  ·L50
+- const BULLET_RE  ·L51
+- const LEDGER_IDS_RE  ·L52
+- const STATE_RE  ·L55
+- allocate_id(root: Path) -> str  ·L58: The next free ID across this repo and its sibling.
+- blank_front(entry_id: str) -> dict  ·L69: A schema-complete front matter with every key present and nothing invented.
+- render_entry(front: dict, statement: str, hypotheses: str, why: str) -> str  ·L97
+- render_record(entry_id: str, date: str, how: str) -> str  ·L127: A fresh attempt record: header, role line, how the ID was allocated, an empty table.
+- _bullet_fields(block: str) -> dict  ·L146: Each `- **Key:** value` bullet of a candidate block, continuation lines included.
+- _candidate_section(request, candidate: str) -> tuple[str, dict]  ·L168
+- _topics(value: str) -> list[str]  ·L182
+- _merge_flag(request, candidate: str, bullet: str, block: str | None, flag: str | None, same=lambda a, b: a == b) -> str | None  ·L186: The candidate's bullet, or the flag where the bullet is absent; a disagreement raises.
+- from_request(root: Path, stem: str, candidate: str, model: str | None, kind: str | None=None, topics: str | None=None, domain: str | None=None) -> tuple[str, str, str]  ·L201: Write an entry for one candidate of an inbox request. Returns (id, path, anchor form).
+- from_title(root: Path, args) -> tuple[str, str, str]  ·L261: Write an entry raised in this repo, with no consumer request behind it.
+- record_path(root: Path, entry_id: str) -> Path  ·L288: Where an entry's attempt record lives, beside its ledger file under the same root.
+- _write_entry(root: Path, entry_id: str, entry_text: str, record_text: str) -> Path  ·L293: Write the ledger file and the attempt record, or neither. Returns the ledger path.
+- _refuse_existing(path: Path) -> None  ·L314
+- _write_new(path: Path, text: str) -> None  ·L319
+- _record_on_request(path: Path, entry_id: str) -> None  ·L325: Add the new ID to the request's `ledger_ids` and move `new` to `triaged`.
+- main(argv: list[str] | None=None) -> int  ·L348
 
 ### mdept/parse.py
 _Read the markdown surfaces: ledger entries, bibliography, requests, role lines._
@@ -1228,105 +1232,111 @@ _Guard: the Lake package builds._
 
 ### tests/test_ledger.py
 _The invariant suite, driven by a fixture ledger with one break per invariant._
-- const FIXTURES  ·L26
-- const REPO_ROOT  ·L27
-- const BASES  ·L28
-- @dataclass class Case  ·L32: One deliberate break: which base, which modes, the invariant it must raise, and,
-- const PLAIN  ·L44
-- const COUNTEREXAMPLES  ·L45
-- const FAMILY  ·L46
-- const LEAN  ·L47
-- const CASES  ·L49
-- stage(tmp_path: Path) -> Path  ·L85: Copy both bases side by side, so `repos.yaml`'s public_sibling resolves.
-- apply_overlay(root: Path, overlay: Path) -> None  ·L93
-- @pytest.mark.parametrize test_good_fixture_passes_plain(base, tmp_path)  ·L106
-- test_good_public_passes_every_mode(tmp_path)  ·L111
-- test_good_private_passes_family(tmp_path)  ·L116
-- test_the_family_check_reads_the_extended_consumer_form(tmp_path)  ·L127: `repos.yaml` carries `{path, ignore, view}` for ToyRepo, and both hold.
-- test_a_bare_consumer_path_still_means_the_default_view(tmp_path)  ·L143
-- list_toy_candidates(root: Path, candidates: list[str]) -> None  ·L159: Rewrite the fixture's `path: consumers/ToyRepo` as a list of candidates.
-- test_the_first_candidate_on_disk_is_the_consumer_path(tmp_path)  ·L169
-- test_a_list_with_no_candidate_on_disk_fails_naming_every_candidate(tmp_path)  ·L178
-- test_a_single_path_and_a_one_element_list_resolve_the_same(tmp_path)  ·L189
-- test_a_single_absent_path_names_no_other_candidate(tmp_path)  ·L198
-- @pytest.mark.parametrize test_a_malformed_consumer_path_is_refused(value, tmp_path)  ·L217
-- const SHELVED  ·L227
-- archive_a_consumer(root: Path) -> None  ·L230: List `Shelved` as archived, and let MD_0007 be raised there with its anchor kept.
-- test_an_archived_consumer_parses_without_a_path(tmp_path)  ·L241
-- @pytest.mark.parametrize test_an_archived_consumer_takes_only_where_it_is_kept(value, tmp_path)  ·L260
-- test_the_family_check_resolves_an_archived_key_and_reads_nothing_of_it(tmp_path)  ·L267: MD_0007 is raised by an archived repo, with a doc and an anchor that exist nowhere.
-- test_a_citation_naming_an_archived_consumer_fails_i15(tmp_path)  ·L281
-- const STALE_TOY  ·L297
-- retire_toy(root: Path) -> None  ·L301
-- test_a_stale_citation_in_a_retired_consumer_is_a_notice(tmp_path)  ·L309
-- test_a_retired_consumer_still_fails_i15_on_a_missing_file(tmp_path)  ·L320: Only the missing status word turns into a notice; a citation of an absent file still fails.
-- test_the_cli_prints_notices_on_a_failing_run(tmp_path, capsys)  ·L333
-- @pytest.mark.parametrize test_retired_takes_a_boolean(value, tmp_path)  ·L345
-- _set_fixture_ledger_line(root: Path, ids: str) -> None  ·L355
-- test_a_public_bibliography_ledger_line_naming_an_unreleased_id_fails(tmp_path)  ·L362
-- test_the_private_run_reads_the_same_ledger_line_through_both_ledgers(tmp_path)  ·L372: MD_0007 is a private entry, so the private run's walk of the sibling resolves it.
-- test_a_view_of_an_archived_consumer_is_refused(tmp_path)  ·L379
-- test_every_invariant_has_a_case()  ·L388
-- test_the_invariant_list_is_the_one_that_runs()  ·L396
-- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L404
-- test_a_plain_words_section_may_name_another_entry_without_its_status(tmp_path)  ·L418: MD_0007's section names MD_0001 as its mirror, with no status word near it.
-- @pytest.mark.parametrize test_the_other_status_rule_fires_on_each_form(text)  ·L431
-- @pytest.mark.parametrize test_the_other_status_rule_passes_a_refutation_a_distant_word_the_own_id_and_the_next_sentence(text)  ·L442
-- test_the_stale_phrase_rule_reads_only_unsettled_entries()  ·L446
-- @pytest.mark.parametrize test_the_stale_phrase_rule_fires_on_each_phrase(text)  ·L456
-- test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path)  ·L461: A settled entry stripped of every evidence row, with no formal pointer, fails on the
-- _break_prose_and_fence(root: Path) -> None  ·L477: Two breaks in disjoint files: an em dash in a doc (I17) and a sorry in a Result (I20).
-- _first_line_of(lines: list[str], invariant: str) -> int  ·L483
-- test_a_run_reports_every_failing_invariant_in_order(tmp_path)  ·L489: The run goes on past a failing invariant, so a fix spanning two invariants is one round.
-- test_the_cli_names_every_failing_invariant(tmp_path, capsys)  ·L499
-- test_every_failing_line_starts_with_fail_and_the_run_ends_on_a_count(tmp_path, capsys)  ·L508: A collected invariant (I15) prints one FAIL line per violation, then the per-invariant count.
-- test_a_config_failure_is_one_fail_line_and_its_count(tmp_path, capsys)  ·L521
-- test_the_sorry_fence_reports_every_violation(tmp_path)  ·L529
-- test_the_inbox_check_reports_every_request(tmp_path)  ·L543: An open request marked closed and a closed one missing a candidate's line fail together.
-- test_a_crash_after_a_failure_is_reported_with_it(tmp_path, monkeypatch)  ·L558: An invariant reading a state an earlier failure guards may crash; the crash joins the report.
-- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L585
-- test_template_front_matter_validates()  ·L597
-- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L606
-- test_new_ends_its_output_on_the_allocated_id(tmp_path, capsys)  ·L627
-- test_new_never_reuses_an_id(tmp_path)  ·L636
-- _stage_wrapped_request(tmp_path: Path) -> Path  ·L645: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
-- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L653
-- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L661
-- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L668
-- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L678: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
-- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L692: The variable promised a repo, so the variable is what the message names.
-- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L710
-- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L729
-- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L733
-- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L738: The fixture cites `research/toy notes.md`, whose name contains a space.
-- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L751: A consumer checkout is scanned through git, and every violation is listed.
-- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L780: MD_0006 is cited from two files in ToyRepo and is one row, not two.
-- test_the_topic_index_is_topic_entries_and_neighbours(tmp_path)  ·L791: Three columns: the topic, its entries, the topics they also file under.
-- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L805: Two citing lines without their status word fail together, one line each.
-- const TOY_PARAGRAPH  ·L824
-- _rewrite_toy(root: Path, paragraph: str) -> None  ·L828
-- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L835: An ID in a line's last characters carries its status word at the next line's start.
-- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L844
-- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L855
-- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L867
-- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L873: MD_0001 carries an orphan artifact; MD_0003 is clean.
-- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L885
-- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L892: A half-built Result of MD_0001 and a stale index fail only the full run.
-- test_a_scoped_run_names_every_outcome_id_this_request_did_not_file(tmp_path)  ·L906: A closed request's Outcome names two entries that point at no request.
-- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L931
-- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L937
-- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L946
-- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L956
-- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L967
-- @pytest.mark.parametrize test_the_last_statement_row_needs_a_later_fidelity_row(stages, stale)  ·L985: Table order is the order; a legacy multi-word stage is read by its first word.
-- test_i22_reports_every_stale_entry_and_a_fidelity_row_clears_it(tmp_path)  ·L990
-- declare_baseline(root: Path, *items: dict) -> None  ·L1014: Append a `baseline` list to the staged private fixture's repos.yaml.
-- const I15_TOY  ·L1024
-- test_a_baselined_failure_passes_and_every_hit_is_a_notice(tmp_path)  ·L1027
-- test_a_failure_outside_the_baseline_still_fails(tmp_path)  ·L1037
-- test_a_baseline_item_that_no_longer_fails_fails(tmp_path)  ·L1048
-- test_a_baselined_i7_failure_does_not_hide_the_next(tmp_path)  ·L1057: I7 reports every failing anchor, so a baselined one masks nothing behind it.
-- @pytest.mark.parametrize test_a_malformed_baseline_item_is_refused(tmp_path, item, words)  ·L1078
+- const FIXTURES  ·L28
+- const REPO_ROOT  ·L29
+- const BASES  ·L30
+- @dataclass class Case  ·L34: One deliberate break: which base, which modes, the invariant it must raise, and,
+- const PLAIN  ·L46
+- const COUNTEREXAMPLES  ·L47
+- const FAMILY  ·L48
+- const LEAN  ·L49
+- const CASES  ·L51
+- stage(tmp_path: Path) -> Path  ·L87: Copy both bases side by side, so `repos.yaml`'s public_sibling resolves.
+- apply_overlay(root: Path, overlay: Path) -> None  ·L95
+- @pytest.mark.parametrize test_good_fixture_passes_plain(base, tmp_path)  ·L108
+- test_good_public_passes_every_mode(tmp_path)  ·L113
+- test_good_private_passes_family(tmp_path)  ·L118
+- test_the_family_check_reads_the_extended_consumer_form(tmp_path)  ·L129: `repos.yaml` carries `{path, ignore, view}` for ToyRepo, and both hold.
+- test_a_bare_consumer_path_still_means_the_default_view(tmp_path)  ·L145
+- list_toy_candidates(root: Path, candidates: list[str]) -> None  ·L161: Rewrite the fixture's `path: consumers/ToyRepo` as a list of candidates.
+- test_the_first_candidate_on_disk_is_the_consumer_path(tmp_path)  ·L171
+- test_a_list_with_no_candidate_on_disk_fails_naming_every_candidate(tmp_path)  ·L180
+- test_a_single_path_and_a_one_element_list_resolve_the_same(tmp_path)  ·L191
+- test_a_single_absent_path_names_no_other_candidate(tmp_path)  ·L200
+- @pytest.mark.parametrize test_a_malformed_consumer_path_is_refused(value, tmp_path)  ·L219
+- const SHELVED  ·L229
+- archive_a_consumer(root: Path) -> None  ·L232: List `Shelved` as archived, and let MD_0007 be raised there with its anchor kept.
+- test_an_archived_consumer_parses_without_a_path(tmp_path)  ·L243
+- @pytest.mark.parametrize test_an_archived_consumer_takes_only_where_it_is_kept(value, tmp_path)  ·L262
+- test_the_family_check_resolves_an_archived_key_and_reads_nothing_of_it(tmp_path)  ·L269: MD_0007 is raised by an archived repo, with a doc and an anchor that exist nowhere.
+- test_a_citation_naming_an_archived_consumer_fails_i15(tmp_path)  ·L283
+- const STALE_TOY  ·L299
+- retire_toy(root: Path) -> None  ·L303
+- test_a_stale_citation_in_a_retired_consumer_is_a_notice(tmp_path)  ·L311
+- test_a_retired_consumer_still_fails_i15_on_a_missing_file(tmp_path)  ·L322: Only the missing status word turns into a notice; a citation of an absent file still fails.
+- test_the_cli_prints_notices_on_a_failing_run(tmp_path, capsys)  ·L335
+- @pytest.mark.parametrize test_retired_takes_a_boolean(value, tmp_path)  ·L347
+- _set_fixture_ledger_line(root: Path, ids: str) -> None  ·L357
+- test_a_public_bibliography_ledger_line_naming_an_unreleased_id_fails(tmp_path)  ·L364
+- test_the_private_run_reads_the_same_ledger_line_through_both_ledgers(tmp_path)  ·L374: MD_0007 is a private entry, so the private run's walk of the sibling resolves it.
+- test_a_view_of_an_archived_consumer_is_refused(tmp_path)  ·L381
+- test_every_invariant_has_a_case()  ·L390
+- test_the_invariant_list_is_the_one_that_runs()  ·L398
+- @pytest.mark.parametrize test_broken_case_raises_its_own_invariant(case, tmp_path)  ·L406
+- test_a_plain_words_section_may_name_another_entry_without_its_status(tmp_path)  ·L420: MD_0007's section names MD_0001 as its mirror, with no status word near it.
+- @pytest.mark.parametrize test_the_other_status_rule_fires_on_each_form(text)  ·L433
+- @pytest.mark.parametrize test_the_other_status_rule_passes_a_refutation_a_distant_word_the_own_id_and_the_next_sentence(text)  ·L444
+- test_the_stale_phrase_rule_reads_only_unsettled_entries()  ·L448
+- @pytest.mark.parametrize test_the_stale_phrase_rule_fires_on_each_phrase(text)  ·L458
+- test_a_settled_entry_with_no_evidence_and_no_formal_pointer_fails_i4_with_the_settled_rule(tmp_path)  ·L463: A settled entry stripped of every evidence row, with no formal pointer, fails on the
+- _break_prose_and_fence(root: Path) -> None  ·L479: Two breaks in disjoint files: an em dash in a doc (I17) and a sorry in a Result (I20).
+- _first_line_of(lines: list[str], invariant: str) -> int  ·L485
+- test_a_run_reports_every_failing_invariant_in_order(tmp_path)  ·L491: The run goes on past a failing invariant, so a fix spanning two invariants is one round.
+- test_the_cli_names_every_failing_invariant(tmp_path, capsys)  ·L501
+- test_every_failing_line_starts_with_fail_and_the_run_ends_on_a_count(tmp_path, capsys)  ·L510: A collected invariant (I15) prints one FAIL line per violation, then the per-invariant count.
+- test_a_config_failure_is_one_fail_line_and_its_count(tmp_path, capsys)  ·L523
+- test_the_sorry_fence_reports_every_violation(tmp_path)  ·L531
+- test_the_inbox_check_reports_every_request(tmp_path)  ·L545: An open request marked closed and a closed one missing a candidate's line fail together.
+- test_a_crash_after_a_failure_is_reported_with_it(tmp_path, monkeypatch)  ·L560: An invariant reading a state an earlier failure guards may crash; the crash joins the report.
+- test_inheritance_is_reported_and_not_failed(tmp_path)  ·L587
+- test_template_front_matter_validates()  ·L599
+- test_new_title_form_writes_an_entry_the_checker_accepts(tmp_path)  ·L608
+- test_new_ends_its_output_on_the_allocated_id(tmp_path, capsys)  ·L629
+- test_new_never_reuses_an_id(tmp_path)  ·L638
+- _stage_wrapped_request(tmp_path: Path) -> Path  ·L647: The private fixture plus a request shaped like the inbox TEMPLATE: trailing
+- test_new_request_form_keeps_trailing_comments_on_the_request(tmp_path)  ·L655
+- test_new_request_form_carries_a_wrapped_statement_whole(tmp_path)  ·L663
+- test_new_refuses_to_overwrite_an_existing_entry(tmp_path)  ·L670
+- _title_args(**override) -> SimpleNamespace  ·L679
+- _allocate(form: str, tmp_path: Path) -> tuple[Path, str]  ·L686: Allocate one entry in the private fixture by the named form; (root, id).
+- @pytest.mark.parametrize test_new_writes_the_attempt_record_on_either_form(form, how, tmp_path)  ·L700
+- @pytest.mark.parametrize test_a_fresh_record_takes_a_row_and_passes_the_scoped_check(form, tmp_path, capsys)  ·L712
+- @pytest.mark.parametrize test_new_refuses_an_existing_record_and_writes_nothing(form, tmp_path)  ·L726
+- test_the_title_form_writes_no_record_on_the_public_root(tmp_path)  ·L742: Attempt records are a private surface: a public allocation is the ledger file alone.
+- test_a_plain_check_does_not_touch_the_private_side(tmp_path, monkeypatch)  ·L756: A broken `MATHDEPT_PRIVATE` cannot fail a command that has no use for it.
+- test_an_env_var_pointing_at_a_non_repo_says_so(tmp_path, monkeypatch)  ·L770: The variable promised a repo, so the variable is what the message names.
+- test_a_command_run_outside_a_repo_fails_with_a_message(tmp_path, monkeypatch, capsys)  ·L788
+- @pytest.mark.parametrize test_a_cited_by_string_splits_into_repo_path_and_locator(citation, expected)  ·L807
+- test_the_quoted_form_is_used_exactly_when_the_path_needs_it()  ·L811
+- test_a_spaced_path_is_satisfied_by_i15_and_i21_together(tmp_path)  ·L816: The fixture cites `research/toy notes.md`, whose name contains a space.
+- test_i21_scans_what_git_would_keep_and_reports_every_file_at_once(tmp_path)  ·L829: A consumer checkout is scanned through git, and every violation is listed.
+- test_a_consumer_column_lists_each_entry_once(tmp_path)  ·L858: MD_0006 is cited from two files in ToyRepo and is one row, not two.
+- test_the_topic_index_is_topic_entries_and_neighbours(tmp_path)  ·L869: Three columns: the topic, its entries, the topics they also file under.
+- test_i15_reports_every_violation_in_one_run(tmp_path)  ·L883: Two citing lines without their status word fail together, one line each.
+- const TOY_PARAGRAPH  ·L902
+- _rewrite_toy(root: Path, paragraph: str) -> None  ·L906
+- test_i15_reads_a_citation_wrapped_at_the_line_end_across_the_break(tmp_path)  ·L913: An ID in a line's last characters carries its status word at the next line's start.
+- test_i15_does_not_read_the_next_line_for_an_id_away_from_the_line_end(tmp_path)  ·L922
+- test_citation_text_joins_the_next_line_only_inside_the_wrap_window()  ·L933
+- _orphan_for(root: Path, entry_id: str, slug: str='stray') -> Path  ·L945
+- test_a_scoped_run_ignores_another_entrys_orphan(tmp_path)  ·L951: MD_0001 carries an orphan artifact; MD_0003 is clean.
+- test_a_scoped_run_reports_a_file_that_belongs_to_no_entry(tmp_path)  ·L963
+- test_a_scoped_run_ignores_another_entrys_lean_file_and_the_views(tmp_path)  ·L970: A half-built Result of MD_0001 and a stale index fail only the full run.
+- test_a_scoped_run_names_every_outcome_id_this_request_did_not_file(tmp_path)  ·L984: A closed request's Outcome names two entries that point at no request.
+- @pytest.mark.parametrize test_the_scoped_cli_refuses_what_it_cannot_scope(flags, message, tmp_path, capsys)  ·L1009
+- test_the_scoped_cli_names_its_scope(tmp_path, capsys)  ·L1015
+- test_new_request_form_applies_kind_and_topics(tmp_path)  ·L1024
+- test_new_request_form_raises_on_a_flag_that_contradicts_the_request(tmp_path)  ·L1034
+- test_new_request_form_refuses_title_form_flags(tmp_path)  ·L1045
+- @pytest.mark.parametrize test_the_last_statement_row_needs_a_later_fidelity_row(stages, stale)  ·L1063: Table order is the order; a legacy multi-word stage is read by its first word.
+- test_i22_reports_every_stale_entry_and_a_fidelity_row_clears_it(tmp_path)  ·L1068
+- declare_baseline(root: Path, *items: dict) -> None  ·L1092: Append a `baseline` list to the staged private fixture's repos.yaml.
+- const I15_TOY  ·L1102
+- test_a_baselined_failure_passes_and_every_hit_is_a_notice(tmp_path)  ·L1105
+- test_a_failure_outside_the_baseline_still_fails(tmp_path)  ·L1115
+- test_a_baseline_item_that_no_longer_fails_fails(tmp_path)  ·L1126
+- test_a_baselined_i7_failure_does_not_hide_the_next(tmp_path)  ·L1135: I7 reports every failing anchor, so a baselined one masks nothing behind it.
+- @pytest.mark.parametrize test_a_malformed_baseline_item_is_refused(tmp_path, item, words)  ·L1156
 
 ### tests/test_map_fresh.py
 _Guard: docs/MAP.md stays in sync with the source._

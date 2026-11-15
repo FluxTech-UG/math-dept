@@ -51,7 +51,10 @@ follows in the attempts table, invariant I22 fails.
 ## 2. Allocate the ID
 
 `python -m mdept.new --request <stem> --candidate C2` allocates the next `MD_####`
-across both repos and pre-fills provenance from the request's front matter. A
+across both repos and pre-fills provenance from the request's front matter. The same
+call writes the entry's triage record `triage/MD_####.md` (section 4): its role line,
+one line naming the request candidate it came from, and an empty attempts table that
+`python -m mdept.row` appends to. A
 candidate that is ill-posed, or that duplicates an existing entry, gets no ID: it is
 answered in the request's Outcome block as `declined: <reason>`, and a duplicate
 names the ID it duplicates.
