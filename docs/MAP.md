@@ -779,15 +779,15 @@ _Move settled entries from the private repo into this public one._
 - release(entry_ids, public: Path, private: Path, dry_run: bool=False) -> dict  ·L268: Release one entry (an ID) or a batch (a list of IDs), all or nothing.
 - render_entry(front: dict, body: str) -> str  ·L358: The public entry file: the abstracted front matter over the unchanged body.
 - preflight(entries: list, fronts: dict, bodies: dict, moves: list, public: Path) -> None  ·L364: Refuse a release that cannot land, before anything moves.
-- _roll_back(completed: list, originals: dict) -> None  ·L430: Undo every move that happened, newest first, then restore every rewritten file.
-- _read_audit_bytes(root: Path) -> bytes | None  ·L441
-- _restore_audits(cached: dict) -> None  ·L446: Put each repo's cached audit back exactly as it was before the release.
-- _regenerate(root: Path) -> None  ·L457: Rewrite `root`'s Lean root, generated ledger views and file map (what `make regen` does).
-- _require_outline() -> None  ·L477: Refuse when `repo-outline`, which rewrites `docs/MAP.md`, is not on PATH.
-- _outline(root: Path) -> None  ·L486: Rewrite `docs/MAP.md`, which lists the counterexample scripts a release moves.
-- _audit(root: Path) -> None  ·L495: Re-run the Lean audit and rewrite `audit/latest.json` (what `make lean` does in `root`).
-- _verify(root: Path, needs_lean: bool) -> dict  ·L508
-- main(argv: list[str] | None=None) -> int  ·L522
+- _roll_back(completed: list, originals: dict) -> None  ·L431: Undo every move that happened, newest first, then restore every rewritten file.
+- _read_audit_bytes(root: Path) -> bytes | None  ·L442
+- _restore_audits(cached: dict) -> None  ·L447: Put each repo's cached audit back exactly as it was before the release.
+- _regenerate(root: Path) -> None  ·L458: Rewrite `root`'s Lean root, generated ledger views and file map (what `make regen` does).
+- _require_outline() -> None  ·L478: Refuse when `repo-outline`, which rewrites `docs/MAP.md`, is not on PATH.
+- _outline(root: Path) -> None  ·L487: Rewrite `docs/MAP.md`, which lists the counterexample scripts a release moves.
+- _audit(root: Path) -> None  ·L496: Re-run the Lean audit and rewrite `audit/latest.json` (what `make lean` does in `root`).
+- _verify(root: Path, needs_lean: bool) -> dict  ·L509
+- main(argv: list[str] | None=None) -> int  ·L523
 
 ### mdept/row.py
 _Append attempt rows to triage records: the one way a lead writes a row._
@@ -1105,12 +1105,14 @@ _A release publishes an entry and keeps its private provenance private._
 - const TYPE_0008  ·L29
 - const TYPES  ·L30
 - @pytest.fixture map_writer(monkeypatch)  ·L34: A release rewrites `docs/MAP.md` with `repo-outline`, a family tool CI does not carry.
-- stage(tmp_path: Path, name: str='work') -> Path  ·L45: A throwaway copy of the fixture pair, laid out as siblings.
-- write_audit(root: Path, declarations: dict, sources_sha: str) -> None  ·L54
-- audit_of_disk(root: Path) -> None  ·L71: What `make lean` would cache for `root` as it stands: one record per Lean file on disk.
-- install_fake_audit(monkeypatch) -> list  ·L87: Replace the release's Lean audit with `audit_of_disk`; the list records each call's root.
-- prepare(tmp_path: Path, monkeypatch) -> tuple[Path, Path]  ·L99: Stage the pair regenerated, with both audits fresh for the tree as it is, and fake the audit runner.
-- test_release_lands_the_entry_and_both_repos_still_validate(tmp_path, monkeypatch)  ·L113
+- collapse(text: str) -> str  ·L45: Text with every run of whitespace made one space, so a wrapped quote still matches.
+- stage(tmp_path: Path, name: str='work') -> Path  ·L50: A throwaway copy of the fixture pair, laid out as siblings.
+- write_audit(root: Path, declarations: dict, sources_sha: str) -> None  ·L59
+- audit_of_disk(root: Path) -> None  ·L76: What `make lean` would cache for `root` as it stands: one record per Lean file on disk.
+- install_fake_audit(monkeypatch) -> list  ·L92: Replace the release's Lean audit with `audit_of_disk`; the list records each call's root.
+- prepare(tmp_path: Path, monkeypatch) -> tuple[Path, Path]  ·L104: Stage the pair regenerated, with both audits fresh for the tree as it is, and fake the audit runner.
+- test_release_lands_the_entry_and_both_repos_still_validate(tmp_path, monkeypatch)  ·L118
+- test_release_refuses_a_body_that_quotes_its_application(tmp_path, monkeypatch)  ·L149: A body quoting the private application, wrapped over two lines, is refused before anything moves.
 
 ## Lean
 

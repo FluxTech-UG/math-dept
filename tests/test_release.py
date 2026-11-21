@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from mdept import audit, check, parse, release
+from mdept import CheckError, audit, check, parse, release
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 BASES = ("good_public", "good_private")
@@ -40,6 +40,11 @@ def map_writer(monkeypatch):
     if shutil.which("repo-outline") is None:
         monkeypatch.setattr(release, "_outline", lambda root: None)
         monkeypatch.setattr(release, "_require_outline", lambda: None, raising=False)
+
+
+def collapse(text: str) -> str:
+    """Text with every run of whitespace made one space, so a wrapped quote still matches."""
+    return " ".join(text.split())
 
 
 def stage(tmp_path: Path, name: str = "work") -> Path:
@@ -127,17 +132,30 @@ def test_release_lands_the_entry_and_both_repos_still_validate(tmp_path, monkeyp
     landed, _, _ = parse.load_front_matter(public / "ledger" / f"{ENTRY}.md")
     assert landed["formal"]["file"] == LEAN_PUBLIC
     assert landed["evidence"] == [{"kind": "experiment", "path": LEAN_PUBLIC}]
-    for field in private_fields:
-        assert landed["provenance"]["raised_by"][field] is None, f"raised_by.{field} reached the public entry"
-    # Nor may the private text land anywhere else in the public repo (a view, the body).
-    # The anchor's value (`T1`) is too short to search for; the front check above covers it.
+    # The private text may land nowhere in the public repo (the entry, a view, the body).
+    # The anchor's value (`T1`) is too short to search for; the public schema refuses it
+    # in the front matter. Whitespace is collapsed on both sides: bodies are wrapped.
     for field in ("doc", "application"):
-        needle = private_fields[field].encode("utf-8")
+        needle = collapse(private_fields[field])
         leaks = [path.relative_to(public).as_posix() for path in sorted(public.rglob("*"))
-                 if path.is_file() and needle in path.read_bytes()]
+                 if path.is_file() and needle in collapse(path.read_bytes().decode("utf-8", "replace"))]
         assert not leaks, f"raised_by.{field} ({private_fields[field]!r}) reached the public repo in {leaks}"
 
     assert len(plan["checks"]) == 2
     check.run(public, lean=True)
     check.run(private, lean=True)
+
+
+def test_release_refuses_a_body_that_quotes_its_application(tmp_path, monkeypatch):
+    """A body quoting the private application, wrapped over two lines, is refused before anything moves."""
+    public, private = prepare(tmp_path, monkeypatch)
+    path = private / "ledger" / f"{ENTRY}.md"
+    front, _, _ = parse.load_front_matter(path)
+    first, rest = front["provenance"]["raised_by"]["application"].split(" ", 1)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(f"\n{first}\n{rest}\n")
+
+    with pytest.raises(CheckError, match="I23 public text"):
+        release.release(ENTRY, public, private)
+    assert not (public / "ledger" / f"{ENTRY}.md").exists()
 

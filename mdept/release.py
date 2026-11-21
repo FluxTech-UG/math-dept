@@ -74,11 +74,11 @@ PUBLIC_LIB_PREFIX = "MathDept/"
 
 PRIVATE_MODULE_PREFIX = "MathDeptPrivate."
 
-#: The private provenance fields whose value a released entry's body may not quote. An
-#: anchor (`A8`, `§12`) is a short handle that ordinary mathematical prose repeats, so it is
-#: left to the front-matter check (the public schema) alone. Measured on 21 November 2026
-#: over the 170 private entries: no body quoted its doc or application, 59 bodies held
-#: their anchor's text.
+#: The private provenance fields whose value a released entry's body may not quote. The
+#: anchor is left to the front-matter check (the public schema) alone: on 21 November 2026,
+#: 59 of the 170 private bodies cited their anchor on purpose, so a body search would refuse
+#: real releases; those bodies are reworded before their release. None of the 170 quoted
+#: its doc or application.
 BODY_SEARCHED_KEYS = tuple(key for key in schema.RAISED_BY_PRIVATE_KEYS if key != "anchor")
 
 #: A Lean `import` line: the rest of the line names one or more modules, then
@@ -380,7 +380,8 @@ def preflight(entries: list, fronts: dict, bodies: dict, moves: list, public: Pa
         raised_by = entry.front["provenance"]["raised_by"] or {}
         for key in BODY_SEARCHED_KEYS:
             value = raised_by.get(key)
-            if value and value in bodies[entry.id]:
+            # Bodies are wrapped, so a quote may break over lines: compare with whitespace collapsed.
+            if value and " ".join(value.split()) in " ".join(bodies[entry.id].split()):
                 raise CheckError(
                     f"I23 public text: ledger/{entry.id}.md: field 'provenance.raised_by.{key}': "
                     f"the body quotes {value!r}, which stays private; a public entry would publish it. "
