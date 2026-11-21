@@ -348,90 +348,90 @@ _The ledger catalog: one line per entry, under a fixed token budget, for a reade
 
 ### mdept/check.py
 _Ledger invariants I1 to I23._
-- const REFERENCE_SURFACES  ·L85
-- const QUOTED_SURFACES  ·L98
-- const EM_DASH_EXCLUDE  ·L103
-- const ROLE_LINE_SURFACES  ·L107
-- const PRIVATE_MACHINERY  ·L113
-- const PUBLIC_TEXT_EXEMPT  ·L125
-- const STANDARD_AXIOMS  ·L127
-- violation(invariant: str, path, field_name: str, message: str) -> str  ·L130: One violation line: the invariant, the offending path and field, and what is wrong.
-- fail(invariant: str, path, field_name: str, message: str) -> None  ·L135
-- collected(violations: list[str]) -> CheckError  ·L139: Every violation found, one per line in the order found, as one error.
-- @contextmanager recording(violations: list[str])  ·L145: Record a `CheckError` raised in the block into `violations` and carry on.
-- @dataclass class Context  ·L160
-  - @property private(self) -> bool  ·L183
-  - @property scoped(self) -> bool  ·L187
-  - owns(self, path) -> bool  ·L190: True when `path` belongs to an entry in scope (always, unscoped).
-  - unowned_by_any(self, path) -> bool  ·L206: True when no entry of either ledger claims `path` by stem or by field.
-  - counts(self, path) -> bool  ·L214: Whether a scoped run reports on an entry-file surface's `path`.
-  - checked_requests(self) -> list  ·L224: The requests whose lifecycle this run checks: all, or those naming an entry in scope.
-  - _owned_paths(self) -> set[str]  ·L236
-  - rel(self, path) -> str  ·L242: The path relative to this repo, or `public sibling <path>` for a file of the sibling.
-  - family_by_id(self) -> dict  ·L260: Both ledgers' entries by ID: an ID resolves wherever it lives.
-  - sibling_entries(self) -> list  ·L280: The public sibling's entries this run also walks through I8, I9a and I12.
-  - sibling_reference_surfaces(self) -> list[Path]  ·L291: The public sibling's I12 surfaces, when this run walks the sibling (`sibling_entries`).
-  - resolve(self, entry_id: str)  ·L297: The entry an ID names, as this repo's links and references see it, or None.
-  - held(self, entry_id: str) -> bool  ·L308: True when this is the public repo and the ID is unreleased (`family.held`), never a failure.
-- const _OWNER_RE  ·L313
-- owner_id(path: Path) -> str | None  ·L316: The entry ID a file's stem names, or None.
-- _entry_paths(entry) -> set[str]  ·L322: The repo-relative paths an entry claims through its own fields.
-- i1_filename_is_id(ctx: Context) -> None  ·L339
-- _precheck_filenames(root: Path) -> None  ·L346
-- i2_permanence(ctx: Context) -> None  ·L356
-- i3_schema(ctx: Context) -> None  ·L387
-- i4_status_evidence(ctx: Context) -> None  ·L410
-- _require_how(ctx: Context, entry, settled) -> None  ·L469
-- i5_formal_pointer(ctx: Context) -> None  ·L479
-- i6_counterexamples(ctx: Context) -> None  ·L520
-- i7_raised_by(ctx: Context) -> None  ·L564: Every anchor is a form of the grammar, and resolves to one place.
-- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L590
-- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L629
-- i8_links(ctx: Context) -> None  ·L646
-- const _IMPLIED_BY  ·L669
-- const _IMPLIES  ·L670
-- const _ESTABLISHED  ·L671
-- i9a_no_contradiction(ctx: Context) -> None  ·L674: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
-- i9b_inheritance_notice(ctx: Context) -> None  ·L699: The one informational check. Its notices are section 7 of the generated index.
-- i10_cited_sources(ctx: Context) -> None  ·L709
-- i11_tag_sync(ctx: Context) -> None  ·L736
-- i12_dangling_references(ctx: Context) -> None  ·L764
-- _released_lean_pointers(ctx: Context, path: Path, text: str) -> None  ·L788: Public run: a prose pointer into the private library at a Lean file this repo holds fails.
-- _bibliography_ledger_lines(ctx: Context) -> None  ·L802: Public run: a bibliography `Ledger` line names only entries the public ledger holds.
-- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L820
-- reference_surfaces(root: Path) -> list[Path]  ·L827: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates,
-- i13_inbox(ctx: Context) -> None  ·L845: Each request's lifecycle; every failing request is reported, each by its first violation.
-- _check_request(request) -> None  ·L857
-- i14_request_backlinks(ctx: Context) -> None  ·L891: Entries and requests name each other; every failing entry and every failing Outcome id
-- _check_entry_backlink(ctx: Context, entry, token: str, stems: dict) -> None  ·L912
-- _check_outcome_claim(ctx: Context, request, token: str) -> None  ·L926
-- const WRAP_WINDOW  ·L940
-- citation_text(lines: list[str], index: int, token: str) -> str  ·L943: The text that must carry `token`'s status word for its citation on `lines[index]`.
-- i15_consumer_citations(ctx: Context) -> None  ·L957: Every line of a listed file that names an entry carries its status word.
-- i16_generated_views(ctx: Context) -> None  ·L1029
-- i17_prose(ctx: Context) -> None  ·L1051
-- i18_dates(ctx: Context) -> None  ·L1065
-- i19_attempt_records(ctx: Context) -> None  ·L1084
-- i20_sorry_fence(ctx: Context) -> None  ·L1115: Every breach of the sorry fence in a file this run counts, one per line.
-- i21_unlisted_citations(ctx: Context) -> None  ·L1127: Every entry mention in a listed consumer appears in that entry's `cited_by`.
-- i22_fidelity_after_statement(ctx: Context) -> None  ·L1184: A `statement` row in an attempt record is followed by a `fidelity` row.
-- _public_text_files(root: Path) -> list[Path]  ·L1220: The files I23 reads: git's tracked files when `root` is a checkout's top, else a walk.
-- i23_public_text(ctx: Context) -> None  ·L1246: Public run: no tracked text file names the private working setup (`PRIVATE_MACHINERY`).
-- const INVARIANTS  ·L1280
-- bibliography_path(root: Path, kind: str) -> Path  ·L1308: The bibliography this repo checks against.
-- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1328
-- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1384: Narrow the context to the named entries, refusing the modes that read the whole tree.
-- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1408: Run every invariant in order and report every one that fails.
-- const BASELINE_INVARIANTS  ·L1446
-- _baseline_matches(item: dict, line: str) -> bool  ·L1449
-- apply_baseline(failures: list[str], ctx: Context, complete: bool) -> list[str]  ·L1454: The failures left once the declared consumer-owned ones are taken out.
-- _with_notices(error: CheckError, ctx: Context) -> CheckError  ·L1495: Carry the run's notices on its failure, so a red run still prints them.
-- const _FAILURE_INVARIANT_RE  ·L1503
-- const _FAILURE_CRASH_RE  ·L1505
-- failure_report(message: str, config_error: bool) -> list[str]  ·L1508: A failed run's stderr: every line of the report opening with `FAIL `, then the count.
-- _keyed_lines(message: str, config_error: bool) -> list[tuple[str | None, str]]  ·L1527: Each line of a failed run's message with the key it counts under, None for a continuation.
-- failure_lines(message: str, config_error: bool) -> list[str]  ·L1543: The failures of a failed run, one string each, as `failure_report` counts them.
-- main(argv: list[str] | None=None) -> int  ·L1558
+- const REFERENCE_SURFACES  ·L86
+- const QUOTED_SURFACES  ·L99
+- const EM_DASH_EXCLUDE  ·L104
+- const ROLE_LINE_SURFACES  ·L108
+- const PRIVATE_MACHINERY  ·L114
+- const PUBLIC_TEXT_EXEMPT  ·L126
+- const STANDARD_AXIOMS  ·L128
+- violation(invariant: str, path, field_name: str, message: str) -> str  ·L131: One violation line: the invariant, the offending path and field, and what is wrong.
+- fail(invariant: str, path, field_name: str, message: str) -> None  ·L136
+- collected(violations: list[str]) -> CheckError  ·L140: Every violation found, one per line in the order found, as one error.
+- @contextmanager recording(violations: list[str])  ·L146: Record a `CheckError` raised in the block into `violations` and carry on.
+- @dataclass class Context  ·L161
+  - @property private(self) -> bool  ·L184
+  - @property scoped(self) -> bool  ·L188
+  - owns(self, path) -> bool  ·L191: True when `path` belongs to an entry in scope (always, unscoped).
+  - unowned_by_any(self, path) -> bool  ·L207: True when no entry of either ledger claims `path` by stem or by field.
+  - counts(self, path) -> bool  ·L215: Whether a scoped run reports on an entry-file surface's `path`.
+  - checked_requests(self) -> list  ·L225: The requests whose lifecycle this run checks: all, or those naming an entry in scope.
+  - _owned_paths(self) -> set[str]  ·L237
+  - rel(self, path) -> str  ·L243: The path relative to this repo, or `public sibling <path>` for a file of the sibling.
+  - family_by_id(self) -> dict  ·L261: Both ledgers' entries by ID: an ID resolves wherever it lives.
+  - sibling_entries(self) -> list  ·L281: The public sibling's entries this run also walks through I8, I9a and I12.
+  - sibling_reference_surfaces(self) -> list[Path]  ·L292: The public sibling's I12 surfaces, when this run walks the sibling (`sibling_entries`).
+  - resolve(self, entry_id: str)  ·L298: The entry an ID names, as this repo's links and references see it, or None.
+  - held(self, entry_id: str) -> bool  ·L309: True when this is the public repo and the ID is unreleased (`family.held`), never a failure.
+- const _OWNER_RE  ·L314
+- owner_id(path: Path) -> str | None  ·L317: The entry ID a file's stem names, or None.
+- _entry_paths(entry) -> set[str]  ·L323: The repo-relative paths an entry claims through its own fields.
+- i1_filename_is_id(ctx: Context) -> None  ·L340
+- _precheck_filenames(root: Path) -> None  ·L347
+- i2_permanence(ctx: Context) -> None  ·L357
+- i3_schema(ctx: Context) -> None  ·L388
+- i4_status_evidence(ctx: Context) -> None  ·L411
+- _require_how(ctx: Context, entry, settled) -> None  ·L470
+- i5_formal_pointer(ctx: Context) -> None  ·L480
+- i6_counterexamples(ctx: Context) -> None  ·L521
+- i7_raised_by(ctx: Context) -> None  ·L565: Every anchor is a form of the grammar, and resolves to one place.
+- _check_anchor(ctx: Context, where: str, field_name: str, source) -> None  ·L591
+- _consumer_path(ctx: Context, repo: str, invariant: str='I7 raised-by') -> Path  ·L630
+- i8_links(ctx: Context) -> None  ·L647
+- const _IMPLIED_BY  ·L670
+- const _IMPLIES  ·L671
+- const _ESTABLISHED  ·L672
+- i9a_no_contradiction(ctx: Context) -> None  ·L675: A pair this repo cannot resolve is skipped: in the public repo that is a held ID
+- i9b_inheritance_notice(ctx: Context) -> None  ·L700: The one informational check. Its notices are section 7 of the generated index.
+- i10_cited_sources(ctx: Context) -> None  ·L710
+- i11_tag_sync(ctx: Context) -> None  ·L737
+- i12_dangling_references(ctx: Context) -> None  ·L765
+- _released_lean_pointers(ctx: Context, path: Path, text: str) -> None  ·L789: Public run: a prose pointer into the private library at a Lean file this repo holds fails.
+- _bibliography_ledger_lines(ctx: Context) -> None  ·L803: Public run: a bibliography `Ledger` line names only entries the public ledger holds.
+- _dangling_ids(ctx: Context, path: Path, text: str) -> None  ·L821
+- reference_surfaces(root: Path) -> list[Path]  ·L828: Every markdown file under `root` that I12 scans (`REFERENCE_SURFACES`), templates,
+- i13_inbox(ctx: Context) -> None  ·L846: Each request's lifecycle; every failing request is reported, each by its first violation.
+- _check_request(request) -> None  ·L858
+- i14_request_backlinks(ctx: Context) -> None  ·L892: Entries and requests name each other; every failing entry and every failing Outcome id
+- _check_entry_backlink(ctx: Context, entry, token: str, stems: dict) -> None  ·L913
+- _check_outcome_claim(ctx: Context, request, token: str) -> None  ·L927
+- const WRAP_WINDOW  ·L941
+- citation_text(lines: list[str], index: int, token: str) -> str  ·L944: The text that must carry `token`'s status word for its citation on `lines[index]`.
+- i15_consumer_citations(ctx: Context) -> None  ·L958: Every line of a listed file that names an entry carries its status word.
+- i16_generated_views(ctx: Context) -> None  ·L1030
+- i17_prose(ctx: Context) -> None  ·L1052
+- i18_dates(ctx: Context) -> None  ·L1066
+- i19_attempt_records(ctx: Context) -> None  ·L1085
+- i20_sorry_fence(ctx: Context) -> None  ·L1116: Every breach of the sorry fence in a file this run counts, one per line.
+- i21_unlisted_citations(ctx: Context) -> None  ·L1128: Every entry mention in a listed consumer appears in that entry's `cited_by`.
+- i22_fidelity_after_statement(ctx: Context) -> None  ·L1185: A `statement` row in an attempt record is followed by a `fidelity` row.
+- _public_text_files(root: Path) -> list[Path]  ·L1221: The files I23 reads: git's tracked and untracked-but-not-ignored files when `root`
+- i23_public_text(ctx: Context) -> None  ·L1249: Public run: no tracked text file names the private working setup (`PRIVATE_MACHINERY`).
+- const INVARIANTS  ·L1284
+- bibliography_path(root: Path, kind: str) -> Path  ·L1312: The bibliography this repo checks against.
+- build_context(root: Path, run_counterexamples: bool, family: bool, lean: bool, scope: list[str] | None=None) -> Context  ·L1332
+- _apply_scope(ctx: Context, scope: list[str], family: bool, lean: bool) -> None  ·L1388: Narrow the context to the named entries, refusing the modes that read the whole tree.
+- run(root: Path | str | None=None, run_counterexamples: bool=False, family: bool=False, lean: bool=False, entries: list[str] | None=None) -> Context  ·L1412: Run every invariant in order and report every one that fails.
+- const BASELINE_INVARIANTS  ·L1450
+- _baseline_matches(item: dict, line: str) -> bool  ·L1453
+- apply_baseline(failures: list[str], ctx: Context, complete: bool) -> list[str]  ·L1458: The failures left once the declared consumer-owned ones are taken out.
+- _with_notices(error: CheckError, ctx: Context) -> CheckError  ·L1499: Carry the run's notices on its failure, so a red run still prints them.
+- const _FAILURE_INVARIANT_RE  ·L1507
+- const _FAILURE_CRASH_RE  ·L1509
+- failure_report(message: str, config_error: bool) -> list[str]  ·L1512: A failed run's stderr: every line of the report opening with `FAIL `, then the count.
+- _keyed_lines(message: str, config_error: bool) -> list[tuple[str | None, str]]  ·L1531: Each line of a failed run's message with the key it counts under, None for a continuation.
+- failure_lines(message: str, config_error: bool) -> list[str]  ·L1547: The failures of a failed run, one string each, as `failure_report` counts them.
+- main(argv: list[str] | None=None) -> int  ·L1562
 
 ### mdept/comments.py
 _File the comment issues of the private tracker into the private inbox, one file each._

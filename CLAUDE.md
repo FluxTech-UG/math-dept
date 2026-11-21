@@ -190,7 +190,8 @@ Underneath those:
   it belongs to a session in `math-dept-private`.
 - `python -m mdept.check --entry MD_0007 [--entry ...]` is one entry's gate while other
   sessions share the checkout: every invariant over the named entries and their own
-  files, other entries' files ignored (the module docstring has the rules).
+  files, other entries' files ignored, I16 and I23 left to the full run (the module
+  docstring has the rules). I23 (public text) also skips in the private repo's run.
 - `python -m mdept.inbox_status` (run in `math-dept-private`) prints an inbox run's
   measure, `new=<n> closable_open=<n> entries_without_current_fidelity=<n>
   check_fails=<n> later_day_owed=<n>`, then the names behind each nonzero count (the

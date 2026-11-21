@@ -39,8 +39,9 @@ Modes:
   tracked or untracked; a file on an entry surface that belongs to no entry of
   either ledger is still reported, since only the running session can own it.
   I13 and I14 check the requests that name a scoped entry. I16 (the generated
-  views, rendered from the whole ledger) is skipped and left to the full run.
-  `--entry` excludes `--family` and `--lean`, which read the whole family and
+  views, rendered from the whole ledger) is skipped and left to the full run,
+  and so is I23 (public text, which reads every file). The private repo's run
+  skips I23 too: it guards what the public repo publishes. `--entry` excludes `--family` and `--lean`, which read the whole family and
   a digest over every Lean source.
 
 Two scoping decisions worth knowing before reading the code:
@@ -106,7 +107,7 @@ EM_DASH_EXCLUDE = ("tests/fixtures", *QUOTED_SURFACES)
 #: that owns its own header.
 ROLE_LINE_SURFACES = ("docs", "proofs", "triage")
 
-#: I23 reads every tracked text file for these words: the names of the private
+#: I23 reads every tracked or new (untracked, not ignored) text file for these words, in any case: the names of the private
 #: working setup of the machine this repo is worked on, which public text never
 #: carries. The list lives here alone, so this file is exempt by path, and so is
 #: `tests/fixtures`, whose I23 case plants one of the words on purpose.
@@ -1218,7 +1219,8 @@ def i22_fidelity_after_statement(ctx: Context) -> None:
 
 
 def _public_text_files(root: Path) -> list[Path]:
-    """The files I23 reads: git's tracked files when `root` is a checkout's top, else a walk.
+    """The files I23 reads: git's tracked and untracked-but-not-ignored files when `root`
+    is a checkout's top (so a new file is read before it is added), else a walk.
 
     A tree that is not a checkout (a test fixture, an exported tarball) is walked,
     skipping `parse.IGNORE_DIRS`, the way `family` walks such a consumer. A tracked
@@ -1229,7 +1231,8 @@ def _public_text_files(root: Path) -> list[Path]:
     top = subprocess.run(["git", "-C", str(root), "rev-parse", "--show-toplevel"],
                          capture_output=True, text=True, check=False)
     if top.returncode == 0 and Path(top.stdout.strip()).resolve() == root:
-        listed = subprocess.run(["git", "-C", str(root), "ls-files", "-z", "--cached"],
+        listed = subprocess.run(["git", "-C", str(root), "ls-files", "-z", "--cached",
+                                 "--others", "--exclude-standard"],
                                 capture_output=True, check=False)
         if listed.returncode != 0:
             raise CheckError(violation("I23 public text", root, "<files>",
@@ -1246,8 +1249,8 @@ def _public_text_files(root: Path) -> list[Path]:
 def i23_public_text(ctx: Context) -> None:
     """Public run: no tracked text file names the private working setup (`PRIVATE_MACHINERY`).
 
-    A file with a NUL byte is binary and is not read, as `git grep -I` has it. Every
-    hit is reported as `path:line`. The private repo and a scoped run skip it: the
+    A file with a NUL byte is binary and is not read, as `git grep -I` has it. The
+    match ignores case. Every hit is reported as `path:line`. The private repo and a scoped run skip it: the
     rule guards what the public repo publishes, and the full run reads every file.
     """
     if ctx.private or ctx.scoped:
@@ -1267,7 +1270,8 @@ def i23_public_text(ctx: Context) -> None:
                                         f"a text file that is not UTF-8 cannot be checked ({exc})"))
             continue
         for number, line in enumerate(text.splitlines(), start=1):
-            named = [word for word in PRIVATE_MACHINERY if word in line]
+            lowered = line.lower()
+            named = [word for word in PRIVATE_MACHINERY if word.lower() in lowered]
             if named:
                 violations.append(violation(
                     "I23 public text", f"{rel}:{number}", "<private machinery>",

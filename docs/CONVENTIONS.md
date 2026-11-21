@@ -145,10 +145,12 @@ file for U+2014 and fails on the first hit. The one exception is quoted text: th
 I17 nor I12 reads it (`QUOTED_SURFACES` in `mdept/check.py`).
 
 The repo is public, so no tracked text file names the private working setup of the
-machine it is worked on (its hook, mod and tool names). I23 reads every tracked text
-file of the public repo for the words of `PRIVATE_MACHINERY` in `mdept/check.py`, the
-one place they are written, and reports every hit as `path:line`; that file and
-`tests/fixtures` are exempt by path, and the private repo's run skips it.
+machine it is worked on (its hook, mod and tool names). I23 reads every tracked or
+untracked-but-not-ignored text file of the public repo for the words of
+`PRIVATE_MACHINERY` in `mdept/check.py`, the one place they are written, in any case,
+and reports every hit as `path:line`; that file and `tests/fixtures` are exempt by
+path. The private repo's run and a scoped run (`--entry`) skip it, as a scoped run
+skips I16: it guards what the public repo publishes, and it reads every file.
 
 LaTeX is written to be readable as source, since most readers of this repo read the
 markdown and not a renderer. State only the current state: an entry says what is known
@@ -175,7 +177,7 @@ repo listed in `repos.yaml` by path that is absent fails the family check; it ne
 `--entry MD_0007` (repeatable) is the scoped run, one entry's gate while other sessions
 share the checkout: every invariant over the named entries and the files that belong to
 them, other entries' files ignored, a file that belongs to no entry still reported, I16
-left to the full run; it excludes `--family` and `--lean`.
+and I23 left to the full run; it excludes `--family` and `--lean`.
 
 `python -m mdept.inbox_status`, run in the private repo, prints an inbox run's measure on
 one line, `new=<n> closable_open=<n> entries_without_current_fidelity=<n> check_fails=<n>
