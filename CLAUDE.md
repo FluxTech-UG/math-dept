@@ -161,7 +161,7 @@ never be the evidence that settles one.
 | `make regen` | Rewrites the generated views: `ledger/INDEX.md`, `ledger/CATALOG.md`, `ledger/EDGES.tsv`, `ledger.json`, `MathDept.lean`, `docs/MAP.md`. |
 | `make lean` | `lake build`, then the axiom audit, cached to `audit/latest.json`. |
 | `make counterexamples` | Loads and verifies every script in `counterexamples/`. |
-| `make test` | The pytest suite, which is the one command that covers all guards. |
+| `make test` | The pytest suite: the axiom audit of the real Lean results, every counterexample witness, the validator's refusals of a status without its support, a drifted statement and private words in public text, and a release that keeps private provenance private. |
 | `make site` | Builds the reading site into `build/site/` (gitignored); the `site` workflow publishes it to GitHub Pages on every push to `main`. |
 | `make figures` | Redraws `figures/MD_####.svg` from every counterexample script that carries `--svg`; commit the result. |
 

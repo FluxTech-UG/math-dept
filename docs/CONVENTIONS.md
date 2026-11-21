@@ -77,10 +77,9 @@ write stays inside the repo it belongs to.
 `sorry` appears only under `MathDept/Conjectures/`. `MathDept/Results/`,
 `MathDept/Defs/` and `MathDept/Smoke.lean` are axiom-audited: their declarations use
 only `propext`, `Classical.choice` and `Quot.sound`, plus per-declaration exceptions
-listed in `audit/axiom-allowlist.txt` (one `<decl> <axiom>` line each). Three layers
+listed in `audit/axiom-allowlist.txt` (one `<decl> <axiom>` line each). Two layers
 enforce this: I20 and `python -m mdept.audit sorry` grep the token without needing
-Lean, `tests/test_sorry_scope.py` runs that guard, and `scripts/AxiomAudit.lean` under
-`make lean` catches `sorryAx` propagating out of a conjecture and a `native_decide` axiom
+Lean, and `scripts/AxiomAudit.lean` under `make lean` and `make test` catches `sorryAx` propagating out of a conjecture and a `native_decide` axiom
 arriving from `native_decide`.
 
 ## Lean file conventions
@@ -92,7 +91,8 @@ Imports are targeted (`import Mathlib.Data.Real.Basic`, not the whole library);
 `import Mathlib` appears only in `MathDept/Smoke.lean`. `autoImplicit = false` is set
 once in `lakefile.toml`. `python -m mdept.audit sorry` checks the namespace, the
 `^MD_\d{4}$` stem, and that no stem lives in both `Conjectures/` and `Results/`;
-`tests/test_root_fresh.py` checks that the generated root imports every module.
+`python scripts/gen_root.py --check` (in `make check`) checks that the generated root
+imports every module.
 
 ## Provenance is mandatory, and public provenance is abstract
 

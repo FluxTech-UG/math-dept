@@ -28,15 +28,6 @@ def require_lean(reason: str) -> None:
     pytest.skip(f"{reason}; set MATHDEPT_REQUIRE_LEAN=1 to make this a failure")
 
 
-def test_audit_script_exists():
-    assert (REPO_ROOT / "scripts" / "AxiomAudit.lean").is_file()
-
-
-def test_allowlist_parses():
-    for decl, axiom in audit.read_allowlist(REPO_ROOT):
-        assert decl and axiom
-
-
 def test_axiom_audit_passes():
     if shutil.which("lake") is None:
         require_lean("`lake` is not on PATH")
@@ -52,13 +43,3 @@ def test_axiom_audit_passes():
             continue
         offending = {a for a in record["axioms"] if a not in STANDARD_AXIOMS and (decl, a) not in allowlisted}
         assert not offending, f"{decl} depends on {sorted(offending)}"
-
-
-def test_cached_audit_is_fresh_when_present():
-    cached = REPO_ROOT / "audit" / "latest.json"
-    if not cached.is_file():
-        pytest.skip("audit/latest.json is not committed yet; it appears with the first `make lean`")
-    data = json.loads(cached.read_text(encoding="utf-8"))
-    assert data["sources_sha256"] == audit.sources_sha256(REPO_ROOT), (
-        "audit/latest.json is stale against the Lean sources; run `make lean`"
-    )

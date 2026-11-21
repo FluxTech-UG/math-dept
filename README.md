@@ -82,7 +82,7 @@ math-dept/
   scripts/                 AxiomAudit.lean and the generated-root writer
   audit/                   the axiom allowlist and the cached audit JSON
   docs/                    protocol.md, triage.md, CONVENTIONS.md, MAP.md
-  tests/                   pytest: the one command that runs every guard
+  tests/                   pytest: axiom audit, witnesses, validator refusals, release
 ```
 
 ## The Lean side

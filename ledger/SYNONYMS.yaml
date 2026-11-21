@@ -2,7 +2,7 @@
 # and the phrase the ledger uses for the same thing. A query carrying the consumer
 # phrase is ranked as if it carried either one (`mdept.words.expand`). Abstract
 # mathematics only: this file is public. Every ledger phrase is one the ledger's
-# own entries use; `tests/test_search.py` checks that on the real ledger.
+# own entries use.
 pairs:
   # Periodic orbits and their linearisation.
   - {consumer: floquet matrix, ledger: monodromy}
