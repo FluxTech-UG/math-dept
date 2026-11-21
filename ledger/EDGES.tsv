@@ -14,7 +14,6 @@ MD_0017	cited_by	1DSim3:twe/sources/pore_cell.py
 MD_0017	cited_by	1DSim4:configs/tables/disc_from_onepore.json
 MD_0017	cited_by	1DSim4:docs/design/21-bed-one-pore.md
 MD_0017	cited_by	1DSim4:scripts/make_disc_table.py
-MD_0017	cited_by	1DSim4:tests/test_onepore.py
 MD_0017	cited_by	1DSim4:twe4/config/blocks/__init__.py
 MD_0017	cited_by	1DSim4:twe4/sources/regenerator/pore.py
 MD_0017	cited_by	MesoSim1:mesosim/linear/cell.py
@@ -69,7 +68,6 @@ MD_0070	cited_by	1DSim4:docs/STATUS.md
 MD_0070	cited_by	1DSim4:docs/design.md
 MD_0070	cited_by	1DSim4:docs/design/14-test-regime.md
 MD_0070	cited_by	1DSim4:docs/design/21-bed-one-pore.md
-MD_0070	cited_by	1DSim4:tests/test_onepore.py
 MD_0070	cited_by	1DSim4:twe4/sources/regenerator/onepore.py
 MD_0070	cited_by	1DSim4:twe4/sources/regenerator/stieltjes.py
 MD_0070	cited_by	MesoSim1:docs/design.md
