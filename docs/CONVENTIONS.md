@@ -3,7 +3,7 @@
 
 Repo-specific rules only; each names what enforces it. A rule with no command behind
 it is an intention, not a convention. Enforcement is `python -m mdept.check`
-(invariants I1 to I22), the Lean guards reached through `make lean`, and `tests/`. The
+(invariants I1 to I23), the Lean guards reached through `make lean`, and `tests/`. The
 flow these rules serve is `docs/protocol.md`.
 
 ## Role line
@@ -144,6 +144,12 @@ file for U+2014 and fails on the first hit. The one exception is quoted text: th
 `inbox/comments/` holds tracker comments filed verbatim by `mdept.comments`, and neither
 I17 nor I12 reads it (`QUOTED_SURFACES` in `mdept/check.py`).
 
+The repo is public, so no tracked text file names the private working setup of the
+machine it is worked on (its hook, mod and tool names). I23 reads every tracked text
+file of the public repo for the words of `PRIVATE_MACHINERY` in `mdept/check.py`, the
+one place they are written, and reports every hit as `path:line`; that file and
+`tests/fixtures` are exempt by path, and the private repo's run skips it.
+
 LaTeX is written to be readable as source, since most readers of this repo read the
 markdown and not a renderer. State only the current state: an entry says what is known
 now, and dated attempts live in the private `triage/` record.
@@ -251,4 +257,5 @@ a git checkout is scanned over its tracked and untracked-but-not-ignored files; 
 gitignores never reaches its history and is not a citation surface. I22 every `statement`
 row of an attempt record (an edit to the Statement or its Hypotheses) has a later
 `fidelity` row in the same table, table order being the order; a legacy stage of several
-words (`fidelity (steps 2 to 4)`) is read by its first word.
+words (`fidelity (steps 2 to 4)`) is read by its first word. I23 no tracked text file of
+the public repo names the private working setup (Prose, above).

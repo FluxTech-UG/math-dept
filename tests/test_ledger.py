@@ -81,6 +81,8 @@ CASES = [
     Case("I20_sorry_in_results", "good_public", "I20 sorry fence", PLAIN),
     Case("I21_unlisted_citation", "good_private", "I21 unlisted citation", FAMILY),
     Case("I22_fidelity_stale", "good_private", "I22 fidelity", PLAIN),
+    Case("I23_private_machinery", "good_public", "I23 public text", PLAIN,
+         rule="docs/notes.md:5"),
 ]
 
 
@@ -389,14 +391,14 @@ def test_a_view_of_an_archived_consumer_is_refused(tmp_path):
 
 def test_every_invariant_has_a_case():
     covered = {case.invariant.split()[0] for case in CASES}
-    expected = {f"I{n}" for n in range(1, 23)}
+    expected = {f"I{n}" for n in range(1, 24)}
     expected.discard("I9")
     expected.add("I9a")
     assert covered == expected
 
 
 def test_the_invariant_list_is_the_one_that_runs():
-    assert len(check.INVARIANTS) == 23
+    assert len(check.INVARIANTS) == 24
 
 
 # --- one break per invariant ------------------------------------------------
