@@ -112,6 +112,10 @@ def prepare(tmp_path: Path, monkeypatch) -> tuple[Path, Path]:
 
 def test_release_lands_the_entry_and_both_repos_still_validate(tmp_path, monkeypatch):
     public, private = prepare(tmp_path, monkeypatch)
+    before, _, _ = parse.load_front_matter(private / "ledger" / f"{ENTRY}.md")
+    private_fields = {field: before["provenance"]["raised_by"][field]
+                      for field in ("doc", "anchor", "application")}
+    assert all(private_fields.values()), "the fixture must carry every private field to show it is dropped"
     plan = release.release(ENTRY, public, private)
 
     assert (public / "ledger" / f"{ENTRY}.md").is_file()
@@ -123,7 +127,15 @@ def test_release_lands_the_entry_and_both_repos_still_validate(tmp_path, monkeyp
     landed, _, _ = parse.load_front_matter(public / "ledger" / f"{ENTRY}.md")
     assert landed["formal"]["file"] == LEAN_PUBLIC
     assert landed["evidence"] == [{"kind": "experiment", "path": LEAN_PUBLIC}]
-    assert landed["provenance"]["raised_by"]["doc"] is None
+    for field in private_fields:
+        assert landed["provenance"]["raised_by"][field] is None, f"raised_by.{field} reached the public entry"
+    # Nor may the private text land anywhere else in the public repo (a view, the body).
+    # The anchor's value (`T1`) is too short to search for; the front check above covers it.
+    for field in ("doc", "application"):
+        needle = private_fields[field].encode("utf-8")
+        leaks = [path.relative_to(public).as_posix() for path in sorted(public.rglob("*"))
+                 if path.is_file() and needle in path.read_bytes()]
+        assert not leaks, f"raised_by.{field} ({private_fields[field]!r}) reached the public repo in {leaks}"
 
     assert len(plan["checks"]) == 2
     check.run(public, lean=True)

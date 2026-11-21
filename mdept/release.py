@@ -27,7 +27,9 @@ that does not resolve is a dead pointer. The release refuses only when the publi
 front would then fail the public schema or I4: no settling `proof` row left for a
 proven-informal entry, no `counterexample` row left for a refuted one. What
 survives is `repo`, a one-line neutral `domain`, and the who/date/model credit
-trail, which is the point of recording provenance at all.
+trail, which is the point of recording provenance at all. The body moves as
+written, so a body that quotes the dropped document path or reasoning refuses
+the release: once the public repo is pushed, published text cannot be taken back.
 
 Several IDs release as one batch. A batch moves every entry, regenerates each
 repo once, re-runs the Lean audit once in each repo whose Lean sources changed,
@@ -71,6 +73,11 @@ PRIVATE_LIB_PREFIX = "MathDeptPrivate/"
 PUBLIC_LIB_PREFIX = "MathDept/"
 
 PRIVATE_MODULE_PREFIX = "MathDeptPrivate."
+
+#: The private provenance fields whose value a released entry's body may not quote. An
+#: anchor (`A8`, `§12`) is a short handle that ordinary mathematical prose repeats, so it is
+#: left to the front-matter check (the public schema) alone.
+BODY_SEARCHED_KEYS = tuple(key for key in schema.RAISED_BY_PRIVATE_KEYS if key != "anchor")
 
 #: A Lean `import` line: the rest of the line names one or more modules, then
 #: perhaps a `--` comment.
@@ -131,9 +138,7 @@ def abstract_provenance(front: dict) -> dict:
         public["provenance"]["raised_by"] = {
             "repo": raised_by["repo"],
             "domain": raised_by["domain"],
-            "doc": None,
-            "anchor": None,
-            "application": None,
+            **{key: None for key in schema.RAISED_BY_PRIVATE_KEYS},
         }
     # Private-only rows are dropped; every surviving row follows its file across.
     # A row left pointing at MathDeptPrivate/ would be a dead pointer the moment
@@ -297,7 +302,7 @@ def release(entry_ids, public: Path, private: Path, dry_run: bool = False) -> di
 
     # Everything knowable before the first byte moves. A dry run gets the same
     # answer as a real one, which is the point of having a dry run.
-    preflight(entries, fronts, moves, public)
+    preflight(entries, fronts, bodies, moves, public)
     if dry_run:
         return plan
 
@@ -354,20 +359,31 @@ def render_entry(front: dict, body: str) -> str:
     return f"---\n{dumped}\n---\n{body}"
 
 
-def preflight(entries: list, fronts: dict, moves: list, public: Path) -> None:
+def preflight(entries: list, fronts: dict, bodies: dict, moves: list, public: Path) -> None:
     """Refuse a release that cannot land, before anything moves.
 
-    Four questions, in the order that makes the error most useful: does each
-    rewritten entry satisfy the PUBLIC schema, is every source still there, is
+    Five questions, in the order that makes the error most useful: does each
+    rewritten entry satisfy the PUBLIC schema (which refuses a private provenance
+    field left set), does its body quote the value of a private provenance field
+    (the application's document or its reasoning), is every source still there, is
     every destination free, and will every path a public entry names resolve
     once the moves are done. An ID a released file links to or mentions is not
     asked about: the public repo reads one it holds no entry for as unreleased,
-    held in the private ledger (`family.held`). Before all four, the map tool a real run regenerates `docs/MAP.md` with must
+    held in the private ledger (`family.held`). Before all five, the map tool a real run regenerates `docs/MAP.md` with must
     be on PATH, so a dry run fails where a real run would.
     """
     _require_outline()
     for entry in entries:
         schema.validate_front(fronts[entry.id], f"ledger/{entry.id}.md", "public")
+        raised_by = entry.front["provenance"]["raised_by"] or {}
+        for key in BODY_SEARCHED_KEYS:
+            value = raised_by.get(key)
+            if value and value in bodies[entry.id]:
+                raise CheckError(
+                    f"I23 public text: ledger/{entry.id}.md: field 'provenance.raised_by.{key}': "
+                    f"the body quotes {value!r}, which stays private; a public entry would publish it. "
+                    "Reword the body. Nothing has been moved."
+                )
 
     seen_destinations: set[Path] = set()
     for source, destination in moves:

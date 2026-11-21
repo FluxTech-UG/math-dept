@@ -151,6 +151,8 @@ PROVENANCE_KEYS = ("raised_by", "stipulated_by", "settled_by", "connects")
 RAISED_BY_KEYS = ("repo", "domain", "doc", "anchor", "application")
 #: Only these survive a release. The rest describe the application and stay private.
 RAISED_BY_PUBLIC_KEYS = ("repo", "domain")
+#: The application's document, its anchor and the reasoning: null in every public entry.
+RAISED_BY_PRIVATE_KEYS = tuple(key for key in RAISED_BY_KEYS if key not in RAISED_BY_PUBLIC_KEYS)
 STIPULATED_BY_KEYS = ("who", "date", "model", "request")
 SETTLED_BY_KEYS = ("who", "date", "how", "checked_by", "model")
 EVIDENCE_KEYS = ("kind", "path")
@@ -443,7 +445,7 @@ def _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None:
     if not isinstance(raised_by["domain"], str) or not raised_by["domain"].strip():
         _fail(path, "provenance.raised_by.domain", "one neutral line describing the domain is required")
     if kind == "public":
-        for field in ("doc", "anchor", "application"):
+        for field in RAISED_BY_PRIVATE_KEYS:
             if raised_by[field] is not None:
                 _fail(
                     path,
@@ -452,7 +454,7 @@ def _validate_raised_by(raised_by, status: str, path: Path, kind: str) -> None:
                     "the application's doc, anchor and rationale stay private",
                 )
     else:
-        for field in ("doc", "anchor", "application"):
+        for field in RAISED_BY_PRIVATE_KEYS:
             value = raised_by[field]
             if value is not None and (not isinstance(value, str) or not value.strip()):
                 _fail(path, f"provenance.raised_by.{field}", "must be null or a non-empty string")

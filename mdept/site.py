@@ -509,7 +509,7 @@ def _provenance(ledger: Ledger, entry) -> list[str]:
         raised = prov["raised_by"]
         rows.append(("raised by", f"{raised['repo']}: {raised['domain']}"))
         if ledger.private:
-            for key in ("doc", "anchor", "application"):
+            for key in schema.RAISED_BY_PRIVATE_KEYS:
                 if raised[key]:
                     rows.append((key, str(raised[key])))
         shown = schema.STIPULATED_BY_KEYS if ledger.private else tuple(
