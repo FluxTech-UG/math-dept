@@ -76,7 +76,9 @@ PRIVATE_MODULE_PREFIX = "MathDeptPrivate."
 
 #: The private provenance fields whose value a released entry's body may not quote. An
 #: anchor (`A8`, `§12`) is a short handle that ordinary mathematical prose repeats, so it is
-#: left to the front-matter check (the public schema) alone.
+#: left to the front-matter check (the public schema) alone. Measured on 21 November 2026
+#: over the 170 private entries: no body quoted its doc or application, 59 bodies held
+#: their anchor's text.
 BODY_SEARCHED_KEYS = tuple(key for key in schema.RAISED_BY_PRIVATE_KEYS if key != "anchor")
 
 #: A Lean `import` line: the rest of the line names one or more modules, then

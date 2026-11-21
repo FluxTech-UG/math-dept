@@ -135,7 +135,9 @@ preflight without moving anything. A release:
   `Results/`);
 - abstracts provenance: keeps `raised_by.repo`, adds a one-line neutral `domain`,
   drops `doc`, `anchor` and `application`. `stipulated_by` and `settled_by` cross
-  intact, because they are the credit trail;
+  intact, because they are the credit trail. The body crosses as written, so an
+  entry whose body quotes its `doc` path or its `application` text is refused
+  before anything moves;
 - drops an evidence row that is private by kind (`triage`) or by path (`sources/`,
   `triage/`, whatever the row's kind), and refuses only when the entry would then
   fail the public schema or I4: a proven-informal entry left without its
