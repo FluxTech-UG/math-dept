@@ -57,6 +57,7 @@ the hypotheses it actually uses.
 | `proofs/` | Informal proofs, each with a Formalization blockers section. |
 | `MathDept/` | Lean: `Defs/` (shared definitions), `Results/` (settled), `Conjectures/` (`sorry` allowed), `Smoke.lean`. |
 | `.claude/skills/{prove,refute,math-extract,lean-review}/` | The working procedures for each job. |
+| `.claude/skills/math-rounds/` | The entry point of a math run: the worklist of what is open, put to John, then handed to `math-orchestration`. |
 | `docs/MAP.md` | Generated file map (`repo-outline`). Read it to find a symbol. |
 | `mdept/anchors.py` | The anchor grammar: what a provenance anchor may say and how it resolves. |
 | `mdept/family.py` | Where the department is, seen from anywhere: both ledgers and the listed consumers. |
@@ -194,9 +195,12 @@ Underneath those:
   docstring has the rules). I23 (public text) also skips in the private repo's run.
 - `python -m mdept.inbox_status` (run in `math-dept-private`) prints an inbox run's
   measure, `new=<n> closable_open=<n> entries_without_current_fidelity=<n>
-  check_fails=<n> later_day_owed=<n>`, then the names behind each nonzero count (the
-  module docstring defines them; `later_day_owed` names each conjectured entry with a
-  proof that owes its later-day check, the first day it may run and the settle date).
+  check_fails=<n> later_day_owed=<n> unsettled=<n> parked=<n>`, then the names behind
+  each nonzero count (the module docstring defines them; `later_day_owed` names each
+  conjectured entry with a proof that owes its later-day check, the first day it may run
+  and the settle date; the last two lines split the open and conjectured entries that are
+  not proof-owed into `unsettled` and `parked` by their attempt days since the last
+  statement edit or unpark, each with its last attempt and its minutes and tokens spent).
 - `python -m mdept.index --check` regenerates the views in memory and fails on drift.
 - `python -m mdept.audit all --json` is the contract the validator consumes: sorry scan,
   per-declaration axioms and pretty-printed types, counterexample results.

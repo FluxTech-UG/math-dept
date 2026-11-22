@@ -366,12 +366,18 @@ STATEMENT_STAGE = "statement"
 FIDELITY_STAGE = "fidelity"
 
 
+#: A cell boundary is a bar with no backslash before it; `\|` is a bar inside a cell
+#: (a norm, an absolute value), as markdown tables have it.
+_CELL_SPLIT_RE = re.compile(r"(?<!\\)\|")
+
+
 def table_cells(line: str) -> list[str] | None:
-    """A markdown table line's cells, stripped, or None when the line is no table row."""
+    """A markdown table line's cells, stripped, an escaped bar `\\|` read as a bar, or None
+    when the line is no table row."""
     body = line.strip()
     if not (body.startswith("|") and body.endswith("|")) or len(body) < 2:
         return None
-    return [cell.strip() for cell in body[1:-1].split("|")]
+    return [cell.strip().replace("\\|", "|") for cell in _CELL_SPLIT_RE.split(body[1:-1])]
 
 
 def attempts_table(lines: list[str], where: str) -> tuple[int, int]:
@@ -406,8 +412,8 @@ def attempt_stages(path: Path, where: str) -> list[str]:
     return [table_cells(line)[1] for line in lines[head + 2:end + 1]]
 
 
-def attempt_rows(path: Path, where: str) -> list[tuple[datetime.date, str]]:
-    """(date, stage word) of every row of a record's attempts table, in table order.
+def attempt_rows(path: Path, where: str) -> list[tuple[datetime.date, str, str, str]]:
+    """(date, stage word, Showed cell, Time cell) of every row of a record's attempts table, in table order.
 
     A Date cell that is not an ISO calendar date is refused, naming `where` and the cell.
     """
@@ -422,7 +428,7 @@ def attempt_rows(path: Path, where: str) -> list[tuple[datetime.date, str]]:
             day = datetime.date.fromisoformat(cells[0])
         except ValueError as exc:
             raise CheckError(f"{where}:{number}: field 'Date': {cells[0]!r} is not a real calendar date ({exc})") from exc
-        rows.append((day, _stage_word(cells[1])))
+        rows.append((day, _stage_word(cells[1]), cells[3], cells[-2]))
     return rows
 
 
@@ -430,7 +436,7 @@ def _stage_word(stage: str) -> str:
     # Rows written before `mdept.row` held a stage to one word carry forms such as
     # `fidelity (steps 2 to 4)`; the first word is the stage.
     words = stage.split()
-    return words[0] if words else ""
+    return words[0].rstrip(",;:.") if words else ""
 
 
 def stale_statement_row(stages: list[str]) -> int | None:

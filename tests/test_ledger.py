@@ -47,6 +47,8 @@ CASES = [
     Case("I05_statement_hash_drift", "good_public", "I5 formal pointer", LEAN),
     Case("I23_private_machinery", "good_public", "I23 public text", PLAIN,
          rule="docs/notes.md:5"),
+    Case("I23_unreleased_id", "good_public", "I23 public text", PLAIN,
+         rule="<unreleased id>"),
 ]
 
 

@@ -20,9 +20,10 @@ row lands under the table's last row; every other byte of the record stays.
 
 Every row is validated before any file is written, and any problem writes nothing:
 an ID that is not `MD_####`, a record that does not exist, a record without exactly
-one attempts table, an empty field, a field holding a pipe, a newline or an em dash,
+one attempts table, an empty field, a field holding a newline or an em dash,
 a stage that is not one word (`STAGE_RE`), or a date that is not a real ISO date.
-Each row written prints `row MD_0007 S3`.
+A vertical bar in a field is written as `\\|`, so a norm or an absolute value goes
+through. Each row written prints `row MD_0007 S3`.
 
 `--check` is the dry run, with either form: it applies every refusal above, the
 existing record included, writes nothing, and prints `ok <n> rows would be written`
@@ -49,10 +50,8 @@ FIELDS = ("stage", "tried", "showed", "time", "model")
 # A stage is one word: a ladder rung (S0 to S4) or a step such as fidelity or review.
 STAGE_RE = re.compile(r"^\S+$")
 #: Each character a cell cannot carry, how a refusal names it, and the fix it names.
-_PIPE_FIX = "write an absolute value or a divisibility in words ('the absolute value of x', 'a divides b')"
 _NEWLINE_FIX = "write the field on one line"
 FORBIDDEN = (
-    ("|", "a pipe", _PIPE_FIX),
     ("\n", "a newline", _NEWLINE_FIX),
     ("\r", "a newline", _NEWLINE_FIX),
     ("\u2014", "an em dash", "use a period, a comma, a colon or parentheses"),
@@ -71,7 +70,10 @@ class Row:
     where: str  # names the row in a refusal: the command line, or a batch block
 
     def render(self, date: str) -> str:
-        cells = (date, self.stage, self.tried, self.showed, self.time, self.model)
+        # A bar in a field (a norm, an absolute value) is written escaped, the form
+        # `parse.table_cells` reads back as a bar; a field that already escapes it stays.
+        cells = tuple(cell.replace("\\|", "|").replace("|", "\\|") for cell in
+                      (date, self.stage, self.tried, self.showed, self.time, self.model))
         return "| " + " | ".join(cells) + " |\n"
 
 

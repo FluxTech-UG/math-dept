@@ -124,6 +124,15 @@ PRIVATE_MACHINERY = (
     "cache-keeper",
 )
 PUBLIC_TEXT_EXEMPT = ("mdept/check.py", "tests/fixtures")
+#: I23 also reads the repo's code, skills and documents for a statement number with no
+#: entry in this ledger: an unreleased entry's number written into tooling text. Ledger
+#: entries, proofs, Lean files and counterexamples cite unreleased siblings on purpose and
+#: are not read for it, and `docs/MAP.md` is generated from them. The sample numbers the
+#: documents use as their examples, MD_0000 to MD_0009, pass.
+PUBLIC_ID_SURFACES = ("mdept", "scripts", ".claude", "docs", "tests", "CLAUDE.md", "README.md")
+PUBLIC_ID_EXEMPT = ("docs/MAP.md",)
+PUBLIC_ID_SAMPLE_MAX = 9
+_PUBLIC_ID_RE = re.compile(r"MD_(\d{4})(?!\d)")
 
 STANDARD_AXIOMS = ("propext", "Classical.choice", "Quot.sound")
 
@@ -1249,6 +1258,9 @@ def _public_text_files(root: Path) -> list[Path]:
 def i23_public_text(ctx: Context) -> None:
     """Public run: no tracked text file names the private working setup (`PRIVATE_MACHINERY`).
 
+    The code, skills and documents (`PUBLIC_ID_SURFACES`) also name no statement number
+    without an entry in this ledger, the sample numbers excepted.
+
     A file with a NUL byte is binary and is not read, as `git grep -I` has it. The
     match ignores case. Every hit is reported as `path:line`. The private repo and a scoped run skip it: the
     rule guards what the public repo publishes, and the full run reads every file.
@@ -1256,10 +1268,16 @@ def i23_public_text(ctx: Context) -> None:
     if ctx.private or ctx.scoped:
         return
     violations: list[str] = []
+    released = {entry.id for entry in ctx.entries}
+
+    def under(rel: str, prefixes: tuple[str, ...]) -> bool:
+        return any(rel == p or rel.startswith(p + "/") for p in prefixes)
+
     for path in _public_text_files(ctx.root):
         rel = ctx.rel(path)
-        if any(rel == p or rel.startswith(p + "/") for p in PUBLIC_TEXT_EXEMPT):
+        if under(rel, PUBLIC_TEXT_EXEMPT):
             continue
+        read_ids = under(rel, PUBLIC_ID_SURFACES) and not under(rel, PUBLIC_ID_EXEMPT)
         data = path.read_bytes()
         if b"\0" in data:
             continue
@@ -1277,6 +1295,17 @@ def i23_public_text(ctx: Context) -> None:
                     "I23 public text", f"{rel}:{number}", "<private machinery>",
                     f"names {', '.join(repr(w) for w in named)}, the private working setup of the "
                     "machine this repo is worked on; public text never carries it"))
+            if not read_ids:
+                continue
+            unreleased = sorted({f"MD_{m.group(1)}" for m in _PUBLIC_ID_RE.finditer(line)
+                                 if int(m.group(1)) > PUBLIC_ID_SAMPLE_MAX
+                                 and f"MD_{m.group(1)}" not in released})
+            if unreleased:
+                violations.append(violation(
+                    "I23 public text", f"{rel}:{number}", "<unreleased id>",
+                    f"names {', '.join(unreleased)}, which has no entry in this ledger; code, "
+                    "skills and documents here name a released entry or a sample number "
+                    f"(MD_0000 to MD_{PUBLIC_ID_SAMPLE_MAX:04d})"))
     if violations:
         raise collected(violations)
 

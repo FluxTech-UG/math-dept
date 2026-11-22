@@ -39,6 +39,7 @@ another.
 | Stieltjes representations and bounds for two-component media | The effective coefficient of a two-component random medium as a Stieltjes transform of a positive measure on [0, 1]; its range of values over measures with prescribed moments, bounded by circular arcs; Padé approximants to Stieltjes series | moment problems, Chebyshev systems, Herglotz functions, rational approximation of Stieltjes functions | `GoldenPapanicolaou1983`, `Milton1981`, `BakerGravesMorris1996` |
 | Regular Sturm-Liouville problems | Separated boundary conditions on a compact interval; simple eigenvalues accumulating only at infinity with an orthonormal eigenbasis; ordering, lowest eigenvalue and zero count by Prüfer angles | compact symmetric operators, Green functions, Rayleigh quotients | `Teschl2012` |
 | Classical maximum principles and potential theory | The Hopf boundary point lemma and the strong maximum principle for non-divergence elliptic operators with first-order terms; the mean value property and its converse for continuous functions; C^2 regularity of the Newtonian potential of a bounded Hölder density | harmonic functions, Poisson integral, fundamental solution of the Laplacian | `GuerraOrriols2026`, `Viaclovsky2004` |
+| Stokes operator and Helmholtz projection | The Helmholtz decomposition of Bessel potential spaces on bounded Lipschitz domains, the divergence-free Stokes scale, domains of fractional powers of the Stokes operator with equivalent norms; the L^2 commutator estimate of the Laplacian and the Helmholtz projection for no-slip fields on smooth bounded domains, its sharp half-space constant, and the Stokes pressure as a harmonic Neumann solution | Lipschitz domains, complex interpolation, analytic semigroups, divergence equation | `MitreaMonniaux2008`, `LiuLiuPego2007` |
 
 ## Entries
 
@@ -356,4 +357,20 @@ Entry format. Copy this shape, uncommented, under a topic heading:
 - **Kind:** notes
 - **Used for:** C^2 regularity of the Newtonian potential of a bounded locally Hölder density, and harmonicity of a continuous function with the mean value property
 - **Mathlib:** `InnerProductSpace.HarmonicOnNhd.circleAverage_eq` (rev 0df444a3, forward direction only); converse mean value property, Newtonian potential: none found, searched 2026-11-13
+- **Ledger:** none yet
+
+### [MitreaMonniaux2008] The regularity of the Stokes operator and the Fujita-Kato approach to the Navier-Stokes initial value problem in Lipschitz domains
+- **Authors:** Mitrea, M.; Monniaux, S.
+- **Source:** J. Funct. Anal. 254, 1522-1574 (2008). DOI 10.1016/j.jfa.2007.11.021. (2.1)-(2.5) pp. 1528-1529; (2.14) p. 1529; Prop 2.10 (2.88) p. 1539; Cor 2.11 (2.91) p. 1540; Prop 2.16 (2.115)-(2.120) p. 1543; Remark 3 p. 1544; (4.35)-(4.38) p. 1550; Def 4.6, Thm 4.7 p. 1552; Thm 5.1 p. 1555; Cor 5.2 (5.7), (5.8) p. 1556. Copy read: https://www.i2m.univ-amu.fr/perso/sylvie.monniaux/_media/publis:2008jfa.pdf, 2026-11-22 (pp. 1522-1559)
+- **Kind:** paper
+- **Used for:** the Helmholtz decomposition of L^p_s on bounded Lipschitz domains, and the domains of fractional powers of the Stokes operator for exponents in [0, 1]
+- **Mathlib:** `TemperedDistribution.MemSobolev` (rev 0df444a3); potential spaces on domains, Stokes operator, fractional powers of unbounded operators: none found, searched 2026-11-22
+- **Ledger:** none yet
+
+### [LiuLiuPego2007] Stability and convergence of efficient Navier-Stokes solvers via a commutator estimate
+- **Authors:** Liu, J.-G.; Liu, J.; Pego, R. L.
+- **Source:** Comm. Pure Appl. Math. 60(10), 1443-1487 (2007). DOI 10.1002/cpa.20178. Preprint numbering: (7) p. 3; Lemma 1 p. 4; Thm 1 (15), (16), (17) p. 5; Sec. 2.1 (19)-(25) pp. 6-7; (50) p. 13; Thm 7 p. 36. Copy read: preprint (revised February 2006), https://www.math.cmu.edu/users/bobpego/preprints/LLP-preprint.pdf, 2026-11-22; journal text not read, numbering not compared
+- **Kind:** paper
+- **Used for:** the L^2 bound on the commutator of the Laplacian and the Helmholtz projection for fields in H^2 ∩ H^1_0 on a bounded connected C^3 domain, and the Stokes pressure as a harmonic Neumann solution
+- **Mathlib:** `InnerProductSpace.HarmonicOnNhd` (rev 0df444a3); Helmholtz projection, Stokes pressure: none found, searched 2026-11-22
 - **Ledger:** none yet

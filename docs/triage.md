@@ -90,7 +90,8 @@ Rows are written with `python -m mdept.row`, one row from flags or a batch from 
 of six-line blocks (id, stage, tried, showed, time, model) separated by `---`. It finds
 the table by its header (`Date` and `Stage` first, `Time` and `Model` last), puts each
 row under the last one, and writes nothing when any row is refused: an empty cell, a
-cell holding a pipe or an em dash, or a stage that is not one word. A stage is a ladder
+cell holding an em dash, or a stage that is not one word. A vertical bar in a cell (a norm,
+an absolute value) is written escaped. A stage is a ladder
 rung (`S0` to `S4`) or a step outside the ladder, such as `fidelity` or `review`.
 `--check` runs every refusal on the same input and writes nothing, printing `ok <n>
 rows would be written` or the refusal: an agent checks its row file with it before

@@ -1,5 +1,5 @@
 # math-dept. One command per job; every target is also a plain python invocation.
-.PHONY: check regen lean counterexamples test all
+.PHONY: check regen lean counterexamples test all gate
 
 # Everything a commit must pass, Lean side excluded (that is `make lean`).
 check:
@@ -27,6 +27,11 @@ counterexamples:
 
 test:
 	python -m pytest -v
+
+# The default target of the `gate` tool: `gate <this repo>` runs the suite within GATE_BUDGET_S.
+GATE_BUDGET_S = 240
+
+gate: test
 
 all: regen check test
 

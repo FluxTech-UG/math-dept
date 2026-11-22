@@ -150,7 +150,12 @@ untracked-but-not-ignored text file of the public repo for the words of
 `PRIVATE_MACHINERY` in `mdept/check.py`, the one place they are written, in any case,
 and reports every hit as `path:line`; that file and `tests/fixtures` are exempt by
 path. The private repo's run and a scoped run (`--entry`) skip it, as a scoped run
-skips I16: it guards what the public repo publishes, and it reads every file.
+skips I16: it guards what the public repo publishes, and it reads every file. In the
+repo's code, skills and documents (`PUBLIC_ID_SURFACES`: `mdept`, `scripts`, `.claude`,
+`docs` without the generated map, `tests`, `CLAUDE.md`, `README.md`) I23 also refuses a
+statement number with no entry in this ledger: a sample line there names a released entry
+or a sample number, `MD_0000` to `MD_0009`. Ledger entries, proofs, Lean files and
+counterexamples cite unreleased siblings on purpose and are not read for it.
 
 LaTeX is written to be readable as source, since most readers of this repo read the
 markdown and not a renderer. State only the current state: an entry says what is known
@@ -181,10 +186,14 @@ and I23 left to the full run; it excludes `--family` and `--lean`.
 
 `python -m mdept.inbox_status`, run in the private repo, prints an inbox run's measure on
 one line, `new=<n> closable_open=<n> entries_without_current_fidelity=<n> check_fails=<n>
-later_day_owed=<n>`, then the names behind each nonzero count; its module docstring
-defines each count, `check_fails` is the family check run in-process, baseline hits not
-counted, and `later_day_owed` lists each conjectured entry with a proof whose last change
-has no later-day check after it, with the first day the check may run and the settle date.
+later_day_owed=<n> unsettled=<n> parked=<n>`, then the names behind each nonzero count;
+its module docstring defines each count, `check_fails` is the family check run
+in-process, baseline hits not counted, `later_day_owed` lists each conjectured entry with
+a proof whose last change has no later-day check after it, with the first day the check
+may run and the settle date, and the last two lines, `unsettled` and `parked`, split the
+open and conjectured entries that are not proof-owed by their attempt days (the parking
+rule, as the docstring defines it), each with its last attempt and the minutes and tokens
+its rows record.
 
 `repos.yaml` lists each consumer as a bare path, as `{path, ignore, view}`, or as
 `{archived: <where>}` for a repo whose files are kept off-line. A mapping may add
@@ -260,4 +269,5 @@ gitignores never reaches its history and is not a citation surface. I22 every `s
 row of an attempt record (an edit to the Statement or its Hypotheses) has a later
 `fidelity` row in the same table, table order being the order; a legacy stage of several
 words (`fidelity (steps 2 to 4)`) is read by its first word. I23 no tracked text file of
-the public repo names the private working setup (Prose, above).
+the public repo names the private working setup, and its code, skills and documents name no
+statement number without a ledger entry here (Prose, above).
